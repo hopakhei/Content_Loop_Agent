@@ -46,7 +46,10 @@ class Article:
 
 
 @dataclass
-class PostingRules:
+class Rules:
+    """The operational config Loop 1 consumes, parsed from the Active rows of the
+    Agent Rules database (daily quota, winning hook, best slots/types, summary)."""
+
     best_slots: list[str] = field(default_factory=list)
     best_content_types: list[str] = field(default_factory=list)
     best_hook_type: Optional[str] = None   # "A" / "B" / "C"

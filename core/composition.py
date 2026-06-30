@@ -5,7 +5,7 @@ Composition model (see README for the rationale):
 * `Post Body` is the canonical content. For non-Thread types it is a single
   post; for `Thread` it is several tweets separated by a line of `---`.
 * Hook A/B/C are *alternative opening lines*. Loop 1 picks one (weighted by
-  Posting Rules, else random) and prepends it to the first post/tweet. If no
+  the Agent Rules, else random) and prepends it to the first post/tweet. If no
   hook fields have text, the body is posted as-is (it already leads with a hook).
 * CTA: the effective URL is the draft override, else the article's CTA URL.
   If the body contains the `{CTA_URL}` placeholder it is substituted; otherwise,
@@ -18,7 +18,7 @@ import random
 import re
 from typing import Optional
 
-from core.models import Draft, PostingRules
+from core.models import Draft, Rules
 
 CTA_TEMPLATE = "完整框架＋案例在 Substack 👉 {url}"
 CTA_MARKER = "👉"
@@ -26,7 +26,7 @@ CTA_PLACEHOLDER = "{CTA_URL}"
 MAX_TWEET_LEN = 280
 THREAD_CONTENT_TYPE = "Thread"
 
-# Probability mass given to the winning hook when Posting Rules names one.
+# Probability mass given to the winning hook when the rules name one.
 WINNING_HOOK_WEIGHT = 0.7
 
 _THREAD_SEPARATOR_RE = re.compile(r"^\s*-{3,}\s*$", re.MULTILINE)
@@ -40,13 +40,13 @@ def effective_cta_url(draft: Draft, article_cta_url: Optional[str]) -> Optional[
 
 def select_hook(
     draft: Draft,
-    rules: Optional[PostingRules] = None,
+    rules: Optional[Rules] = None,
     rng: Optional[random.Random] = None,
 ) -> tuple[Optional[str], Optional[str]]:
     """Pick a hook variant. Returns (key, text) e.g. ("B", "...") or (None, None).
 
-    Honours the A/B/C experiment design: bias toward the winning hook from
-    Posting Rules but keep exploring the others.
+    Honours the A/B/C experiment design: bias toward the winning hook from the
+    rules but keep exploring the others.
     """
     rng = rng or random
     available = draft.available_hooks()

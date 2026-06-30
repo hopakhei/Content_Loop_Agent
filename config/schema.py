@@ -77,21 +77,47 @@ class Performance:
     HOOK_USED_C = "C - 懸念缺口"
 
 
-class PostingRules:
-    """Posting Rules — written by Loop 2, read by Loop 1.
+class AgentRules:
+    """Agent Rules — the single source of truth for learned rules.
 
-    This database does not exist in the workspace yet (no ID in the spec).
-    These names are the proposed schema; create the DB with matching property
-    names and set NOTION_POSTING_RULES_DB. Loop 1 degrades gracefully without it.
+    Loop 2 (LEARN) writes rules here; Loop 1 (POST) reads the `Active`
+    *operational* rows (identified by RULE_* titles below) and parses their
+    `Rule Content`. Narrative rows (insights, failures) coexist for humans and
+    are simply ignored by Loop 1. Set NOTION_AGENT_RULES_DB. Loop 1 degrades
+    gracefully (DAILY_HARD_LIMIT + random hooks) when the DB is unset/empty.
     """
 
-    RULE_NAME = "Rule Name"               # title
-    BEST_SLOTS = "Best Slots"             # rich_text (JSON array)
-    BEST_CONTENT_TYPES = "Best Content Types"  # rich_text (JSON array)
-    BEST_HOOK_TYPE = "Best Hook Type"     # select  (A / B / C)
-    DAILY_LIMIT = "Daily Limit"           # number
-    UPDATED_AT = "Updated At"             # date
-    NOTES = "Notes"                       # rich_text
+    RULE_TITLE = "Rule Title"             # title
+    RULE_CONTENT = "Rule Content"         # text  (machine value for operational rows)
+    CATEGORY = "Category"                 # select
+    STATUS = "Status"                     # select
+    CONFIDENCE = "Confidence"             # number 0-100
+    EVIDENCE_POST_IDS = "Evidence Post IDs"  # text (comma-separated Post IDs)
+    LOOP = "Loop"                         # number (LEARN iteration)
+    VERSION = "Version"                   # number
+    DEPRECATION_REASON = "Deprecation Reason"  # text
+    # Created At / Last Updated are system (created_time / last_edited_time).
+
+    # Category options
+    CAT_HOOK = "Hook"
+    CAT_STRUCTURE = "Structure"
+    CAT_TIMING = "Timing"
+    CAT_CTA = "CTA"
+    CAT_TOPIC = "Topic"
+    CAT_FAILURE = "Failure"
+    CAT_META = "Meta"
+
+    # Status options
+    STATUS_ACTIVE = "Active"
+    STATUS_TESTING = "Testing"
+    STATUS_DEPRECATED = "Deprecated"
+
+    # Operational rule titles (machine-parsed by Loop 1 from Active rows)
+    RULE_DAILY_LIMIT = "Daily Limit"          # Rule Content = integer
+    RULE_BEST_HOOK = "Best Hook"              # Rule Content = "A" / "B" / "C"
+    RULE_BEST_SLOTS = "Best Slots"            # Rule Content = JSON array of slots
+    RULE_BEST_CONTENT_TYPES = "Best Content Types"  # Rule Content = JSON array
+    RULE_LEARN_SUMMARY = "LEARN Summary"      # Rule Content = human-readable prose
 
 
 # Hook key (A/B/C) -> (Content Drafts hook field, Performance "Hook Used" option)

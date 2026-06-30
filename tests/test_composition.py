@@ -8,7 +8,7 @@ from core.composition import (
     select_hook,
     split_thread,
 )
-from core.models import Draft, PostingRules
+from core.models import Draft, Rules
 
 CTA = "https://90spm.substack.com/p/102?r=abc"
 
@@ -36,7 +36,7 @@ def test_select_hook_none_when_empty():
 
 def test_select_hook_biases_to_winner():
     d = _draft(hooks={"A": "a", "B": "b", "C": "c"})
-    rules = PostingRules(best_hook_type="C")
+    rules = Rules(best_hook_type="C")
     rng = random.Random(42)
     picks = [select_hook(d, rules, rng)[0] for _ in range(400)]
     assert picks.count("C") > picks.count("A")

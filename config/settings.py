@@ -38,7 +38,7 @@ NOTION_TOKEN = os.getenv("NOTION_TOKEN", "").strip()
 NOTION_ARTICLE_LIBRARY_DB = os.getenv("NOTION_ARTICLE_LIBRARY_DB", "").strip()
 NOTION_CONTENT_DRAFTS_DB = os.getenv("NOTION_CONTENT_DRAFTS_DB", "").strip()
 NOTION_PERFORMANCE_LOG_DB = os.getenv("NOTION_PERFORMANCE_LOG_DB", "").strip()
-NOTION_POSTING_RULES_DB = os.getenv("NOTION_POSTING_RULES_DB", "").strip()
+NOTION_AGENT_RULES_DB = os.getenv("NOTION_AGENT_RULES_DB", "").strip()
 
 # ── X / Twitter ─────────────────────────────────────────────────────────────
 X_API_KEY = os.getenv("X_API_KEY", "").strip()

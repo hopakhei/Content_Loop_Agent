@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Analyse without writing Posting Rules"
+        description: "Analyse without writing Agent Rules"
         type: boolean
         default: false
 
@@ -23,7 +23,7 @@ jobs:
       NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
       NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
       NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
-      NOTION_POSTING_RULES_DB: "f10d0491-d1a8-4cd6-9e87-5f47f554cbe6"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
       X_API_KEY: ${{ secrets.X_API_KEY }}
       X_API_SECRET: ${{ secrets.X_API_SECRET }}
       X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}

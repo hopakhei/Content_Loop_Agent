@@ -57,7 +57,7 @@ Every run writes a timestamped log to `logs/` and echoes to stdout.
 Triggered once per cron slot (07:30 / 10:00 / 12:30 / 18:30 / 21:30 HKT). On
 each run it:
 
-1. Reads the daily quota from **Posting Rules** (falls back to `DAILY_HARD_LIMIT`).
+1. Reads the daily quota from the **Agent Rules** (falls back to `DAILY_HARD_LIMIT`).
 2. Counts how many posts already went out today (HKT) from **Post Performance**.
 3. Selects up to `MAX_POSTS_PER_RUN` drafts by the **priority ladder**:
    1. A draft whose precise `Scheduled Date` matches this slot.
@@ -87,7 +87,7 @@ publisher exists.
 opening lines* used by the A/B/C experiment.
 
 - **Hook**: Loop 1 picks one hook variant (weighted toward the winning hook from
-  Posting Rules, else random among the non-empty hooks) and prepends it to the
+  the Agent Rules, else random among the non-empty hooks) and prepends it to the
   first post/tweet. If no hook fields have text, the body is posted as-is.
 - **CTA**: effective URL = draft override → else Article CTA URL.
   - If the body contains the literal `{CTA_URL}` placeholder, it is substituted.
@@ -103,9 +103,10 @@ opening lines* used by the A/B/C experiment.
 Nightly (02:00 HKT). Refreshes engagement metrics for posts older than 24h via
 the X API, then aggregates **engagement rate** = `(likes + replies + reposts) /
 impressions` over a 30-day window, grouped by slot / content type / hook. With at
-least **20 data points** it writes the winners back into **Posting Rules**, which
-Loop 1 then reads on its next run. The A/B/C hook design biases Loop 1 toward the
-winning hook while continuing to explore the others.
+least **20 data points** it writes the winners back into the **Agent Rules** as
+`Active` rows (with a `Confidence` score and the supporting `Evidence Post IDs`),
+which Loop 1 then reads on its next run. The A/B/C hook design biases Loop 1 toward
+the winning hook while continuing to explore the others.
 
 ---
 
@@ -132,30 +133,33 @@ slightly from the spec prose. Notable points:
 | `Hook A/B/C` | `Hook A 反共識`, `Hook B 數據衝擊`, `Hook C 懸念缺口` |
 | Performance Log | DB is titled **Post Performance**; `Post ID` is its **title** property. |
 | `Hook Used` values | `A - 反共識`, `B - 數據衝擊`, `C - 懸念缺口` |
-| Posting Rules DB | No ID in the spec; created under the Content Hub (`f10d0491-…`) and wired into config. |
+| Posting Rules DB (spec) | Consolidated onto the existing **Agent Rules** DB (`4acdaa17-…`); the spec's separate Posting Rules DB is retired. |
 
-### Posting Rules database
+### Agent Rules database — the single rules model
 
-Created under **90s.pm.investing — Content Hub** with the schema below and seeded
-with one `LOOP Auto Rules` row (Daily Limit 5, all slots, no hook bias yet). Its
-data-source ID `f10d0491-d1a8-4cd6-9e87-5f47f554cbe6` is baked into `.env.example`
-and the workflows. Loop 2 writes it; Loop 1 reads it. If unset, Loop 1 still falls
-back to `DAILY_HARD_LIMIT` and random hooks.
+The system's "living rules" are stored in one database, **Agent Rules** (under
+*90s.pm.investing — Content Hub*, data-source `4acdaa17-0e02-4aa6-988a-06927c905b96`,
+baked into `.env.example` + the workflows). It holds two kinds of rows:
 
-| Property | Type |
-|---|---|
-| `Rule Name` | Title |
-| `Best Slots` | Text (JSON array) |
-| `Best Content Types` | Text (JSON array) |
-| `Best Hook Type` | Select (`A` / `B` / `C`) |
-| `Daily Limit` | Number |
-| `Updated At` | Date |
-| `Notes` | Text |
+- **Operational rows** that Loop 1 mechanically reads. Loop 2 upserts them as
+  `Active` rows, keyed by `Rule Title`, with the machine value in `Rule Content`:
 
-> Note: the workspace also has a separate **Agent Rules** database (free-text
-> rules: `Rule Content` / `Category` / `Confidence` / `Evidence Post IDs`). It is
-> a different, narrative model and is **not** what Loop 1 reads. Reconciling the
-> two is a future decision.
+  | `Rule Title` | `Category` | `Rule Content` | Used by Loop 1 |
+  |---|---|---|---|
+  | `Daily Limit` | Meta | integer | daily quota |
+  | `Best Hook` | Hook | `A` / `B` / `C` | hook bias |
+  | `Best Slots` | Timing | JSON array | informational |
+  | `Best Content Types` | Structure | JSON array | informational |
+  | `LEARN Summary` | Meta | prose | informational |
+
+- **Narrative rows** (any other title) — human-readable insights/failures with
+  `Confidence`, `Evidence Post IDs`, `Status` (Active/Testing/Deprecated),
+  `Loop`, `Version`. Loop 1 ignores these.
+
+Loop 1 reads only `Active` operational rows and parses `Rule Content`; if the DB
+is unset/empty it falls back to `DAILY_HARD_LIMIT` and random hooks. Loop 2 stamps
+each write with a `Confidence` (scaled by data-point count), the supporting
+`Evidence Post IDs`, the `Loop` iteration, and a bumped `Version`.
 
 ---
 
@@ -170,7 +174,7 @@ back to `DAILY_HARD_LIMIT` and random hooks.
 
 Set repository **secrets**: `NOTION_TOKEN`, `X_API_KEY`, `X_API_SECRET`,
 `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`. The non-secret Notion DB
-IDs (including Posting Rules) are set inline in the workflows.
+IDs (including Agent Rules) are set inline in the workflows.
 
 ### VPS cron (alternative)
 
@@ -223,7 +227,7 @@ python -m pytest -q
 ## Status
 
 - **Loop 1 — POST**: complete, tested, ready to run.
-- **Loop 2 — LEARN**: complete; the Posting Rules DB now exists, so rule-writing
+- **Loop 2 — LEARN**: complete; writes into the **Agent Rules** DB, so rule-writing
   is live (activates once ≥20 data points accumulate). Non-public X metrics
   (impressions, link clicks) require user-context auth on your own recent tweets.
 - **Loop 3 — GENERATE**: complete; provide the article text via `--article-file`.

@@ -12,9 +12,9 @@ from datetime import datetime, timedelta
 from typing import Any, Iterable, Optional
 
 from config import settings
-from config.schema import Articles, Drafts, Performance, PostingRules
+from config.schema import AgentRules, Articles, Drafts, Performance
 from core.models import Article, Draft
-from core.models import PostingRules as PostingRulesModel
+from core.models import Rules as RulesModel
 from core.timeutil import now as hkt_now
 
 try:
@@ -65,6 +65,17 @@ def _date(prop: Optional[dict]) -> Optional[dict]:
     if not d or not d.get("start"):
         return None
     return {"start": d["start"], "is_datetime": "T" in d["start"]}
+
+
+def _safe_json_list(raw: str) -> list:
+    """Parse a JSON array; fall back to comma-splitting a plain string."""
+    if not raw:
+        return []
+    try:
+        val = json.loads(raw)
+        return val if isinstance(val, list) else [val]
+    except json.JSONDecodeError:
+        return [s.strip() for s in raw.split(",") if s.strip()]
 
 
 class NotionService:
@@ -160,37 +171,62 @@ class NotionService:
             self._article_cache[a.id] = a
         return articles
 
-    def get_posting_rules(self) -> Optional[PostingRulesModel]:
-        """Read the single active Posting Rules row. Returns None if the DB is
-        not configured or empty (Loop 1 then falls back to defaults)."""
-        if not settings.NOTION_POSTING_RULES_DB:
+    def get_rules(self) -> Optional[RulesModel]:
+        """Read the operational rules from the `Active` rows of Agent Rules.
+
+        Returns the parsed operational config (daily limit, best hook, best slots,
+        best content types, summary notes), or None if the DB is unset/empty or has
+        no operational rows — Loop 1 then falls back to defaults.
+        """
+        if not settings.NOTION_AGENT_RULES_DB:
             return None
         try:
-            pages = self._query_all(settings.NOTION_POSTING_RULES_DB, page_size=1)
+            pages = self._query_all(
+                settings.NOTION_AGENT_RULES_DB,
+                filter={"property": AgentRules.STATUS, "select": {"equals": AgentRules.STATUS_ACTIVE}},
+            )
         except Exception as exc:  # pragma: no cover - network/permission issues
-            self.log.warning("Could not read Posting Rules (%s); using defaults.", exc)
+            self.log.warning("Could not read Agent Rules (%s); using defaults.", exc)
             return None
         if not pages:
             return None
-        p = pages[0].get("properties", {})
 
-        def _json_list(name: str) -> list:
-            raw = _plain_text(p.get(name))
-            if not raw:
-                return []
-            try:
-                val = json.loads(raw)
-                return val if isinstance(val, list) else [val]
-            except json.JSONDecodeError:
-                return [s.strip() for s in raw.split(",") if s.strip()]
+        daily_limit = best_hook = None
+        best_slots: list = []
+        best_content_types: list = []
+        notes = ""
+        found = False
+        for pg in pages:
+            p = pg.get("properties", {})
+            title = _plain_text(p.get(AgentRules.RULE_TITLE)).strip()
+            content = _plain_text(p.get(AgentRules.RULE_CONTENT)).strip()
+            if title == AgentRules.RULE_DAILY_LIMIT:
+                found = True
+                try:
+                    daily_limit = int(float(content))
+                except ValueError:
+                    pass
+            elif title == AgentRules.RULE_BEST_HOOK:
+                found = True
+                key = content[:1].upper()
+                best_hook = key if key in {"A", "B", "C"} else None
+            elif title == AgentRules.RULE_BEST_SLOTS:
+                found = True
+                best_slots = _safe_json_list(content)
+            elif title == AgentRules.RULE_BEST_CONTENT_TYPES:
+                found = True
+                best_content_types = _safe_json_list(content)
+            elif title == AgentRules.RULE_LEARN_SUMMARY:
+                notes = content
 
-        limit = _number(p.get(PostingRules.DAILY_LIMIT))
-        return PostingRulesModel(
-            best_slots=_json_list(PostingRules.BEST_SLOTS),
-            best_content_types=_json_list(PostingRules.BEST_CONTENT_TYPES),
-            best_hook_type=_select(p.get(PostingRules.BEST_HOOK_TYPE)),
-            daily_limit=int(limit) if limit is not None else None,
-            notes=_plain_text(p.get(PostingRules.NOTES)),
+        if not found:
+            return None
+        return RulesModel(
+            best_slots=best_slots,
+            best_content_types=best_content_types,
+            best_hook_type=best_hook,
+            daily_limit=daily_limit,
+            notes=notes,
         )
 
     def count_posts_today(self, ref: Optional[datetime] = None) -> tuple[int, dict[str, int]]:
@@ -301,24 +337,106 @@ class NotionService:
             })
         return rows
 
-    def upsert_posting_rules(self, rule_name: str, fields: dict[str, Any]) -> Optional[str]:
-        """Loop 2: write the active Posting Rules row. No-op (returns None) if
-        NOTION_POSTING_RULES_DB is not configured. `fields` keys are
-        config.schema.PostingRules property names with pre-built Notion values."""
-        if not settings.NOTION_POSTING_RULES_DB:
-            self.log.warning("NOTION_POSTING_RULES_DB not set; skipping rules write.")
-            return None
-        existing = self._query_all(settings.NOTION_POSTING_RULES_DB, page_size=1)
-        props = {PostingRules.RULE_NAME: {"title": [{"text": {"content": rule_name}}]}, **fields}
+    def get_next_loop_iteration(self) -> int:
+        """The next LEARN iteration number = max existing `Loop` + 1 (>=1)."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return 1
+        try:
+            pages = self._query_all(settings.NOTION_AGENT_RULES_DB)
+        except Exception:  # pragma: no cover - network/permission issues
+            return 1
+        highest = 0
+        for pg in pages:
+            v = _number(pg.get("properties", {}).get(AgentRules.LOOP))
+            if v:
+                highest = max(highest, int(v))
+        return highest + 1
+
+    def _find_rule_page(self, title: str) -> Optional[dict]:
+        pages = self._query_all(
+            settings.NOTION_AGENT_RULES_DB,
+            filter={"property": AgentRules.RULE_TITLE, "title": {"equals": title}},
+            page_size=1,
+        )
+        return pages[0] if pages else None
+
+    def _upsert_rule(
+        self,
+        title: str,
+        category: str,
+        content: str,
+        confidence: Optional[int],
+        evidence: str,
+        loop: int,
+        status: str = AgentRules.STATUS_ACTIVE,
+    ) -> str:
+        """Upsert a single Agent Rules row by title, bumping its Version."""
+        existing = self._find_rule_page(title)
+        props: dict[str, Any] = {
+            AgentRules.RULE_TITLE: {"title": [{"text": {"content": title}}]},
+            AgentRules.RULE_CONTENT: {"rich_text": [{"text": {"content": content}}]},
+            AgentRules.CATEGORY: {"select": {"name": category}},
+            AgentRules.STATUS: {"select": {"name": status}},
+            AgentRules.LOOP: {"number": loop},
+        }
+        if confidence is not None:
+            props[AgentRules.CONFIDENCE] = {"number": confidence}
+        if evidence:
+            props[AgentRules.EVIDENCE_POST_IDS] = {"rich_text": [{"text": {"content": evidence}}]}
         if existing:
-            page_id = existing[0]["id"]
-            self.client.pages.update(page_id=page_id, properties=props)
-            return page_id
+            prev = _number(existing.get("properties", {}).get(AgentRules.VERSION)) or 0
+            props[AgentRules.VERSION] = {"number": int(prev) + 1}
+            self.client.pages.update(page_id=existing["id"], properties=props)
+            return existing["id"]
+        props[AgentRules.VERSION] = {"number": 1}
         page = self.client.pages.create(
-            parent={"database_id": settings.NOTION_POSTING_RULES_DB},
+            parent={"database_id": settings.NOTION_AGENT_RULES_DB},
             properties=props,
         )
         return page["id"]
+
+    def write_rules(
+        self,
+        *,
+        daily_limit: int,
+        best_hook: Optional[str],
+        best_slots: list,
+        best_content_types: list,
+        confidence: int,
+        evidence_post_ids: list[str],
+        loop_iteration: int,
+        summary: str,
+    ) -> bool:
+        """Loop 2: upsert the operational rules (+ a human summary) into Agent
+        Rules as `Active` rows. No-op (returns False) if the DB is not configured."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            self.log.warning("NOTION_AGENT_RULES_DB not set; skipping rules write.")
+            return False
+        evidence = ",".join(evidence_post_ids[:50])
+
+        # Daily Limit is config, not learned -> full confidence, no evidence.
+        self._upsert_rule(
+            AgentRules.RULE_DAILY_LIMIT, AgentRules.CAT_META, str(daily_limit),
+            confidence=100, evidence="", loop=loop_iteration,
+        )
+        if best_hook:
+            self._upsert_rule(
+                AgentRules.RULE_BEST_HOOK, AgentRules.CAT_HOOK, best_hook,
+                confidence, evidence, loop_iteration,
+            )
+        self._upsert_rule(
+            AgentRules.RULE_BEST_SLOTS, AgentRules.CAT_TIMING,
+            json.dumps(best_slots, ensure_ascii=False), confidence, evidence, loop_iteration,
+        )
+        self._upsert_rule(
+            AgentRules.RULE_BEST_CONTENT_TYPES, AgentRules.CAT_STRUCTURE,
+            json.dumps(best_content_types, ensure_ascii=False), confidence, evidence, loop_iteration,
+        )
+        self._upsert_rule(
+            AgentRules.RULE_LEARN_SUMMARY, AgentRules.CAT_META, summary[:1900],
+            confidence, evidence, loop_iteration,
+        )
+        return True
 
     def create_draft(
         self,

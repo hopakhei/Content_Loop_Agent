@@ -2,7 +2,7 @@
 
 讀草稿 → 發佈 → 標記已發.
 
-Runs once per cron slot. Reads the daily quota from Posting Rules (falling back
+Runs once per cron slot. Reads the daily quota from the Agent Rules (falling back
 to DAILY_HARD_LIMIT), selects up to MAX_POSTS_PER_RUN drafts by the priority
 ladder, publishes them to X, and records the result in Notion.
 """
@@ -39,7 +39,7 @@ def run(
     ref = hkt_now(settings.TZ_NAME)
     slot = slot or nearest_slot(ref, settings.POST_SLOTS_HKT)
 
-    rules = notion.get_posting_rules()
+    rules = notion.get_rules()
     daily_limit = rules.daily_limit if (rules and rules.daily_limit) else settings.DAILY_HARD_LIMIT
 
     total_today, per_article = notion.count_posts_today(ref)

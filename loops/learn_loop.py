@@ -4,17 +4,16 @@
 
 Runs nightly (02:00 HKT). Refreshes engagement metrics for posts older than 24h,
 aggregates engagement rate by slot / content type / hook over the last 30 days,
-and (when there are enough data points) updates the Posting Rules that Loop 1 reads.
+and (when there are enough data points) updates the Agent Rules that Loop 1 reads.
 """
 from __future__ import annotations
 
-import json
 import logging
 from datetime import datetime, timezone
 from typing import Optional
 
 from config import settings
-from config.schema import Performance, PostingRules
+from config.schema import Performance
 from core.analysis import DataPoint, best_content_types, best_hook, best_slots, ranked
 from core.timeutil import nearest_slot, parse_notion_datetime
 from services.notion import NotionService
@@ -23,6 +22,8 @@ from services.twitter import TwitterService
 # Minimum data points before we trust an aggregate enough to rewrite the rules.
 MIN_DATA_POINTS = 20
 ANALYSIS_WINDOW_DAYS = 30
+# Data points at which a learned rule reaches full (100) confidence.
+FULL_CONFIDENCE_POINTS = 40
 
 
 def run(
@@ -64,27 +65,37 @@ def run(
     }
 
     if len(points) < MIN_DATA_POINTS:
-        log.info("Only %d/%d data points — not updating Posting Rules yet.", len(points), MIN_DATA_POINTS)
+        log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)
         return summary
 
     notes = _build_notes(slot_rank, type_rank, hook_rank)
+    confidence = min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS))
+    evidence_ids = [
+        r["post_id"] for r in rows
+        if r.get("post_id") and not r["post_id"].startswith("DRYRUN-")
+    ]
+    summary["confidence"] = confidence
+
     if dry_run:
-        log.info("[dry-run] would update Posting Rules: %s", summary)
+        log.info("[dry-run] would update Agent Rules (confidence=%d): %s", confidence, summary)
         return summary
 
-    fields = {
-        PostingRules.BEST_SLOTS: {"rich_text": [{"text": {"content": json.dumps(summary["best_slots"], ensure_ascii=False)}}]},
-        PostingRules.BEST_CONTENT_TYPES: {"rich_text": [{"text": {"content": json.dumps(summary["best_content_types"], ensure_ascii=False)}}]},
-        PostingRules.DAILY_LIMIT: {"number": settings.DAILY_HARD_LIMIT},
-        PostingRules.UPDATED_AT: {"date": {"start": datetime.now(timezone.utc).isoformat()}},
-        PostingRules.NOTES: {"rich_text": [{"text": {"content": notes[:1900]}}]},
-    }
-    if summary["best_hook"]:
-        fields[PostingRules.BEST_HOOK_TYPE] = {"select": {"name": summary["best_hook"]}}
-
-    page_id = notion.upsert_posting_rules("LOOP Auto Rules", fields)
-    summary["rules_updated"] = page_id is not None
-    log.info("Posting Rules %s.", "updated" if summary["rules_updated"] else "not written (DB unset)")
+    loop_iteration = notion.get_next_loop_iteration()
+    summary["rules_updated"] = notion.write_rules(
+        daily_limit=settings.DAILY_HARD_LIMIT,
+        best_hook=summary["best_hook"],
+        best_slots=summary["best_slots"],
+        best_content_types=summary["best_content_types"],
+        confidence=confidence,
+        evidence_post_ids=evidence_ids,
+        loop_iteration=loop_iteration,
+        summary=notes,
+    )
+    log.info(
+        "Agent Rules %s (loop iteration %d, confidence %d).",
+        "updated" if summary["rules_updated"] else "not written (DB unset)",
+        loop_iteration, confidence,
+    )
     return summary
 
 

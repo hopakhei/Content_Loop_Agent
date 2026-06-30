@@ -9,7 +9,7 @@ class FakeNotion:
         self.marked = []
         self.performance = []
 
-    def get_posting_rules(self):
+    def get_rules(self):
         return None
 
     def count_posts_today(self, ref):
