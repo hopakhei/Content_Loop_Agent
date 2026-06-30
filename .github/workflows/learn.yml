@@ -37,6 +37,10 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run Loop 2
         run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping scheduled LEARN. Add repo secrets to enable."
+            exit 0
+          fi
           EXTRA=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="--dry-run"; fi
           python main.py --loop 2 $EXTRA

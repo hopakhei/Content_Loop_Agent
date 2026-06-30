@@ -174,7 +174,9 @@ each write with a `Confidence` (scaled by data-point count), the supporting
 
 Set repository **secrets**: `NOTION_TOKEN`, `X_API_KEY`, `X_API_SECRET`,
 `X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`. The non-secret Notion DB
-IDs (including Agent Rules) are set inline in the workflows.
+IDs (including Agent Rules) are set inline in the workflows. Until these secrets
+exist, the scheduled `post`/`learn` runs **skip cleanly** (exit 0 with a notice)
+rather than failing.
 
 ### VPS cron (alternative)
 

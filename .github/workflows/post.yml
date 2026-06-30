@@ -52,6 +52,10 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run Loop 1
         run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$X_API_KEY" ]; then
+            echo "::notice::Secrets not configured (NOTION_TOKEN / X_API_KEY) — skipping scheduled POST. Add repo secrets to enable."
+            exit 0
+          fi
           EXTRA=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="$EXTRA --dry-run"; fi
           if [ -n "${{ inputs.slot }}" ]; then EXTRA="$EXTRA --slot ${{ inputs.slot }}"; fi
