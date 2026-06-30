@@ -8,8 +8,8 @@ Composition model (see README for the rationale):
   the Agent Rules, else random) and prepends it to the first post/tweet. If no
   hook fields have text, the body is posted as-is (it already leads with a hook).
 * CTA: the effective URL is the draft override, else the article's CTA URL.
-  If the body contains the `{CTA_URL}` placeholder it is substituted; otherwise,
-  if no CTA is present, the standard CTA line is appended (a new final tweet for
+  If the body contains a CTA placeholder (`{CTA_URL}` or the human `[連結]`) it is
+  substituted; otherwise, if no CTA is present, the standard line is appended (a new final tweet for
   threads, an appended line for single posts).
 """
 from __future__ import annotations
@@ -22,7 +22,12 @@ from core.models import Draft, Rules
 
 CTA_TEMPLATE = "完整框架＋案例在 Substack 👉 {url}"
 CTA_MARKER = "👉"
-CTA_PLACEHOLDER = "{CTA_URL}"
+# Tokens a draft may use where the CTA URL should be substituted. Drafts in the
+# wild use the human placeholder [連結]; Loop 3 emits {CTA_URL}. Both are filled.
+CTA_PLACEHOLDERS = (
+    "{CTA_URL}", "{cta_url}",
+    "[連結]", "[链接]", "[連接]", "[CTA]", "[link]", "[Link]", "[LINK]",
+)
 MAX_TWEET_LEN = 280
 THREAD_CONTENT_TYPE = "Thread"
 
@@ -100,8 +105,10 @@ def compose_posts(
 
     # 1. CTA substitution / injection.
     joined = "\n".join(segments)
-    if CTA_PLACEHOLDER in joined:
-        segments = [s.replace(CTA_PLACEHOLDER, cta_url or "") for s in segments]
+    present = [ph for ph in CTA_PLACEHOLDERS if ph in joined]
+    if cta_url and present:
+        for ph in present:
+            segments = [s.replace(ph, cta_url) for s in segments]
     elif cta_url and not _has_cta(joined, cta_url):
         cta_line = CTA_TEMPLATE.format(url=cta_url)
         if is_thread:

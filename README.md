@@ -90,7 +90,7 @@ opening lines* used by the A/B/C experiment.
   the Agent Rules, else random among the non-empty hooks) and prepends it to the
   first post/tweet. If no hook fields have text, the body is posted as-is.
 - **CTA**: effective URL = draft override → else Article CTA URL.
-  - If the body contains the literal `{CTA_URL}` placeholder, it is substituted.
+  - If the body contains a CTA placeholder — `{CTA_URL}` or the human `[連結]` (also `[link]`/`[CTA]`) — it is substituted with the URL.
   - Otherwise, if no CTA is present, the standard line is appended:
     `完整框架＋案例在 Substack 👉 {url}` (a new final tweet for threads).
 - **Threads**: a `Thread` body is split into individual tweets on a line

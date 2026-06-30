@@ -65,6 +65,15 @@ def test_compose_substitutes_placeholder():
     assert CTA in posts[0]
 
 
+def test_compose_substitutes_bracket_placeholder():
+    # Real drafts end the CTA with the human placeholder [連結].
+    d = _draft(content_type="反共識", post_body="主體\n\n完整框架＋案例在 Substack 👉 [連結]")
+    posts = compose_posts(d, hook_text=None, cta_url=CTA)
+    assert "[連結]" not in posts[0]
+    assert posts[0].count("👉") == 1
+    assert CTA in posts[0]
+
+
 def test_compose_prepends_hook():
     d = _draft(content_type="反共識", post_body="主體內容")
     posts = compose_posts(d, hook_text="反共識鈎子", cta_url=CTA)
