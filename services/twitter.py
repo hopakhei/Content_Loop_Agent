@@ -71,6 +71,15 @@ class TwitterService:
             reply_to = tid
         return ids
 
+    def verify(self) -> str:
+        """Read-only credential check: confirm user-context OAuth works (does NOT
+        post). Returns the authenticated @handle; raises if the creds are invalid."""
+        if self.client is None:
+            raise RuntimeError("No X client (constructed in dry-run without credentials).")
+        me = self.client.get_me()
+        data = getattr(me, "data", None)
+        return getattr(data, "username", None) or "unknown"
+
     def get_metrics(self, tweet_ids: list[str]) -> dict[str, dict[str, float]]:
         """Loop 2: fetch engagement for own tweets. Returns {id: {metric: value}}.
 

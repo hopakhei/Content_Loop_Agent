@@ -229,6 +229,27 @@ class NotionService:
             notes=notes,
         )
 
+    def verify_databases(self) -> list[tuple[str, bool, str]]:
+        """Read-only preflight: confirm each configured data source is reachable
+        (token valid + shared with the integration). Returns (label, ok, detail)."""
+        targets = [
+            ("Article Library", settings.NOTION_ARTICLE_LIBRARY_DB),
+            ("Content Drafts", settings.NOTION_CONTENT_DRAFTS_DB),
+            ("Post Performance", settings.NOTION_PERFORMANCE_LOG_DB),
+            ("Agent Rules", settings.NOTION_AGENT_RULES_DB),
+        ]
+        results: list[tuple[str, bool, str]] = []
+        for label, ds_id in targets:
+            if not ds_id:
+                results.append((label, False, "id not configured"))
+                continue
+            try:
+                self.client.data_sources.retrieve(data_source_id=ds_id)
+                results.append((label, True, "reachable"))
+            except Exception as exc:  # report any failure (404 = not shared, 401 = bad token)
+                results.append((label, False, str(exc)[:140]))
+        return results
+
     def count_posts_today(self, ref: Optional[datetime] = None) -> tuple[int, dict[str, int]]:
         """(total posts today, {article_id: count}). 'Today' is HKT calendar day.
 

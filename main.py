@@ -5,6 +5,7 @@
     python main.py --loop 1 --slot 12:30 --yes
     python main.py --loop 2 [--dry-run]      # LEARN
     python main.py --loop 3 --issue 102 --article-file article.txt [--dry-run]
+    python main.py --check                   # read-only Notion + X preflight (no posting)
 """
 from __future__ import annotations
 
@@ -20,7 +21,9 @@ LOOP_NAMES = {1: "post", 2: "learn", 3: "generate"}
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="loop", description="LOOP — 90s.pm.investing content pipeline")
-    p.add_argument("--loop", type=int, choices=[1, 2, 3], required=True, help="Which loop to run")
+    p.add_argument("--loop", type=int, choices=[1, 2, 3], help="Which loop to run")
+    p.add_argument("--check", action="store_true",
+                   help="Read-only preflight: verify Notion DB access + X credentials, then exit")
     p.add_argument("--dry-run", action="store_true", default=settings.DRY_RUN,
                    help="Simulate the full flow without posting or writing to Notion")
     p.add_argument("--slot", help="Loop 1: override the posting slot (HH:MM)")
@@ -32,8 +35,44 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
+def _run_check(logger) -> int:
+    """Read-only preflight of Notion + X. Returns 0 if everything is reachable."""
+    from services.notion import NotionService
+    from services.twitter import TwitterService
+
+    ok = True
+    logger.info("Preflight — Notion databases:")
+    for label, good, detail in NotionService(logger).verify_databases():
+        logger.info("  %-18s %s — %s", label, "OK  " if good else "FAIL", detail)
+        ok = ok and good
+
+    logger.info("Preflight — X credentials:")
+    try:
+        handle = TwitterService(dry_run=False, logger=logger).verify()
+        logger.info("  X auth             OK   — authenticated as @%s", handle)
+    except Exception as exc:
+        logger.error("  X auth             FAIL — %s", exc)
+        ok = False
+
+    logger.info("Preflight %s", "PASSED ✓" if ok else "FAILED ✗")
+    return 0 if ok else 1
+
+
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
+
+    if args.check:
+        logger, log_path = setup_logging("check", dry_run=False)
+        logger.info("=== Preflight check start | log=%s ===", log_path)
+        try:
+            return _run_check(logger)
+        except Exception:
+            logger.exception("Preflight failed with an unhandled error.")
+            return 1
+
+    if not args.loop:
+        build_parser().error("provide --loop {1,2,3} or --check")
+
     dry_run = bool(args.dry_run)
     loop_name = LOOP_NAMES[args.loop]
     logger, log_path = setup_logging(loop_name, dry_run)
