@@ -132,13 +132,15 @@ slightly from the spec prose. Notable points:
 | `Hook A/B/C` | `Hook A 反共識`, `Hook B 數據衝擊`, `Hook C 懸念缺口` |
 | Performance Log | DB is titled **Post Performance**; `Post ID` is its **title** property. |
 | `Hook Used` values | `A - 反共識`, `B - 數據衝擊`, `C - 懸念缺口` |
-| Posting Rules DB | **Does not exist yet** (no ID in the spec). |
+| Posting Rules DB | No ID in the spec; created under the Content Hub (`f10d0491-…`) and wired into config. |
 
 ### Posting Rules database
 
-Loop 2 writes it and Loop 1 reads it. Until it exists, Loop 1 falls back to
-`DAILY_HARD_LIMIT` and random hooks (everything still works). To enable it, create
-a Notion database with these properties and set `NOTION_POSTING_RULES_DB`:
+Created under **90s.pm.investing — Content Hub** with the schema below and seeded
+with one `LOOP Auto Rules` row (Daily Limit 5, all slots, no hook bias yet). Its
+data-source ID `f10d0491-d1a8-4cd6-9e87-5f47f554cbe6` is baked into `.env.example`
+and the workflows. Loop 2 writes it; Loop 1 reads it. If unset, Loop 1 still falls
+back to `DAILY_HARD_LIMIT` and random hooks.
 
 | Property | Type |
 |---|---|
@@ -149,6 +151,11 @@ a Notion database with these properties and set `NOTION_POSTING_RULES_DB`:
 | `Daily Limit` | Number |
 | `Updated At` | Date |
 | `Notes` | Text |
+
+> Note: the workspace also has a separate **Agent Rules** database (free-text
+> rules: `Rule Content` / `Category` / `Confidence` / `Evidence Post IDs`). It is
+> a different, narrative model and is **not** what Loop 1 reads. Reconciling the
+> two is a future decision.
 
 ---
 
@@ -162,9 +169,8 @@ a Notion database with these properties and set `NOTION_POSTING_RULES_DB`:
 - `.github/workflows/tests.yml` — runs the test suite on every PR.
 
 Set repository **secrets**: `NOTION_TOKEN`, `X_API_KEY`, `X_API_SECRET`,
-`X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`, and (optionally)
-`NOTION_POSTING_RULES_DB`. The non-secret Notion DB IDs are set inline in the
-workflows.
+`X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`. The non-secret Notion DB
+IDs (including Posting Rules) are set inline in the workflows.
 
 ### VPS cron (alternative)
 
@@ -217,9 +223,9 @@ python -m pytest -q
 ## Status
 
 - **Loop 1 — POST**: complete, tested, ready to run.
-- **Loop 2 — LEARN**: complete; rule-writing activates once the Posting Rules DB
-  exists. Non-public X metrics (impressions, link clicks) require user-context
-  auth on your own recent tweets.
+- **Loop 2 — LEARN**: complete; the Posting Rules DB now exists, so rule-writing
+  is live (activates once ≥20 data points accumulate). Non-public X metrics
+  (impressions, link clicks) require user-context auth on your own recent tweets.
 - **Loop 3 — GENERATE**: complete; provide the article text via `--article-file`.
 
 Secrets live only in `.env` / CI secrets and are never committed.
