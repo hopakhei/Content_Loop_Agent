@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Run logs (keep the directory, ignore the contents)
+logs/*
+!logs/.gitkeep
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
