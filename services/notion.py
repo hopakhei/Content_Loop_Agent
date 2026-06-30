@@ -92,14 +92,14 @@ class NotionService:
         self._article_cache: dict[str, Article] = {}
 
     # ── low-level paginated query ────────────────────────────────────────────
-    def _query_all(self, database_id: str, **kwargs) -> list[dict]:
+    def _query_all(self, data_source_id: str, **kwargs) -> list[dict]:
         results: list[dict] = []
         cursor = None
         while True:
             payload = dict(kwargs)
             if cursor:
                 payload["start_cursor"] = cursor
-            resp = self.client.databases.query(database_id=database_id, **payload)
+            resp = self.client.data_sources.query(data_source_id=data_source_id, **payload)
             results.extend(resp.get("results", []))
             if not resp.get("has_more"):
                 break
@@ -288,7 +288,7 @@ class NotionService:
         if hook_label:
             props[Performance.HOOK_USED] = {"select": {"name": hook_label}}
         page = self.client.pages.create(
-            parent={"database_id": settings.NOTION_PERFORMANCE_LOG_DB},
+            parent={"type": "data_source_id", "data_source_id": settings.NOTION_PERFORMANCE_LOG_DB},
             properties=props,
         )
         return page["id"]
@@ -390,7 +390,7 @@ class NotionService:
             return existing["id"]
         props[AgentRules.VERSION] = {"number": 1}
         page = self.client.pages.create(
-            parent={"database_id": settings.NOTION_AGENT_RULES_DB},
+            parent={"type": "data_source_id", "data_source_id": settings.NOTION_AGENT_RULES_DB},
             properties=props,
         )
         return page["id"]
@@ -474,7 +474,7 @@ class NotionService:
             props[Drafts.SOURCE_ARTICLE] = {"select": {"name": source_article}}
 
         page = self.client.pages.create(
-            parent={"database_id": settings.NOTION_CONTENT_DRAFTS_DB},
+            parent={"type": "data_source_id", "data_source_id": settings.NOTION_CONTENT_DRAFTS_DB},
             properties=props,
         )
         return page["id"]

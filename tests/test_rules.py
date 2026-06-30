@@ -26,7 +26,7 @@ class FakeDB:
     def __init__(self, rows=None):
         self.rows = rows or []
 
-    def query(self, database_id, **kw):
+    def query(self, data_source_id, **kw):
         flt = kw.get("filter") or {}
         if flt.get("property") == "Rule Title":
             wanted = flt["title"]["equals"]
@@ -54,7 +54,7 @@ class FakePages:
 
 class FakeClient:
     def __init__(self, rows=None):
-        self.databases = FakeDB(rows)
+        self.data_sources = FakeDB(rows)
         self.pages = FakePages()
 
 
