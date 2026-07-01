@@ -85,6 +85,24 @@ def test_thread_split_on_dashes():
     assert split_thread(body) == ["第一條", "第二條", "第三條"]
 
 
+def test_thread_split_on_emdashes():
+    # Real drafts use an em-dash rule line as the separator.
+    body = "第一條\n———\n第二條\n———\n第三條"
+    assert split_thread(body) == ["第一條", "第二條", "第三條"]
+
+
+def test_thread_does_not_split_on_blank_lines():
+    # Blank lines inside a tweet must NOT fragment it (the over-splitting bug).
+    body = "第一段\n\n第二段\n\n第三段"
+    assert split_thread(body) == [body]
+
+
+def test_thread_ignores_inline_dashes():
+    # An em-dash inside a sentence is not a separator.
+    body = "差不了多少——但倉位管理差很多。"
+    assert split_thread(body) == [body]
+
+
 def test_thread_appends_cta_as_new_tweet():
     d = _draft(content_type="Thread", post_body="鈎子\n---\n論點\n---\n收尾")
     posts = compose_posts(d, hook_text=None, cta_url=CTA)

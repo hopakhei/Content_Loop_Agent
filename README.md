@@ -93,8 +93,10 @@ opening lines* used by the A/B/C experiment.
   - If the body contains a CTA placeholder — `{CTA_URL}` or the human `[連結]` (also `[link]`/`[CTA]`) — it is substituted with the URL.
   - Otherwise, if no CTA is present, the standard line is appended:
     `完整框架＋案例在 Substack 👉 {url}` (a new final tweet for threads).
-- **Threads**: a `Thread` body is split into individual tweets on a line
-  containing only `---` (falls back to blank-line splitting).
+- **Threads**: a `Thread` body is split into tweets **only** on an explicit
+  separator line — 3+ dashes/em-dashes (`---` or `———`). Blank lines inside a
+  tweet are preserved; a body with no separator posts as a single tweet. (We do
+  not split on blank lines — that over-fragments the thread.)
 
 ---
 

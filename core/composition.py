@@ -34,8 +34,10 @@ THREAD_CONTENT_TYPE = "Thread"
 # Probability mass given to the winning hook when the rules name one.
 WINNING_HOOK_WEIGHT = 0.7
 
-_THREAD_SEPARATOR_RE = re.compile(r"^\s*-{3,}\s*$", re.MULTILINE)
-_BLANKLINE_RE = re.compile(r"\n\s*\n")
+# A thread tweet boundary is a line that is ONLY a rule of 3+ dashes / em-dashes /
+# en-dashes / underscores (`---`, `———`, `___`). Anchored to the whole line, so an
+# inline dash inside a sentence (e.g. "差不了多少——但…") never matches.
+_THREAD_SEPARATOR_RE = re.compile(r"^[ \t]*[-–—_]{3,}[ \t]*$", re.MULTILINE)
 
 
 def effective_cta_url(draft: Draft, article_cta_url: Optional[str]) -> Optional[str]:
@@ -75,14 +77,13 @@ def select_hook(
 
 
 def split_thread(body: str) -> list[str]:
-    """Split a Thread body into individual tweets.
+    """Split a Thread body into tweets on explicit separator lines only.
 
-    Primary convention: a line containing only `---` separates tweets.
-    Fallback: split on blank lines. Always returns at least one segment.
+    A tweet boundary is a line of 3+ dashes/em-dashes/underscores (`---` or `———`).
+    Blank lines within a tweet are preserved — we never split on them, as that
+    over-fragments a thread. A body with no separator line is a single tweet.
     """
     parts = [p.strip() for p in _THREAD_SEPARATOR_RE.split(body) if p.strip()]
-    if len(parts) <= 1:
-        parts = [p.strip() for p in _BLANKLINE_RE.split(body) if p.strip()]
     return parts or [body.strip()]
 
 
