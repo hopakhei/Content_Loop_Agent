@@ -9,11 +9,14 @@ into Content Drafts (Status = Draft, Generation = 1) related to the Article.
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from core.parsing import map_content_type, map_platforms, map_source_article, parse_units
 from services.claude import ClaudeService
 from services.notion import NotionService
+
+ARTICLE_SUFFIXES = {".md", ".txt"}
 
 
 def run(
@@ -90,3 +93,46 @@ def run(
 
     log.info("Loop 3 done | created=%d drafts for issue %s", len(created), issue_number)
     return {"issue": issue_number, "units": len(units), "created": len(created), "drafts": created}
+
+
+def discover_articles(articles_dir: str = "articles") -> list[tuple[int, Path]]:
+    """(issue_number, path) for every articles/<digits>.(md|txt), sorted by issue."""
+    base = Path(articles_dir)
+    found = []
+    for p in sorted(base.glob("*")):
+        if p.suffix.lower() in ARTICLE_SUFFIXES and p.stem.isdigit():
+            found.append((int(p.stem), p))
+    return sorted(found)
+
+
+def run_batch(
+    articles_dir: str = "articles",
+    dry_run: bool = False,
+    logger: Optional[logging.Logger] = None,
+    notion: Optional[NotionService] = None,
+    claude: Optional[ClaudeService] = None,
+) -> dict:
+    """Fission every articles/<issue>.(md|txt) file into Notion in one pass."""
+    log = logger or logging.getLogger("loop.generate")
+    articles = discover_articles(articles_dir)
+    if not articles:
+        log.warning("No article files found in %s/ (expected e.g. 102.md).", articles_dir)
+        return {"articles": 0, "results": []}
+
+    notion = notion or NotionService(log)
+    claude = claude or ClaudeService(logger=log)
+    log.info("Loop 3 BATCH | %d article(s): %s", len(articles), ", ".join(str(i) for i, _ in articles))
+
+    results = []
+    for issue, path in articles:
+        text = path.read_text(encoding="utf-8").strip()
+        if not text:
+            log.warning("Skipping issue %s: %s is empty.", issue, path)
+            continue
+        results.append(
+            run(issue_number=issue, article_text=text, dry_run=dry_run,
+                logger=log, notion=notion, claude=claude)
+        )
+    total = sum(r["created"] for r in results)
+    log.info("Loop 3 BATCH done | %d article(s) → %d drafts", len(results), total)
+    return {"articles": len(results), "created": total, "results": results}

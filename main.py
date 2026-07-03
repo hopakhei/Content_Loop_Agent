@@ -5,6 +5,7 @@
     python main.py --loop 1 --slot 12:30 --yes
     python main.py --loop 2 [--dry-run]      # LEARN
     python main.py --loop 3 --issue 102 --article-file article.txt [--dry-run]
+    python main.py --loop 3 --all            # fission every articles/<issue>.(md|txt)
     python main.py --check                   # read-only Notion + X preflight (no posting)
 """
 from __future__ import annotations
@@ -30,6 +31,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--yes", action="store_true", help="Loop 1: skip the pre-post countdown (headless cron)")
     p.add_argument("--issue", help="Loop 3: article Issue #")
     p.add_argument("--article-file", help="Loop 3: path to the article's full text")
+    p.add_argument("--all", action="store_true", help="Loop 3: fission every articles/<issue>.(md|txt)")
+    p.add_argument("--articles-dir", default="articles", help="Loop 3: directory of article texts (with --all)")
     p.add_argument("--cta-url", help="Loop 3: CTA URL (defaults to the Article's CTA URL)")
     p.add_argument("--article-id", help="Loop 3: Notion page id of the Article to relate drafts to")
     return p
@@ -86,18 +89,21 @@ def main(argv=None) -> int:
             from loops import learn_loop
             learn_loop.run(dry_run=dry_run, logger=logger)
         else:
-            if not args.issue or not args.article_file:
-                build_parser().error("Loop 3 requires --issue and --article-file")
-            text = Path(args.article_file).read_text(encoding="utf-8")
             from loops import generate_loop
-            generate_loop.run(
-                issue_number=args.issue,
-                article_text=text,
-                cta_url=args.cta_url,
-                article_id=args.article_id,
-                dry_run=dry_run,
-                logger=logger,
-            )
+            if args.all:
+                generate_loop.run_batch(articles_dir=args.articles_dir, dry_run=dry_run, logger=logger)
+            elif args.issue and args.article_file:
+                text = Path(args.article_file).read_text(encoding="utf-8")
+                generate_loop.run(
+                    issue_number=args.issue,
+                    article_text=text,
+                    cta_url=args.cta_url,
+                    article_id=args.article_id,
+                    dry_run=dry_run,
+                    logger=logger,
+                )
+            else:
+                build_parser().error("Loop 3 requires --all, or --issue with --article-file")
     except KeyboardInterrupt:
         logger.warning("Interrupted by user.")
         return 130
