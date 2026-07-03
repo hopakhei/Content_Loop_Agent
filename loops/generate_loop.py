@@ -25,6 +25,7 @@ def run(
     cta_url: Optional[str] = None,
     article_id: Optional[str] = None,
     dry_run: bool = False,
+    fresh: bool = False,
     logger: Optional[logging.Logger] = None,
     notion: Optional[NotionService] = None,
     claude: Optional[ClaudeService] = None,
@@ -55,6 +56,14 @@ def run(
     log.info("Claude returned %d parseable units.", len(units))
 
     source_article = map_source_article(issue_number)
+
+    if fresh:
+        if dry_run:
+            log.info("[dry-run] fresh: existing unposted drafts for issue %s would be parked (Optimizing).", issue_number)
+        else:
+            parked = notion.park_drafts(source_article=source_article, article_id=article_id)
+            log.info("Fresh: parked %d existing unposted draft(s) for issue %s.", parked, issue_number)
+
     created: list[dict] = []
     for unit in units:
         content_type = map_content_type(unit.content_type_label)
@@ -108,6 +117,7 @@ def discover_articles(articles_dir: str = "articles") -> list[tuple[int, Path]]:
 def run_batch(
     articles_dir: str = "articles",
     dry_run: bool = False,
+    fresh: bool = False,
     logger: Optional[logging.Logger] = None,
     notion: Optional[NotionService] = None,
     claude: Optional[ClaudeService] = None,
@@ -130,7 +140,7 @@ def run_batch(
             log.warning("Skipping issue %s: %s is empty.", issue, path)
             continue
         results.append(
-            run(issue_number=issue, article_text=text, dry_run=dry_run,
+            run(issue_number=issue, article_text=text, dry_run=dry_run, fresh=fresh,
                 logger=log, notion=notion, claude=claude)
         )
     total = sum(r["created"] for r in results)

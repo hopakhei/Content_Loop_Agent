@@ -33,6 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--article-file", help="Loop 3: path to the article's full text")
     p.add_argument("--all", action="store_true", help="Loop 3: fission every articles/<issue>.(md|txt)")
     p.add_argument("--articles-dir", default="articles", help="Loop 3: directory of article texts (with --all)")
+    p.add_argument("--fresh", action="store_true",
+                   help="Loop 3: park each article's existing unposted drafts (Optimizing) before generating")
     p.add_argument("--cta-url", help="Loop 3: CTA URL (defaults to the Article's CTA URL)")
     p.add_argument("--article-id", help="Loop 3: Notion page id of the Article to relate drafts to")
     return p
@@ -91,7 +93,9 @@ def main(argv=None) -> int:
         else:
             from loops import generate_loop
             if args.all:
-                generate_loop.run_batch(articles_dir=args.articles_dir, dry_run=dry_run, logger=logger)
+                generate_loop.run_batch(
+                    articles_dir=args.articles_dir, dry_run=dry_run, fresh=args.fresh, logger=logger
+                )
             elif args.issue and args.article_file:
                 text = Path(args.article_file).read_text(encoding="utf-8")
                 generate_loop.run(
@@ -100,6 +104,7 @@ def main(argv=None) -> int:
                     cta_url=args.cta_url,
                     article_id=args.article_id,
                     dry_run=dry_run,
+                    fresh=args.fresh,
                     logger=logger,
                 )
             else:

@@ -250,6 +250,25 @@ class NotionService:
                 results.append((label, False, str(exc)[:140]))
         return results
 
+    def park_drafts(self, source_article: Optional[str] = None, article_id: Optional[str] = None) -> int:
+        """Loop 3 fresh-start: move this article's UNPOSTED drafts (Draft/Scheduled)
+        to Status=Optimizing so Loop 1 stops selecting them. Matches by Source
+        Article select and/or Article relation. Returns how many were parked."""
+        if not (source_article or article_id):
+            return 0
+        parked = 0
+        for status in (Drafts.STATUS_DRAFT, Drafts.STATUS_SCHEDULED):
+            for d in self.query_drafts_by_status(status):
+                if (source_article and d.source_article == source_article) or (
+                    article_id and d.article_id == article_id
+                ):
+                    self.client.pages.update(
+                        page_id=d.id,
+                        properties={Drafts.STATUS: {"select": {"name": Drafts.STATUS_OPTIMIZING}}},
+                    )
+                    parked += 1
+        return parked
+
     def count_posts_today(self, ref: Optional[datetime] = None) -> tuple[int, dict[str, int]]:
         """(total posts today, {article_id: count}). 'Today' is HKT calendar day.
 
