@@ -9,15 +9,12 @@ name: Loop 1 — POST
 # GitHub-hosted cron is best-effort and can be delayed a few minutes; the loop
 # auto-detects the nearest slot from the current HKT time, so small drift is fine.
 on:
-  # ⏸ PAUSED: scheduled auto-posting is disabled while 101–107 are re-fissioned
-  # with the new Hook framework. Re-enable by uncommenting the schedule below.
-  # Manual runs via workflow_dispatch still work.
-  # schedule:
-  #   - cron: "30 23 * * *"
-  #   - cron: "0 2 * * *"
-  #   - cron: "30 4 * * *"
-  #   - cron: "30 10 * * *"
-  #   - cron: "30 13 * * *"
+  schedule:
+    - cron: "30 23 * * *"
+    - cron: "0 2 * * *"
+    - cron: "30 4 * * *"
+    - cron: "30 10 * * *"
+    - cron: "30 13 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
