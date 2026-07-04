@@ -49,7 +49,8 @@ X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 
 # ── Claude (Loop 3) ─────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
-CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-opus-4-8").strip()
+# `or` (not a getenv default) so a set-but-empty env var still falls back.
+CLAUDE_MODEL = (os.getenv("CLAUDE_MODEL") or "claude-opus-4-8").strip()
 
 # ── Behaviour ───────────────────────────────────────────────────────────────
 MAX_POSTS_PER_RUN = _int("MAX_POSTS_PER_RUN", 1)
