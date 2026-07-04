@@ -75,4 +75,5 @@ def test_map_platforms():
 def test_map_source_article():
     assert map_source_article(102) == "102 - 北極星"
     assert map_source_article("105") == "105 - 畫樹"
+    assert map_source_article(107) == "107 - 組合"
     assert map_source_article(999) is None
