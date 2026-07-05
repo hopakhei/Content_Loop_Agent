@@ -22,11 +22,17 @@ from core.timeutil import parse_notion_datetime, slot_to_minutes
 SLOT_MATCH_TOLERANCE_MIN = 45
 
 
+def make_eligibility(available_platforms: set) -> Callable[[Draft], bool]:
+    """Eligibility check for the configured publishers: a draft qualifies if it
+    targets at least one available platform (or has no platform set)."""
+    def _eligible(draft: Draft) -> bool:
+        return (not draft.platforms) or bool(set(draft.platforms) & available_platforms)
+    return _eligible
+
+
 def can_post_on_x(draft: Draft) -> bool:
-    """Loop 1 publishes to X. A draft is eligible if it targets X (or has no
-    platform set). Threads-only drafts are skipped until a Threads publisher exists.
-    """
-    return (not draft.platforms) or ("X" in draft.platforms)
+    """Back-compat helper: eligibility when only the X publisher is configured."""
+    return make_eligibility({"X"})(draft)
 
 
 def _arg_key(draft: Draft) -> tuple:

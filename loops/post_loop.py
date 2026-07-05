@@ -4,7 +4,9 @@
 
 Runs once per cron slot. Reads the daily quota from the Agent Rules (falling back
 to DAILY_HARD_LIMIT), selects up to MAX_POSTS_PER_RUN drafts by the priority
-ladder, publishes them to X, and records the result in Notion.
+ladder, publishes each to every platform it targets (X always; Threads when
+THREADS_ACCESS_TOKEN is configured), and records the result in Notion — one
+Post Performance row per platform, but one posting event toward the daily limit.
 """
 from __future__ import annotations
 
@@ -17,9 +19,10 @@ from config import settings
 from config.schema import HOOK_FIELDS
 from core.composition import compose_posts, effective_cta_url, length_warnings, select_hook
 from core.models import Draft
-from core.selection import select_draft
+from core.selection import make_eligibility, select_draft
 from core.timeutil import nearest_slot, now as hkt_now
 from services.notion import NotionService
+from services.threads import ThreadsService
 from services.twitter import TwitterService
 
 
@@ -30,11 +33,19 @@ def run(
     logger: Optional[logging.Logger] = None,
     notion: Optional[NotionService] = None,
     twitter: Optional[TwitterService] = None,
+    threads: Optional[ThreadsService] = None,
 ) -> dict:
     """Execute one Loop-1 run. Returns a summary dict (also useful for tests)."""
     log = logger or logging.getLogger("loop.post")
     notion = notion or NotionService(log)
-    twitter = twitter or TwitterService(dry_run=dry_run, logger=log)
+
+    publishers: dict = {}
+    publishers["X"] = twitter or TwitterService(dry_run=dry_run, logger=log)
+    if threads is not None:
+        publishers["Threads"] = threads
+    elif settings.THREADS_ACCESS_TOKEN:
+        publishers["Threads"] = ThreadsService(dry_run=dry_run, logger=log)
+    eligible = make_eligibility(set(publishers))
 
     ref = hkt_now(settings.TZ_NAME)
     slot = slot or nearest_slot(ref, settings.POST_SLOTS_HKT)
@@ -44,8 +55,8 @@ def run(
 
     total_today, per_article = notion.count_posts_today(ref)
     log.info(
-        "Loop 1 POST | %s HKT | slot=%s | dry_run=%s | posts today=%d/%d",
-        ref.strftime("%Y-%m-%d %H:%M"), slot, dry_run, total_today, daily_limit,
+        "Loop 1 POST | %s HKT | slot=%s | dry_run=%s | platforms=%s | posts today=%d/%d",
+        ref.strftime("%Y-%m-%d %H:%M"), slot, dry_run, "+".join(sorted(publishers)), total_today, daily_limit,
     )
 
     summary = {"slot": slot, "dry_run": dry_run, "posted": [], "skipped": None}
@@ -62,7 +73,8 @@ def run(
         drafts = notion.query_drafts_by_status("Draft")
 
         chosen, reason = select_draft(
-            slot, ref, scheduled, drafts, per_article, articles_by_id, tzname=settings.TZ_NAME
+            slot, ref, scheduled, drafts, per_article, articles_by_id,
+            tzname=settings.TZ_NAME, eligible=eligible,
         )
         if not chosen:
             summary["skipped"] = reason
@@ -70,7 +82,7 @@ def run(
             break
 
         result = _publish_one(
-            chosen, reason, rules, articles_by_id, notion, twitter, log,
+            chosen, reason, rules, articles_by_id, notion, publishers, log,
             ref=ref, dry_run=dry_run, assume_yes=assume_yes,
         )
         if result is None:  # aborted by user during preview
@@ -92,7 +104,7 @@ def _publish_one(
     rules,
     articles_by_id: dict,
     notion: NotionService,
-    twitter: TwitterService,
+    publishers: dict,
     log: logging.Logger,
     *,
     ref: datetime,
@@ -114,46 +126,68 @@ def _publish_one(
     for warning in length_warnings(posts):
         log.warning("Length: %s", warning)
 
-    _show_preview(log, draft, posts, reason, hook_key, cta_url)
+    # Target every platform the draft names that we have a publisher for
+    # (a draft with no platforms defaults to X).
+    targets = [p for p in (draft.platforms or ["X"]) if p in publishers]
+    if not targets:
+        log.warning("SKIP draft %s: no configured publisher for %s.", draft.title, draft.platforms)
+        return None
+
+    _show_preview(log, draft, posts, reason, hook_key, cta_url, targets)
     if not _confirm(log, dry_run=dry_run, assume_yes=assume_yes):
         log.warning("Aborted by user before posting '%s'.", draft.title)
         return None
 
-    tweet_ids = twitter.post_thread(posts)
-    post_id = tweet_ids[0]
-
     hook_label = HOOK_FIELDS[hook_key][1] if hook_key else None
+    results: dict = {}
+    for platform in targets:
+        try:
+            ids = publishers[platform].post_thread(posts)
+        except Exception as exc:
+            log.error("FAILED on %s for '%s': %s", platform, draft.title, exc)
+            continue
+        results[platform] = ids
+        if not dry_run:
+            notion.create_performance_record(
+                draft_id=draft.id,
+                post_id=ids[0],
+                platform=platform,
+                posted_at=ref,
+                hook_label=hook_label,
+                loop_version=1,
+            )
+
+    if not results:
+        log.error("SKIP draft %s: every target platform failed.", draft.title)
+        return None
     if not dry_run:
         notion.mark_draft_posted(draft.id)
-        notion.create_performance_record(
-            draft_id=draft.id,
-            post_id=post_id,
-            platform="X",
-            posted_at=ref,
-            hook_label=hook_label,
-            loop_version=1,
-        )
 
-    log.info(
-        "POSTED ✓ '%s' | reason=%s | hook=%s | tweets=%d | post_id=%s",
-        draft.title, reason, hook_key or "none", len(tweet_ids), post_id,
-    )
+    for platform, ids in results.items():
+        log.info(
+            "POSTED ✓ '%s' | platform=%s | reason=%s | hook=%s | posts=%d | post_id=%s",
+            draft.title, platform, reason, hook_key or "none", len(ids), ids[0],
+        )
+    first = next(iter(results.values()))
     return {
         "draft_id": draft.id,
         "title": draft.title,
-        "post_id": post_id,
-        "tweet_ids": tweet_ids,
+        "platforms": list(results),
+        "post_ids": {p: ids[0] for p, ids in results.items()},
+        "post_id": first[0],
+        "tweet_ids": results.get("X", first),
         "reason": reason,
         "hook": hook_key,
-        "num_tweets": len(tweet_ids),
+        "num_tweets": len(first),
     }
 
 
-def _show_preview(log, draft, posts, reason, hook_key, cta_url) -> None:
+def _show_preview(log, draft, posts, reason, hook_key, cta_url, targets) -> None:
     sep = "─" * 56
     log.info(sep)
-    log.info("PREVIEW | %s | type=%s | reason=%s | hook=%s",
-             draft.title, draft.content_type or "?", reason, hook_key or "none")
+    log.info("PREVIEW | %s | type=%s | reason=%s | hook=%s | → %s",
+             draft.title, draft.content_type or "?", reason, hook_key or "none",
+             " + ".join(targets))
     log.info("CTA: %s", cta_url or "(none)")
     for i, text in enumerate(posts, start=1):
         tag = f"[{i}/{len(posts)}]" if len(posts) > 1 else ""

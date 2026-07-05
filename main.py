@@ -59,6 +59,18 @@ def _run_check(logger) -> int:
         logger.error("  X auth             FAIL — %s", exc)
         ok = False
 
+    logger.info("Preflight — Threads credentials:")
+    if settings.THREADS_ACCESS_TOKEN:
+        from services.threads import ThreadsService
+        try:
+            handle = ThreadsService(dry_run=False, logger=logger).verify()
+            logger.info("  Threads auth       OK   — authenticated as @%s", handle)
+        except Exception as exc:
+            logger.error("  Threads auth       FAIL — %s", exc)
+            ok = False
+    else:
+        logger.info("  Threads auth       SKIP — THREADS_ACCESS_TOKEN not set (optional)")
+
     logger.info("Preflight %s", "PASSED ✓" if ok else "FAILED ✗")
     return 0 if ok else 1
 

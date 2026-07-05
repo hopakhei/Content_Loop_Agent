@@ -281,16 +281,25 @@ class NotionService:
             settings.NOTION_PERFORMANCE_LOG_DB,
             filter={"property": Performance.POSTED_AT, "date": {"on_or_after": start_of_day.isoformat()}},
         )
+        # A draft posted to multiple platforms creates one Performance row per
+        # platform but is ONE posting event — count distinct drafts.
+        seen: set = set()
+        total = 0
         per_article: dict[str, int] = {}
         for pg in pages:
             props = pg.get("properties", {})
             draft_ids = _relation_ids(props.get(Performance.DRAFT))
+            key = draft_ids[0] if draft_ids else pg["id"]
+            if key in seen:
+                continue
+            seen.add(key)
+            total += 1
             if not draft_ids:
                 continue
             draft = self._build_draft(self.client.pages.retrieve(page_id=draft_ids[0]))
             if draft.article_id:
                 per_article[draft.article_id] = per_article.get(draft.article_id, 0) + 1
-        return len(pages), per_article
+        return total, per_article
 
     def query_posted_needing_metrics(self, older_than_hours: int = 24) -> list[dict]:
         """Loop 2: Post Performance rows posted more than N hours ago.

@@ -81,3 +81,55 @@ def test_loop1_dry_run_writes_nothing():
     assert len(summary["posted"]) == 1
     assert notion.marked == []
     assert notion.performance == []
+
+
+class FakeThreads:
+    def __init__(self):
+        self.threads = []
+
+    def post_thread(self, posts):
+        self.threads.append(posts)
+        return [f"200{i}" for i, _ in enumerate(posts)]
+
+
+def _dual_draft():
+    d = _draft()
+    d.platforms = ["X", "Threads"]
+    return d
+
+
+def _threads_only_draft():
+    d = _draft()
+    d.id = "d2"
+    d.title = "#101-09 故事貼"
+    d.platforms = ["Threads"]
+    return d
+
+
+def test_loop1_posts_to_both_platforms():
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    result = summary["posted"][0]
+    assert sorted(result["platforms"]) == ["Threads", "X"]
+    assert len(twitter.threads) == 1 and len(threads.threads) == 1
+    # One posting event, one draft marked, but a Performance row per platform.
+    assert notion.marked == ["d1"]
+    assert sorted(r["platform"] for r in notion.performance) == ["Threads", "X"]
+
+
+def test_loop1_threads_only_draft_posts_when_threads_configured():
+    notion = FakeNotion([_threads_only_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    result = summary["posted"][0]
+    assert result["platforms"] == ["Threads"]
+    assert twitter.threads == []          # X untouched
+    assert len(threads.threads) == 1
+    assert notion.performance[0]["platform"] == "Threads"

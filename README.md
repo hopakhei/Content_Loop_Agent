@@ -77,9 +77,19 @@ each run it:
   `PREVIEW_COUNTDOWN_SECONDS` (default 5s) so you can `Ctrl+C`. `--yes` skips the
   wait for headless cron.
 
-Phase 1 publishes to **X only** (the configured publishing layer). Threads-only
-drafts (e.g. 故事貼, 金句裂變) are skipped with a log line until a Threads
-publisher exists.
+**Platforms:** each draft is published to every platform its `Platform`
+multi-select names — X always, **Threads** when `THREADS_ACCESS_TOKEN` is set.
+A dual-platform draft creates one Post Performance row per platform but counts
+as **one** posting event toward the daily limit. Without a Threads token the
+system behaves as X-only and Threads-only drafts (故事貼, 金句裂變) are skipped.
+
+To enable Threads: create a Meta app at developers.facebook.com with the
+*Threads API* use case, add your account as a Threads tester (accept the invite
+in the Threads app under Settings → Account → Website permissions → Invites),
+generate a long-lived user token with `threads_basic` +
+`threads_content_publish`, and set the `THREADS_ACCESS_TOKEN` secret
+(`THREADS_USER_ID` optional — auto-resolved). Tokens last ~60 days; refresh
+via `GET /refresh_access_token`.
 
 ### Composition model
 
@@ -175,7 +185,8 @@ each write with a `Confidence` (scaled by data-point count), the supporting
 - `.github/workflows/tests.yml` — runs the test suite on every PR.
 
 Set repository **secrets**: `NOTION_TOKEN`, `X_API_KEY`, `X_API_SECRET`,
-`X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`. The non-secret Notion DB
+`X_ACCESS_TOKEN`, `X_ACCESS_SECRET`, `X_BEARER_TOKEN`, and (optional, enables
+Threads) `THREADS_ACCESS_TOKEN` + `THREADS_USER_ID`. The non-secret Notion DB
 IDs (including Agent Rules) are set inline in the workflows. Until these secrets
 exist, the scheduled `post`/`learn` runs **skip cleanly** (exit 0 with a notice)
 rather than failing.

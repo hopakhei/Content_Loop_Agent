@@ -47,6 +47,10 @@ X_ACCESS_TOKEN = os.getenv("X_ACCESS_TOKEN", "").strip()
 X_ACCESS_SECRET = os.getenv("X_ACCESS_SECRET", "").strip()
 X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 
+# ── Threads (Meta) ──────────────────────────────────────────────────────────
+THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()
+THREADS_USER_ID = os.getenv("THREADS_USER_ID", "").strip()
+
 # ── Claude (Loop 3) ─────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 # `or` (not a getenv default) so a set-but-empty env var still falls back.
