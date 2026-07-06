@@ -109,6 +109,67 @@ class ThreadsService:
             reply_to = pid
         return ids
 
+    # ── insights (Loop 2) ────────────────────────────────────────────────────
+    def get_insights(self, post_ids: list[str]) -> dict[str, dict[str, float]]:
+        """Loop 2: lifetime insights per post. Returns {id: {metric: value}}
+        with Threads `views` mapped to `impressions` (link clicks don't exist
+        on Threads). Requires the token to carry the `threads_manage_insights`
+        scope — regenerate THREADS_ACCESS_TOKEN with that scope checked if
+        every call fails with a permission error.
+        """
+        if self.dry_run or not post_ids:
+            return {}
+        out: dict[str, dict[str, float]] = {}
+        failures = 0
+        for pid in post_ids:
+            try:
+                r = self.session.get(
+                    f"{API_BASE}/{pid}/insights",
+                    params={"metric": "views,likes,replies,reposts,quotes", "access_token": self.token},
+                    timeout=30,
+                )
+                r.raise_for_status()
+                vals = {item.get("name"): _insight_value(item) for item in r.json().get("data", [])}
+            except Exception as exc:
+                failures += 1
+                if failures == 1:
+                    self.log.warning(
+                        "Threads insights failed for %s: %s — if this is a permission error, "
+                        "regenerate THREADS_ACCESS_TOKEN with the threads_manage_insights scope.",
+                        pid, _err_detail(exc),
+                    )
+                if failures >= 3 and not out:
+                    self.log.warning("Threads insights failing consistently — skipping the remaining posts.")
+                    break
+                continue
+            out[pid] = {
+                "impressions": vals.get("views", 0),
+                "likes": vals.get("likes", 0),
+                "replies": vals.get("replies", 0),
+                "reposts": vals.get("reposts", 0),
+                "quotes": vals.get("quotes", 0),
+            }
+        return out
+
+
+def _insight_value(item: dict) -> float:
+    """Insights come back as either total_value or a values[] series."""
+    tv = item.get("total_value")
+    if isinstance(tv, dict) and "value" in tv:
+        return tv["value"]
+    vals = item.get("values") or []
+    return (vals[0] or {}).get("value", 0) if vals else 0
+
+
+def _err_detail(exc: Exception) -> str:
+    resp = getattr(exc, "response", None)
+    if resp is not None:
+        try:
+            return f"{exc} | {resp.text[:200]}"
+        except Exception:
+            pass
+    return str(exc)
+
 
 def _preview(text: str, limit: int = 80) -> str:
     flat = text.replace("\n", " ⏎ ")

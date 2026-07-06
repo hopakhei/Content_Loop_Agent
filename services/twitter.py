@@ -85,27 +85,50 @@ class TwitterService:
 
         `public_metrics` (likes/replies/reposts/quotes) are always available;
         `non_public_metrics` (impressions, url link clicks) require user-context
-        auth and are only returned for your own recent tweets.
+        auth — `user_auth=True`, or the API rejects the request — and only exist
+        for your own tweets from the last 30 days. If that request is rejected
+        (e.g. access-tier limits) we degrade to public metrics only, and the
+        impressions/link_clicks keys are omitted so existing Notion values are
+        preserved rather than zeroed.
         """
         if self.dry_run or not tweet_ids:
             return {}
         out: dict[str, dict[str, float]] = {}
-        resp = self.client.get_tweets(
-            ids=tweet_ids,
-            tweet_fields=["public_metrics", "non_public_metrics"],
-        )
-        for tw in resp.data or []:
-            pm = getattr(tw, "public_metrics", None) or {}
-            npm = getattr(tw, "non_public_metrics", None) or {}
-            out[str(tw.id)] = {
-                "likes": pm.get("like_count", 0),
-                "replies": pm.get("reply_count", 0),
-                "reposts": pm.get("retweet_count", 0),
-                "quotes": pm.get("quote_count", 0),
-                "impressions": npm.get("impression_count", 0),
-                "link_clicks": npm.get("url_link_clicks", 0),
-            }
+        for i in range(0, len(tweet_ids), 100):  # lookup accepts at most 100 ids
+            resp = self._lookup_tweets(tweet_ids[i:i + 100])
+            if resp is None:
+                continue
+            for tw in resp.data or []:
+                pm = getattr(tw, "public_metrics", None) or {}
+                m: dict[str, float] = {
+                    "likes": pm.get("like_count", 0),
+                    "replies": pm.get("reply_count", 0),
+                    "reposts": pm.get("retweet_count", 0),
+                    "quotes": pm.get("quote_count", 0),
+                }
+                npm = getattr(tw, "non_public_metrics", None) or {}
+                if npm:
+                    m["impressions"] = npm.get("impression_count", 0)
+                    m["link_clicks"] = npm.get("url_link_clicks", 0)
+                out[str(tw.id)] = m
         return out
+
+    def _lookup_tweets(self, ids: list[str]):
+        try:
+            return self.client.get_tweets(
+                ids=ids,
+                tweet_fields=["public_metrics", "non_public_metrics"],
+                user_auth=True,
+            )
+        except Exception as exc:
+            self.log.warning(
+                "Tweet lookup with non_public_metrics failed (%s) — retrying public-only.", exc
+            )
+        try:
+            return self.client.get_tweets(ids=ids, tweet_fields=["public_metrics"], user_auth=True)
+        except Exception as exc:
+            self.log.warning("Tweet metrics lookup failed for %d ids: %s", len(ids), exc)
+            return None
 
 
 def _preview(text: str, limit: int = 80) -> str:

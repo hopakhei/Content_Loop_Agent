@@ -17,6 +17,7 @@ from config.schema import Performance
 from core.analysis import DataPoint, best_content_types, best_hook, best_slots, ranked
 from core.timeutil import nearest_slot, parse_notion_datetime
 from services.notion import NotionService
+from services.threads import ThreadsService
 from services.twitter import TwitterService
 
 # Minimum data points before we trust an aggregate enough to rewrite the rules.
@@ -24,6 +25,11 @@ MIN_DATA_POINTS = 20
 ANALYSIS_WINDOW_DAYS = 30
 # Data points at which a learned rule reaches full (100) confidence.
 FULL_CONFIDENCE_POINTS = 40
+# Refresh a post's metrics between 24h (engagement has matured) and 72h after
+# posting — normally two nights per post, to stay inside the X read quota.
+# Older rows that never got impressions are retried until the window closes.
+REFRESH_MIN_AGE_HOURS = 24
+REFRESH_MAX_AGE_HOURS = 72
 
 
 def run(
@@ -31,17 +37,20 @@ def run(
     logger: Optional[logging.Logger] = None,
     notion: Optional[NotionService] = None,
     twitter: Optional[TwitterService] = None,
+    threads: Optional[ThreadsService] = None,
 ) -> dict:
     log = logger or logging.getLogger("loop.learn")
     notion = notion or NotionService(log)
     twitter = twitter or TwitterService(dry_run=dry_run, logger=log)
+    if threads is None and settings.THREADS_ACCESS_TOKEN:
+        threads = ThreadsService(dry_run=dry_run, logger=log)
 
     log.info("Loop 2 LEARN | dry_run=%s | window=%dd", dry_run, ANALYSIS_WINDOW_DAYS)
 
     rows = notion.get_performance_rows(since_days=ANALYSIS_WINDOW_DAYS)
     log.info("Loaded %d performance rows.", len(rows))
 
-    refreshed = _refresh_metrics(rows, notion, twitter, log, dry_run=dry_run)
+    refreshed = _refresh_metrics(rows, notion, twitter, threads, log, dry_run=dry_run)
     log.info("Refreshed metrics for %d posts.", refreshed)
 
     points = [_to_point(r) for r in rows]
@@ -99,23 +108,48 @@ def run(
     return summary
 
 
-def _refresh_metrics(rows, notion, twitter, log, *, dry_run: bool) -> int:
-    """Pull fresh engagement for real (non dry-run) tweets older than 24h and
-    write the numbers back to Notion. Mutates `rows` in place."""
+def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> int:
+    """Pull fresh engagement for real (non dry-run) posts in the refresh window
+    and write the numbers back to Notion. Rows are routed to the platform that
+    published them — X ids to the X API, Threads ids to the Threads insights
+    API. Mutates `rows` in place."""
     now = datetime.now(timezone.utc)
-    by_id = {}
+    x_rows: dict[str, dict] = {}
+    threads_rows: dict[str, dict] = {}
     for r in rows:
         pid = r.get("post_id") or ""
         if not pid or pid.startswith("DRYRUN-") or not r.get("posted_at"):
             continue
         posted = parse_notion_datetime(r["posted_at"], settings.TZ_NAME).astimezone(timezone.utc)
-        if (now - posted).total_seconds() >= 24 * 3600:
-            by_id[pid] = r
+        age_hours = (now - posted).total_seconds() / 3600
+        if age_hours < REFRESH_MIN_AGE_HOURS:
+            continue
+        if age_hours > REFRESH_MAX_AGE_HOURS and (r.get("impressions") or 0) > 0:
+            continue  # already measured; don't re-spend read quota on it
+        if (r.get("platform") or "X") == "Threads":
+            threads_rows[pid] = r
+        else:
+            x_rows[pid] = r
 
-    if not by_id or dry_run:
+    if dry_run or not (x_rows or threads_rows):
         return 0
 
-    metrics = twitter.get_metrics(list(by_id))
+    metrics: dict[str, dict] = {}
+    if x_rows:
+        try:
+            metrics.update(twitter.get_metrics(list(x_rows)))
+        except Exception as exc:
+            log.warning("X metrics refresh failed: %s", exc)
+    if threads_rows:
+        if threads is None:
+            log.info("Skipping %d Threads rows — THREADS_ACCESS_TOKEN not set.", len(threads_rows))
+        else:
+            try:
+                metrics.update(threads.get_insights(list(threads_rows)))
+            except Exception as exc:
+                log.warning("Threads insights refresh failed: %s", exc)
+
+    by_id = {**x_rows, **threads_rows}
     updated = 0
     for pid, m in metrics.items():
         row = by_id.get(pid)

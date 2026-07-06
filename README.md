@@ -87,9 +87,10 @@ To enable Threads: create a Meta app at developers.facebook.com with the
 *Threads API* use case, add your account as a Threads tester (accept the invite
 in the Threads app under Settings → Account → Website permissions → Invites),
 generate a long-lived user token with `threads_basic` +
-`threads_content_publish`, and set the `THREADS_ACCESS_TOKEN` secret
-(`THREADS_USER_ID` optional — auto-resolved). Tokens last ~60 days; refresh
-via `GET /refresh_access_token`.
+`threads_content_publish` + `threads_manage_insights` (the last one lets
+Loop 2 read views/likes for Threads posts), and set the `THREADS_ACCESS_TOKEN`
+secret (`THREADS_USER_ID` optional — auto-resolved). Tokens last ~60 days;
+refresh via `GET /refresh_access_token`.
 
 ### Composition model
 
@@ -112,13 +113,25 @@ opening lines* used by the A/B/C experiment.
 
 ## Loop 2 — LEARN (detail)
 
-Nightly (02:00 HKT). Refreshes engagement metrics for posts older than 24h via
-the X API, then aggregates **engagement rate** = `(likes + replies + reposts) /
-impressions` over a 30-day window, grouped by slot / content type / hook. With at
-least **20 data points** it writes the winners back into the **Agent Rules** as
-`Active` rows (with a `Confidence` score and the supporting `Evidence Post IDs`),
-which Loop 1 then reads on its next run. The A/B/C hook design biases Loop 1 toward
-the winning hook while continuing to explore the others.
+Nightly (02:00 HKT). Refreshes engagement metrics **per platform** — X post ids
+go to the X API (user-context auth; impressions/link clicks are
+`non_public_metrics` and only exist for your own tweets), Threads post ids go to
+the Threads Insights API (`views` → Impressions; needs the
+`threads_manage_insights` token scope). To conserve the small X read quota,
+each post is refreshed in a **24h–72h window** after posting (engagement has
+matured by 24h); older rows that never received impressions are retried until
+data arrives. It then aggregates **engagement rate** = `(likes + replies +
+reposts) / impressions` over a 30-day window, grouped by slot / content type /
+hook. With at least **20 data points** it writes the winners back into the
+**Agent Rules** as `Active` rows (with a `Confidence` score and the supporting
+`Evidence Post IDs`), which Loop 1 then reads on its next run. The A/B/C hook
+design biases Loop 1 toward the winning hook while continuing to explore the
+others.
+
+> Note: metrics are blank until a post crosses the 24h maturity line **and**
+> the next nightly LEARN run picks it up — expect the first numbers the second
+> night after a post goes out. If X rejects the non-public metrics request,
+> LEARN degrades to public counts (likes/replies/reposts) instead of failing.
 
 ---
 
@@ -245,6 +258,8 @@ python -m pytest -q
 - **Loop 2 — LEARN**: complete; writes into the **Agent Rules** DB, so rule-writing
   is live (activates once ≥20 data points accumulate). Non-public X metrics
   (impressions, link clicks) require user-context auth on your own recent tweets.
+  Threads metrics come from the Insights API and require the
+  `threads_manage_insights` token scope.
 - **Loop 3 — GENERATE**: complete; provide the article text via `--article-file`.
 
 Secrets live only in `.env` / CI secrets and are never committed.
