@@ -25,8 +25,10 @@ except ImportError:  # pragma: no cover - surfaced at runtime
 
 API_BASE = "https://graph.threads.net/v1.0"
 MAX_POST_LEN = 500  # Threads text limit
-# threads_publish intermittently 500s right after container creation; retry
-# with these delays before giving up. (Tests shrink this to avoid sleeping.)
+# The Threads graph endpoints intermittently 5xx (especially threads_publish
+# right after container creation). Retry with these backoff delays before
+# giving up — this is what keeps a reply chain from truncating mid-thread and
+# leaving a hook-only post live. (Tests shrink this to avoid real sleeps.)
 PUBLISH_RETRY_DELAYS = (2.0, 5.0)
 
 
@@ -91,30 +93,40 @@ class ThreadsService:
         payload = {"media_type": "TEXT", "text": text, "access_token": self.token}
         if reply_to:
             payload["reply_to_id"] = reply_to
-        r = self.session.post(f"{API_BASE}/{uid}/threads", data=payload, timeout=30)
-        r.raise_for_status()
-        creation_id = r.json()["id"]
-        return self._publish(uid, creation_id)
+        create = self._post_with_retry(f"{API_BASE}/{uid}/threads", payload, what="create container")
+        creation_id = create.json()["id"]
+        publish = self._post_with_retry(
+            f"{API_BASE}/{uid}/threads_publish",
+            {"creation_id": creation_id, "access_token": self.token},
+            what="publish",
+        )
+        return str(publish.json()["id"])
 
-    def _publish(self, uid: str, creation_id: str) -> str:
-        """Publish a created container, retrying transient (5xx) server errors."""
+    def _post_with_retry(self, url: str, data: dict, *, what: str):
+        """POST to a Threads graph endpoint, retrying transient failures (5xx
+        status or a network error) with backoff. Raises the last error if every
+        attempt fails. 4xx (bad token, permission) is not retried — it won't fix
+        itself. Retrying is safe here: a 5xx means the server rejected the call,
+        so nothing was committed to duplicate."""
+        last_exc = None
         for attempt, delay in enumerate((0.0,) + tuple(PUBLISH_RETRY_DELAYS)):
+            more = attempt < len(PUBLISH_RETRY_DELAYS)
             if delay:
                 time.sleep(delay)
-            r = self.session.post(
-                f"{API_BASE}/{uid}/threads_publish",
-                data={"creation_id": creation_id, "access_token": self.token},
-                timeout=30,
-            )
-            status = getattr(r, "status_code", 200)
-            if status >= 500 and attempt < len(PUBLISH_RETRY_DELAYS):
-                self.log.warning(
-                    "threads_publish returned %s (attempt %d) — retrying.", status, attempt + 1
-                )
+            try:
+                r = self.session.post(url, data=data, timeout=30)
+            except Exception as exc:  # network error (ConnectionError/Timeout)
+                last_exc = exc
+                if not more:
+                    raise
+                self.log.warning("Threads %s network error (attempt %d): %s — retrying.", what, attempt + 1, exc)
+                continue
+            if getattr(r, "status_code", 200) >= 500 and more:
+                self.log.warning("Threads %s returned %s (attempt %d) — retrying.", what, r.status_code, attempt + 1)
                 continue
             r.raise_for_status()
-            return str(r.json()["id"])
-        raise RuntimeError("unreachable")  # pragma: no cover
+            return r
+        raise last_exc if last_exc else RuntimeError("unreachable")  # pragma: no cover
 
     def post_thread(self, posts: list[str]) -> list[str]:
         """Post a reply chain. Returns ids in order; ids[0] is the root post

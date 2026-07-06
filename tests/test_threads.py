@@ -7,11 +7,13 @@ from services.threads import ThreadsService
 
 
 class _Resp:
-    def __init__(self, payload):
+    def __init__(self, payload, status_code=200):
         self._payload = payload
+        self.status_code = status_code
 
     def raise_for_status(self):
-        pass
+        if self.status_code >= 400:
+            raise RuntimeError(f"{self.status_code} error")
 
     def json(self):
         return self._payload
@@ -129,6 +131,42 @@ def test_publish_retries_transient_500(monkeypatch):
     svc = ThreadsService(session=FlakySession(), access_token="tok", user_id="17800000")
     assert svc.post_post("hello") == "901"
     assert svc.session.publish_attempts == 2
+
+
+def test_create_container_retries_network_error(monkeypatch):
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", (0.0, 0.0))
+
+    class FlakyNetwork(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.create_attempts = 0
+
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/threads"):
+                self.create_attempts += 1
+                if self.create_attempts == 1:
+                    raise ConnectionError("connection reset")
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = ThreadsService(session=FlakyNetwork(), access_token="tok", user_id="17800000")
+    assert svc.post_post("hello") == "901"
+    assert svc.session.create_attempts == 2
+
+
+def test_post_gives_up_after_exhausting_retries(monkeypatch):
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", (0.0,))
+
+    class AlwaysDown(FakeSession):
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/threads"):
+                resp = _Resp({})
+                resp.status_code = 503
+                return resp
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = ThreadsService(session=AlwaysDown(), access_token="tok", user_id="17800000")
+    with pytest.raises(Exception):
+        svc.post_post("hello")
 
 
 def test_post_thread_partial_failure_carries_live_ids(monkeypatch):

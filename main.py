@@ -25,6 +25,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--loop", type=int, choices=[1, 2, 3], help="Which loop to run")
     p.add_argument("--check", action="store_true",
                    help="Read-only preflight: verify Notion DB access + X credentials, then exit")
+    p.add_argument("--inspect-threads", action="store_true",
+                   help="Read-only: show how recently-posted Threads drafts composed (segments + CTA), then exit")
+    p.add_argument("--inspect-days", type=int, default=3,
+                   help="With --inspect-threads: look back this many days (default 3)")
     p.add_argument("--dry-run", action="store_true", default=settings.DRY_RUN,
                    help="Simulate the full flow without posting or writing to Notion")
     p.add_argument("--slot", help="Loop 1: override the posting slot (HH:MM)")
@@ -75,6 +79,46 @@ def _run_check(logger) -> int:
     return 0 if ok else 1
 
 
+def _run_inspect_threads(logger, days: int) -> int:
+    """Read-only: for each Threads post recorded in the last `days`, reproduce
+    the composition from the (unchanged) draft so we can see exactly how many
+    posts it became and whether the CTA is carried — the diagnostic for a
+    truncated/hook-only Threads post."""
+    from services.notion import NotionService
+    from core.composition import (
+        CTA_MARKER, CTA_PLACEHOLDERS, compose_posts, effective_cta_url,
+    )
+
+    notion = NotionService(logger)
+    rows = notion.get_performance_rows(since_days=days)
+    threads_rows = [r for r in rows if (r.get("platform") or "") == "Threads"]
+    logger.info("Threads posts recorded in the last %dd: %d", days, len(threads_rows))
+
+    for r in threads_rows:
+        draft_id = r.get("draft_id")
+        if not draft_id:
+            continue
+        draft = notion._build_draft(notion.client.pages.retrieve(page_id=draft_id))
+        article = notion.get_article(draft.article_id) if draft.article_id else None
+        cta = effective_cta_url(draft, article.cta_url if article else None)
+        body = draft.post_body or ""
+        # Compose WITHOUT a hook so the raw body split is visible.
+        posts = compose_posts(draft, hook_text=None, cta_url=cta)
+        cta_in_output = any((CTA_MARKER in p) or (cta and cta in p) for p in posts)
+        logger.info("─" * 64)
+        logger.info("post_id=%s | %s | type=%s | platforms=%s",
+                    r.get("post_id"), draft.title, draft.content_type, draft.platforms)
+        logger.info("cta_url=%s", cta or "(none)")
+        logger.info("body: has_placeholder=%s has_👉=%s len=%d",
+                    any(ph in body for ph in CTA_PLACEHOLDERS), CTA_MARKER in body, len(body))
+        logger.info("→ composes into %d post(s); CTA present in output=%s", len(posts), cta_in_output)
+        for i, p in enumerate(posts, 1):
+            logger.info("   [%d/%d] %d chars | %s", i, len(posts), len(p),
+                        p[:56].replace("\n", " ⏎ "))
+    logger.info("Inspect done.")
+    return 0
+
+
 def main(argv=None) -> int:
     args = build_parser().parse_args(argv)
 
@@ -85,6 +129,15 @@ def main(argv=None) -> int:
             return _run_check(logger)
         except Exception:
             logger.exception("Preflight failed with an unhandled error.")
+            return 1
+
+    if args.inspect_threads:
+        logger, log_path = setup_logging("inspect", dry_run=False)
+        logger.info("=== Inspect Threads composition | log=%s ===", log_path)
+        try:
+            return _run_inspect_threads(logger, args.inspect_days)
+        except Exception:
+            logger.exception("Inspect failed with an unhandled error.")
             return 1
 
     if not args.loop:
