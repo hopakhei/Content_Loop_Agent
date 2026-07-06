@@ -117,11 +117,16 @@ def compose_posts(
         else:
             segments[-1] = (segments[-1] + "\n\n" + cta_line).strip()
 
-    # 2. Prepend the chosen hook to the first post/tweet.
+    # 2. Prepend the chosen hook to the first post/tweet — unless the body
+    # already opens with that exact hook (some drafts lead with Hook A's text;
+    # prepending it again would post the same sentence twice).
     if hook_text and hook_text.strip():
         head = hook_text.strip()
         first = segments[0].strip()
-        segments[0] = f"{head}\n\n{first}" if first else head
+        if first.startswith(head):
+            segments[0] = first
+        else:
+            segments[0] = f"{head}\n\n{first}" if first else head
 
     return [s.strip() for s in segments if s.strip()]
 

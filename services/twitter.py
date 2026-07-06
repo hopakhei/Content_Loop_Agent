@@ -11,6 +11,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from config import settings
+from services.errors import PartialThreadError
 
 try:
     import tweepy
@@ -62,11 +63,21 @@ class TwitterService:
 
     def post_thread(self, tweets: list[str]) -> list[str]:
         """Post tweets as a reply chain. Returns the ids in order; ids[0] is the
-        root tweet (the canonical Post ID for Performance logging)."""
+        root tweet (the canonical Post ID for Performance logging).
+
+        If the chain fails midway, raises PartialThreadError carrying the ids
+        that DID post — the root tweet is live, so the caller must record it
+        rather than retry the whole thread (X rejects duplicate content anyway).
+        """
         ids: list[str] = []
         reply_to: Optional[str] = None
         for text in tweets:
-            tid = self.post_tweet(text, in_reply_to=reply_to)
+            try:
+                tid = self.post_tweet(text, in_reply_to=reply_to)
+            except Exception as exc:
+                if ids:
+                    raise PartialThreadError(ids, exc) from exc
+                raise
             ids.append(tid)
             reply_to = tid
         return ids

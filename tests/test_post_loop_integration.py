@@ -1,6 +1,7 @@
 """End-to-end Loop 1 flow with fake Notion/X services (no network)."""
 from core.models import Article, Draft
 from loops import post_loop
+from services.errors import PartialThreadError
 
 
 class FakeNotion:
@@ -133,3 +134,23 @@ def test_loop1_threads_only_draft_posts_when_threads_configured():
     assert twitter.threads == []          # X untouched
     assert len(threads.threads) == 1
     assert notion.performance[0]["platform"] == "Threads"
+
+
+class PartialTwitter:
+    """Posts the root tweet then dies — like hitting the write cap mid-thread."""
+
+    def post_thread(self, tweets):
+        raise PartialThreadError(["7770"], RuntimeError("403 Forbidden"))
+
+
+def test_loop1_partial_thread_records_root_instead_of_retrying():
+    notion = FakeNotion([_draft()])
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=PartialTwitter(),
+    )
+    # The live root tweet is recorded so the next slot won't duplicate it.
+    result = summary["posted"][0]
+    assert result["post_id"] == "7770"
+    assert notion.marked == ["d1"]
+    assert notion.performance[0]["post_id"] == "7770"

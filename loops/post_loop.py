@@ -21,6 +21,7 @@ from core.composition import compose_posts, effective_cta_url, length_warnings, 
 from core.models import Draft
 from core.selection import make_eligibility, select_draft
 from core.timeutil import nearest_slot, now as hkt_now
+from services.errors import PartialThreadError
 from services.notion import NotionService
 from services.threads import ThreadsService
 from services.twitter import TwitterService
@@ -143,6 +144,14 @@ def _publish_one(
     for platform in targets:
         try:
             ids = publishers[platform].post_thread(posts)
+        except PartialThreadError as exc:
+            # The root post is live — record it so the next slot doesn't
+            # re-post duplicate content; the tail can be added by hand.
+            log.error(
+                "PARTIAL on %s for '%s': %d/%d posts live before failure (%s) — recording the root post.",
+                platform, draft.title, len(exc.ids), len(posts), exc.cause,
+            )
+            ids = exc.ids
         except Exception as exc:
             log.error("FAILED on %s for '%s': %s", platform, draft.title, exc)
             continue

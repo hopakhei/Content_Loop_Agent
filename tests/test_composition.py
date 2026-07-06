@@ -80,6 +80,16 @@ def test_compose_prepends_hook():
     assert posts[0].startswith("反共識鈎子")
 
 
+def test_compose_skips_hook_already_leading_the_body():
+    # Some drafts' Post Body opens with Hook A's exact text — prepending it
+    # again would post the same sentence twice.
+    hook = "大多數財經內容，根本不是為了幫你做決策而寫的。"
+    d = _draft(content_type="反共識", post_body=f"{hook}\n它是為了讓結論更容易被接受。")
+    posts = compose_posts(d, hook_text=hook, cta_url=CTA)
+    assert posts[0].count(hook) == 1
+    assert posts[0].startswith(hook)
+
+
 def test_thread_split_on_dashes():
     body = "第一條\n---\n第二條\n---\n第三條"
     assert split_thread(body) == ["第一條", "第二條", "第三條"]

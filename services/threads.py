@@ -11,10 +11,12 @@ In `dry_run` mode nothing hits the network; fake ids are prefixed `DRYRUN-`.
 from __future__ import annotations
 
 import logging
+import time
 from datetime import datetime, timezone
 from typing import Optional
 
 from config import settings
+from services.errors import PartialThreadError
 
 try:
     import requests
@@ -23,6 +25,9 @@ except ImportError:  # pragma: no cover - surfaced at runtime
 
 API_BASE = "https://graph.threads.net/v1.0"
 MAX_POST_LEN = 500  # Threads text limit
+# threads_publish intermittently 500s right after container creation; retry
+# with these delays before giving up. (Tests shrink this to avoid sleeping.)
+PUBLISH_RETRY_DELAYS = (2.0, 5.0)
 
 
 class ThreadsService:
@@ -89,22 +94,45 @@ class ThreadsService:
         r = self.session.post(f"{API_BASE}/{uid}/threads", data=payload, timeout=30)
         r.raise_for_status()
         creation_id = r.json()["id"]
+        return self._publish(uid, creation_id)
 
-        r2 = self.session.post(
-            f"{API_BASE}/{uid}/threads_publish",
-            data={"creation_id": creation_id, "access_token": self.token},
-            timeout=30,
-        )
-        r2.raise_for_status()
-        return str(r2.json()["id"])
+    def _publish(self, uid: str, creation_id: str) -> str:
+        """Publish a created container, retrying transient (5xx) server errors."""
+        for attempt, delay in enumerate((0.0,) + tuple(PUBLISH_RETRY_DELAYS)):
+            if delay:
+                time.sleep(delay)
+            r = self.session.post(
+                f"{API_BASE}/{uid}/threads_publish",
+                data={"creation_id": creation_id, "access_token": self.token},
+                timeout=30,
+            )
+            status = getattr(r, "status_code", 200)
+            if status >= 500 and attempt < len(PUBLISH_RETRY_DELAYS):
+                self.log.warning(
+                    "threads_publish returned %s (attempt %d) — retrying.", status, attempt + 1
+                )
+                continue
+            r.raise_for_status()
+            return str(r.json()["id"])
+        raise RuntimeError("unreachable")  # pragma: no cover
 
     def post_thread(self, posts: list[str]) -> list[str]:
         """Post a reply chain. Returns ids in order; ids[0] is the root post
-        (the canonical Post ID for Performance logging)."""
+        (the canonical Post ID for Performance logging).
+
+        If the chain fails midway, raises PartialThreadError carrying the ids
+        that DID post — the root post is live, so the caller must record it
+        rather than retry the whole thread.
+        """
         ids: list[str] = []
         reply_to: Optional[str] = None
         for text in posts:
-            pid = self.post_post(text, reply_to=reply_to)
+            try:
+                pid = self.post_post(text, reply_to=reply_to)
+            except Exception as exc:
+                if ids:
+                    raise PartialThreadError(ids, exc) from exc
+                raise
             ids.append(pid)
             reply_to = pid
         return ids

@@ -1,4 +1,8 @@
 """ThreadsService: two-step publish, reply chaining, verify — with a fake session."""
+import pytest
+
+from services import threads as threads_module
+from services.errors import PartialThreadError
 from services.threads import ThreadsService
 
 
@@ -103,3 +107,40 @@ def test_get_insights_survives_per_post_errors():
     out = svc.get_insights(["bad", "901"])
     assert "bad" not in out
     assert out["901"]["impressions"] == 120
+
+
+def test_publish_retries_transient_500(monkeypatch):
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", (0.0, 0.0))
+
+    class FlakySession(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.publish_attempts = 0
+
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/threads_publish"):
+                self.publish_attempts += 1
+                if self.publish_attempts == 1:
+                    resp = _Resp({"id": "never"})
+                    resp.status_code = 500
+                    return resp
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = ThreadsService(session=FlakySession(), access_token="tok", user_id="17800000")
+    assert svc.post_post("hello") == "901"
+    assert svc.session.publish_attempts == 2
+
+
+def test_post_thread_partial_failure_carries_live_ids(monkeypatch):
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", ())
+
+    class DiesOnSecond(FakeSession):
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/threads") and data.get("reply_to_id"):
+                raise RuntimeError("boom")
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = ThreadsService(session=DiesOnSecond(), access_token="tok", user_id="17800000")
+    with pytest.raises(PartialThreadError) as err:
+        svc.post_thread(["one", "two"])
+    assert err.value.ids == ["901"]
