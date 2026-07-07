@@ -377,6 +377,7 @@ class NotionService:
                 "posted_at": date["start"] if date else None,
                 "platform": _select(p.get(Performance.PLATFORM)),
                 "hook_used": _select(p.get(Performance.HOOK_USED)),
+                "loop_version": _number(p.get(Performance.LOOP_VERSION)) or 1,
                 "content_type": content_type,
                 "impressions": _number(p.get(Performance.IMPRESSIONS)) or 0.0,
                 "likes": _number(p.get(Performance.LIKES)) or 0.0,

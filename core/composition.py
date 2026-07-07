@@ -131,6 +131,27 @@ def compose_posts(
     return [s.strip() for s in segments if s.strip()]
 
 
+def extract_cta_to_reply(posts: list[str], cta_url: Optional[str]) -> list[str]:
+    """Move a CTA link out of the ROOT post into its own trailing reply post.
+
+    X's open-sourced ranker suppresses main posts carrying external links; the
+    documented workaround is link-in-first-reply. Threads-of-posts already
+    carry the CTA as the final post, so only the root is examined. Line-based:
+    the CTA is composed as its own line (`完整框架＋案例在 Substack 👉 url`),
+    so any root line containing the URL moves to a new final post. If the URL
+    is inseparable (root would become empty), the posts are returned unchanged.
+    """
+    if not cta_url or not posts or cta_url not in posts[0]:
+        return posts
+    kept = [ln for ln in posts[0].splitlines() if cta_url not in ln]
+    moved = [ln for ln in posts[0].splitlines() if cta_url in ln]
+    root = "\n".join(kept).strip()
+    cta_post = "\n".join(moved).strip()
+    if not root or not cta_post:
+        return posts
+    return [root, *posts[1:], cta_post]
+
+
 def length_warnings(posts: list[str], limit: int = MAX_TWEET_LEN) -> list[str]:
     """Human-readable warnings for any post exceeding the character limit."""
     warnings = []

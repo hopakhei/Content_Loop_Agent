@@ -45,8 +45,39 @@ Hook 不一定是文字——聲音與視覺同樣有效；平台容許時，最
 你不需要老師，讓數據來教你。Hook 決定內容，而非內容決定 Hook——有了 Hook 資料庫，內容
 便源源不絕。觀察自身內容的前 10%（多仿效其 Hook）與後 10%（少製作），無限重複。
 
+## 原理六：為 X 演算法而寫（源碼實證）
+X 的推薦系統已開源（2023 `twitter/the-algorithm`；2026 `xai-org/x-algorithm`，Grok
+Transformer「Phoenix」）。排序 = Σ(權重 × 該行為的預測機率)。2023 公開權重換算成
+「一個讚」的倍數：
+
+| 行為 | 相對價值 |
+|---|---|
+| 回覆、且**作者回覆該回覆** | **150×** |
+| 回覆 | 27× |
+| 點進個人檔案並互動 | 24× |
+| 點開貼文久看（dwell） | ~21× |
+| 轉發 | 2× |
+| 讚 | 1× |
+| 負面回饋（「少看到這類」／mute／block） | **−148×** |
+| 檢舉 | **−738×** |
+
+2026 Phoenix 模型預測同一族行為（reply / profile click / dwell / follow /
+negative feedback），結論不變：**對話 ≫ 收藏 ≫ 按讚；一次檢舉抵銷數百個讚。**
+
+由此推出三條鐵律：
+1. **Reply Trigger（回覆觸發）**：Hook 的第三個零件。每個 X Hook 必須留下「可以被
+   反駁、補充或回答」的開口——一個立場鮮明可爭辯的斷言、一條開放式問題、或一個
+   未完成的清單。目標是讓讀者「不回覆不舒服」。
+2. **絕不觸發負面訊號**：不寫激怒式餌（rage bait）、不寫「同意就轉發」式互動乞討、
+   不用誇大其詞而內文兌現不了的標題（那是 mute 與「少看到」的主因）。寧可少一分
+   點擊，不可多一分檢舉。
+3. **連結殺觸及**：主貼帶外部連結會被壓觸及。CTA 連結放在「自己的第一則回覆」
+   （Loop 1 已自動處理：X 主貼無連結，CTA 自動跟貼）。
+
 ## Agent 自我評分準則（每個 Hook 輸出前必須通過）
 1. **有沒有 Call Out？**（目標讀者看到會否心想「這是在說我」——零售投資者的切身痛點）
 2. **有沒有 Condition for Value？**（有沒有暗示「看下去會獲得框架或答案」）
-3. **屬於八種句式中的哪一種？**（Label／Question／Conditional／Command／Statement／List／Narrative／Exclamation）
-4. **落在 70-20-10 的哪一格？**（proven／winner-adjacent／experimental）
+3. **有沒有 Reply Trigger？**（讀者有沒有一個明確的回覆入口——可反駁／可補充／可回答）
+4. **屬於八種句式中的哪一種？**（Label／Question／Conditional／Command／Statement／List／Narrative／Exclamation）
+5. **落在 70-20-10 的哪一格？**（proven／winner-adjacent／experimental）
+6. **會不會觸發負面訊號？**（rage bait／互動乞討／標題超賣＝直接重寫）

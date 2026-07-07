@@ -14,6 +14,7 @@ class DataPoint:
     slot: Optional[str] = None
     content_type: Optional[str] = None
     hook: Optional[str] = None            # "A" / "B" / "C"
+    composition: Optional[str] = None     # "v1" / "v2" (Loop Version on the row)
     impressions: float = 0.0
     likes: float = 0.0
     replies: float = 0.0

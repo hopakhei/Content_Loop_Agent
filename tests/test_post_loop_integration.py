@@ -68,10 +68,12 @@ def test_loop1_posts_and_records():
     assert notion.marked == ["d1"]
     assert len(notion.performance) == 1
     assert notion.performance[0]["platform"] == "X"
-    # CTA appended to the single post, hook prepended.
-    posted_text = twitter.threads[0][0]
-    assert posted_text.startswith("反共識鈎")
-    assert "👉" in posted_text
+    assert notion.performance[0]["loop_version"] == post_loop.COMPOSITION_VERSION
+    # On X the root post is link-free (hook + body); the CTA is a self-reply.
+    root, cta_reply = twitter.threads[0]
+    assert root.startswith("反共識鈎")
+    assert "👉" not in root
+    assert "👉" in cta_reply
 
 
 def test_loop1_dry_run_writes_nothing():
@@ -120,6 +122,9 @@ def test_loop1_posts_to_both_platforms():
     # One posting event, one draft marked, but a Performance row per platform.
     assert notion.marked == ["d1"]
     assert sorted(r["platform"] for r in notion.performance) == ["Threads", "X"]
+    # Platform-specific form: X root link-free + CTA self-reply; Threads inline.
+    assert len(twitter.threads[0]) == 2 and "👉" not in twitter.threads[0][0]
+    assert len(threads.threads[0]) == 1 and "👉" in threads.threads[0][0]
 
 
 def test_loop1_threads_only_draft_posts_when_threads_configured():

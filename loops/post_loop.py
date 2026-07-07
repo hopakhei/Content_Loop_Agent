@@ -17,7 +17,13 @@ from typing import Optional
 
 from config import settings
 from config.schema import HOOK_FIELDS
-from core.composition import compose_posts, effective_cta_url, length_warnings, select_hook
+from core.composition import (
+    compose_posts,
+    effective_cta_url,
+    extract_cta_to_reply,
+    length_warnings,
+    select_hook,
+)
 from core.models import Draft
 from core.selection import make_eligibility, select_draft
 from core.timeutil import nearest_slot, now as hkt_now
@@ -25,6 +31,11 @@ from services.errors import PartialThreadError
 from services.notion import NotionService
 from services.threads import ThreadsService
 from services.twitter import TwitterService
+
+# Stamped on every Post Performance row so Loop 2 can compare eras.
+#   1 = original composition (CTA inline in the root post on X)
+#   2 = X root post link-free, CTA moved to a self-reply (algo-informed)
+COMPOSITION_VERSION = 2
 
 
 def run(
@@ -134,7 +145,16 @@ def _publish_one(
         log.warning("SKIP draft %s: no configured publisher for %s.", draft.title, draft.platforms)
         return None
 
+    # Platform-specific final form: on X the root post must be link-free
+    # (X's ranker suppresses main posts with external links), so the CTA
+    # moves to a self-reply. Threads keeps the CTA inline.
+    posts_for = {p: posts for p in targets}
+    if "X" in posts_for:
+        posts_for["X"] = extract_cta_to_reply(posts, cta_url)
+
     _show_preview(log, draft, posts, reason, hook_key, cta_url, targets)
+    if posts_for.get("X") is not None and posts_for["X"] != posts:
+        log.info("X variant: CTA moved to a self-reply (%d posts).", len(posts_for["X"]))
     if not _confirm(log, dry_run=dry_run, assume_yes=assume_yes):
         log.warning("Aborted by user before posting '%s'.", draft.title)
         return None
@@ -143,13 +163,13 @@ def _publish_one(
     results: dict = {}
     for platform in targets:
         try:
-            ids = publishers[platform].post_thread(posts)
+            ids = publishers[platform].post_thread(posts_for[platform])
         except PartialThreadError as exc:
             # The root post is live — record it so the next slot doesn't
             # re-post duplicate content; the tail can be added by hand.
             log.error(
                 "PARTIAL on %s for '%s': %d/%d posts live before failure (%s) — recording the root post.",
-                platform, draft.title, len(exc.ids), len(posts), exc.cause,
+                platform, draft.title, len(exc.ids), len(posts_for[platform]), exc.cause,
             )
             ids = exc.ids
         except Exception as exc:
@@ -163,7 +183,7 @@ def _publish_one(
                 platform=platform,
                 posted_at=ref,
                 hook_label=hook_label,
-                loop_version=1,
+                loop_version=COMPOSITION_VERSION,
             )
 
     if not results:

@@ -60,9 +60,12 @@ def run(
     slot_rank = ranked(points, lambda p: p.slot)
     type_rank = ranked(points, lambda p: p.content_type)
     hook_rank = ranked(points, lambda p: p.hook)
+    comp_rank = ranked(points, lambda p: p.composition)
     _log_ranking(log, "Slot", slot_rank)
     _log_ranking(log, "Content Type", type_rank)
     _log_ranking(log, "Hook", hook_rank)
+    # v1 = CTA inline in the X root post; v2 = link-free root, CTA self-reply.
+    _log_ranking(log, "Composition", comp_rank)
 
     summary = {
         "rows": len(rows),
@@ -70,6 +73,7 @@ def run(
         "best_slots": best_slots(points, top=2),
         "best_content_types": best_content_types(points),
         "best_hook": best_hook(points),
+        "composition_rank": comp_rank,
         "rules_updated": False,
     }
 
@@ -77,7 +81,7 @@ def run(
         log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)
         return summary
 
-    notes = _build_notes(slot_rank, type_rank, hook_rank)
+    notes = _build_notes(slot_rank, type_rank, hook_rank, comp_rank)
     confidence = min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS))
     evidence_ids = [
         r["post_id"] for r in rows
@@ -183,6 +187,7 @@ def _to_point(row: dict) -> DataPoint:
         slot=slot,
         content_type=row.get("content_type"),
         hook=hook,
+        composition=f"v{int(row.get('loop_version') or 1)}",
         impressions=row.get("impressions", 0.0),
         likes=row.get("likes", 0.0),
         replies=row.get("replies", 0.0),
@@ -199,11 +204,12 @@ def _log_ranking(log, label, rows) -> None:
     log.info("%s ranking: %s", label, pretty)
 
 
-def _build_notes(slot_rank, type_rank, hook_rank) -> str:
+def _build_notes(slot_rank, type_rank, hook_rank, comp_rank) -> str:
     def fmt(rows):
         return "; ".join(f"{k}: {rate:.2%} (n={n})" for k, rate, n in rows) or "n/a"
     return (
         f"Slots → {fmt(slot_rank)}\n"
         f"Content Types → {fmt(type_rank)}\n"
-        f"Hooks → {fmt(hook_rank)}"
+        f"Hooks → {fmt(hook_rank)}\n"
+        f"Composition (v1 CTA-inline / v2 CTA-reply) → {fmt(comp_rank)}"
     )
