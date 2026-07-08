@@ -20,9 +20,9 @@ from config.schema import HOOK_FIELDS
 from core.composition import (
     compose_posts,
     effective_cta_url,
-    extract_cta_to_reply,
     length_warnings,
     select_hook,
+    strip_cta,
 )
 from core.models import Draft
 from core.selection import make_eligibility, select_draft
@@ -33,9 +33,10 @@ from services.threads import ThreadsService
 from services.twitter import TwitterService
 
 # Stamped on every Post Performance row so Loop 2 can compare eras.
-#   1 = original composition (CTA inline in the root post on X)
-#   2 = X root post link-free, CTA moved to a self-reply (algo-informed)
-COMPOSITION_VERSION = 2
+#   1 = CTA inline in the X post
+#   2 = X post link-free, CTA in a self-reply
+#   3 = X post link-free, no CTA (funnel de-prioritised while followers are low)
+COMPOSITION_VERSION = 3
 
 
 def run(
@@ -150,16 +151,17 @@ def _publish_one(
         log.warning("SKIP draft %s: no configured publisher for %s.", draft.title, draft.platforms)
         return None
 
-    # Platform-specific final form: on X the root post must be link-free
-    # (X's ranker suppresses main posts with external links), so the CTA
-    # moves to a self-reply. Threads keeps the CTA inline.
+    # Platform-specific final form: on X we post link-free while the follower
+    # count is low (skip the CTA — one tweet, no link suppression, half the
+    # write quota). Set X_INCLUDE_CTA=true to keep the CTA inline. Threads
+    # always keeps the CTA.
     posts_for = {p: posts for p in targets}
-    if "X" in posts_for:
-        posts_for["X"] = extract_cta_to_reply(posts, cta_url)
+    if "X" in posts_for and not settings.X_INCLUDE_CTA:
+        posts_for["X"] = strip_cta(posts, cta_url)
 
     _show_preview(log, draft, posts, reason, hook_key, cta_url, targets)
     if posts_for.get("X") is not None and posts_for["X"] != posts:
-        log.info("X variant: CTA moved to a self-reply (%d posts).", len(posts_for["X"]))
+        log.info("X variant: CTA removed (link-free, %d post(s)).", len(posts_for["X"]))
     if not _confirm(log, dry_run=dry_run, assume_yes=assume_yes):
         log.warning("Aborted by user before posting '%s'.", draft.title)
         return None

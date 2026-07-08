@@ -104,11 +104,14 @@ opening lines* used by the A/B/C experiment.
   - If the body contains a CTA placeholder — `{CTA_URL}` or the human `[連結]` (also `[link]`/`[CTA]`) — it is substituted with the URL.
   - Otherwise, if no CTA is present, the standard line is appended:
     `完整框架＋案例在 Substack 👉 {url}` (a new final tweet for threads).
-  - **On X the root post is always link-free**: the CTA line is moved into a
-    self-reply (X's open-sourced ranker suppresses main posts carrying external
-    links; link-in-first-reply is the documented workaround). Threads keeps the
-    CTA inline. Rows are stamped `Loop Version = 2` so Loop 2 can compare the
-    two compositions' engagement rates.
+  - **On X the post is link-free by default** (`X_INCLUDE_CTA=false`): the CTA
+    is stripped entirely. While the follower count is low the funnel matters
+    less than raw reach, and dropping the link both avoids X's link-suppression
+    penalty and halves the write-quota cost (one tweet, not two) — important on
+    the X Free tier's monthly post cap. Set `X_INCLUDE_CTA=true` to keep the CTA
+    inline once the funnel is worth it. **Threads always keeps the CTA.** Rows
+    are stamped `Loop Version` (1 = CTA inline, 2 = CTA self-reply, 3 = X
+    link-free) so Loop 2 can compare the eras' engagement rates.
 - **Threads**: a `Thread` body is split into tweets **only** on an explicit
   separator line — 3+ dashes/em-dashes (`---` or `———`). Blank lines inside a
   tweet are preserved; a body with no separator posts as a single tweet. (We do

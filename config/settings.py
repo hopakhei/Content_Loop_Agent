@@ -47,6 +47,11 @@ X_ACCESS_TOKEN = os.getenv("X_ACCESS_TOKEN", "").strip()
 X_ACCESS_SECRET = os.getenv("X_ACCESS_SECRET", "").strip()
 X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 
+# Include the CTA link on X? Off by default: while the follower count is low we
+# post link-free on X (maximise reach, conserve the write quota). Threads keeps
+# the CTA regardless. Flip on once the funnel is worth the reach/quota cost.
+X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", False)
+
 # ── Threads (Meta) ──────────────────────────────────────────────────────────
 THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()
 THREADS_USER_ID = os.getenv("THREADS_USER_ID", "").strip()

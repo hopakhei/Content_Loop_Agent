@@ -4,10 +4,10 @@ from core.composition import (
     CTA_TEMPLATE,
     compose_posts,
     effective_cta_url,
-    extract_cta_to_reply,
     length_warnings,
     select_hook,
     split_thread,
+    strip_cta,
 )
 from core.models import Draft, Rules
 
@@ -121,26 +121,26 @@ def test_thread_appends_cta_as_new_tweet():
     assert CTA in posts[-1]
 
 
-def test_extract_cta_moves_link_out_of_single_post():
+def test_strip_cta_removes_inline_cta_line():
     posts = [f"主體內容\n\n{CTA_TEMPLATE.format(url=CTA)}"]
-    out = extract_cta_to_reply(posts, CTA)
-    assert len(out) == 2
-    assert CTA not in out[0] and out[0] == "主體內容"
-    assert CTA in out[1] and out[1].startswith("完整框架")
+    out = strip_cta(posts, CTA)
+    assert out == ["主體內容"]
 
 
-def test_extract_cta_leaves_link_free_root_alone():
-    # A thread's root has no link (CTA is already the final tweet).
+def test_strip_cta_drops_a_threads_dedicated_cta_tweet():
     posts = ["第一條", "第二條", CTA_TEMPLATE.format(url=CTA)]
-    assert extract_cta_to_reply(posts, CTA) == posts
-    assert extract_cta_to_reply(["no cta here"], CTA) == ["no cta here"]
-    assert extract_cta_to_reply(["body"], None) == ["body"]
+    assert strip_cta(posts, CTA) == ["第一條", "第二條"]
 
 
-def test_extract_cta_keeps_inseparable_root_unchanged():
-    # Root that is ONLY the CTA line would become empty — leave it alone.
+def test_strip_cta_leaves_link_free_posts_unchanged():
+    assert strip_cta(["no cta here"], CTA) == ["no cta here"]
+    # Recognises the 👉 marker even without the URL passed in.
+    assert strip_cta([f"body\n{CTA_TEMPLATE.format(url=CTA)}"]) == ["body"]
+
+
+def test_strip_cta_never_returns_empty():
     posts = [CTA_TEMPLATE.format(url=CTA)]
-    assert extract_cta_to_reply(posts, CTA) == posts
+    assert strip_cta(posts, CTA) == posts
 
 
 def test_length_warnings():

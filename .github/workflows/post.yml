@@ -86,7 +86,8 @@ jobs:
             const body = `**Loop 1 (POST) failed** at ${stamp}.\n\n` +
               `- Run: ${runUrl}\n- The run log artifact (post-log-${context.runId}) has the full detail — ` +
               `look for \`FAILED on\` / \`PARTIAL on\` lines.\n\n` +
-              `Common causes: X 403 (17-posts/24h free-tier cap or duplicate content), ` +
+              `Common causes: X 402 (monthly post cap reached — upgrade tier or wait for reset), ` +
+              `X 403 (17-posts/24h free-tier cap or duplicate content), ` +
               `Threads 4xx/5xx on publish, expired THREADS_ACCESS_TOKEN (~60 days).`;
             const { data: issues } = await github.rest.issues.listForRepo({
               ...context.repo, state: 'open', labels: label, per_page: 1,
