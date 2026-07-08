@@ -387,6 +387,46 @@ class NotionService:
             })
         return rows
 
+    def get_x_parked_until(self):
+        """Loop 1: the ISO date until which X posting is parked (402 quota
+        exhaustion), or None. Reads the Active `X Parked Until` rule."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return None
+        page = self._find_rule_page(AgentRules.RULE_X_PARKED)
+        if not page:
+            return None
+        p = page.get("properties", {})
+        if _select(p.get(AgentRules.STATUS)) != AgentRules.STATUS_ACTIVE:
+            return None
+        raw = _plain_text(p.get(AgentRules.RULE_CONTENT)).strip()
+        try:
+            from datetime import date
+            return date.fromisoformat(raw)
+        except ValueError:
+            self.log.warning("Unparseable %s rule content: %r", AgentRules.RULE_X_PARKED, raw)
+            return None
+
+    def park_x_until(self, until) -> None:
+        """Loop 1: record that X's monthly write quota is exhausted until `until`
+        (a date). Loop 1 skips X while the rule is Active and not yet expired."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return
+        self._upsert_rule(
+            AgentRules.RULE_X_PARKED, AgentRules.CAT_META, until.isoformat(),
+            confidence=100, evidence="", loop=0,
+        )
+
+    def unpark_x(self) -> None:
+        """Flip the park rule to Deprecated once the park date has passed."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return
+        page = self._find_rule_page(AgentRules.RULE_X_PARKED)
+        if page:
+            self.client.pages.update(
+                page_id=page["id"],
+                properties={AgentRules.STATUS: {"select": {"name": AgentRules.STATUS_DEPRECATED}}},
+            )
+
     def get_next_loop_iteration(self) -> int:
         """The next LEARN iteration number = max existing `Loop` + 1 (>=1)."""
         if not settings.NOTION_AGENT_RULES_DB:

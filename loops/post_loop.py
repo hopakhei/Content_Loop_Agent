@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import logging
 import time
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from config import settings
@@ -58,9 +58,30 @@ def run(
         publishers["Threads"] = threads
     elif settings.THREADS_ACCESS_TOKEN:
         publishers["Threads"] = ThreadsService(dry_run=dry_run, logger=log)
-    eligible = make_eligibility(set(publishers))
 
     ref = hkt_now(settings.TZ_NAME)
+
+    # X quota park: after a 402 (monthly write cap) Loop 1 records a rule and
+    # posts without X until the recorded date passes (or the rule is deprecated
+    # by hand in Notion).
+    try:
+        parked_until = notion.get_x_parked_until()
+    except Exception as exc:  # never let the park check block posting
+        log.warning("Could not read the X park rule (%s) — assuming X available.", exc)
+        parked_until = None
+    if parked_until:
+        if ref.date() <= parked_until:
+            log.warning("X parked until %s (monthly write quota) — posting without X.", parked_until)
+            publishers.pop("X", None)
+        else:
+            log.info("X park (until %s) has expired — resuming X posting.", parked_until)
+            if not dry_run:
+                try:
+                    notion.unpark_x()
+                except Exception as exc:
+                    log.warning("Could not deprecate the X park rule: %s", exc)
+
+    eligible = make_eligibility(set(publishers))
     slot = slot or nearest_slot(ref, settings.POST_SLOTS_HKT)
 
     rules = notion.get_rules()
@@ -153,15 +174,22 @@ def _publish_one(
 
     # Platform-specific final form: on X we post link-free while the follower
     # count is low (skip the CTA — one tweet, no link suppression, half the
-    # write quota). Set X_INCLUDE_CTA=true to keep the CTA inline. Threads
-    # always keeps the CTA.
+    # write quota; X_INCLUDE_CTA=true restores it), and cap chains at
+    # X_MAX_THREAD_POSTS — every tweet in a chain costs one monthly write
+    # credit, so a 6-tweet thread posts only its root on X while the full
+    # chain still goes out on Threads.
     posts_for = {p: posts for p in targets}
-    if "X" in posts_for and not settings.X_INCLUDE_CTA:
-        posts_for["X"] = strip_cta(posts, cta_url)
+    if "X" in posts_for:
+        x_posts = posts if settings.X_INCLUDE_CTA else strip_cta(posts, cta_url)
+        cap = max(1, settings.X_MAX_THREAD_POSTS)
+        if len(x_posts) > cap:
+            log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(x_posts))
+            x_posts = x_posts[:cap]
+        posts_for["X"] = x_posts
 
     _show_preview(log, draft, posts, reason, hook_key, cta_url, targets)
     if posts_for.get("X") is not None and posts_for["X"] != posts:
-        log.info("X variant: CTA removed (link-free, %d post(s)).", len(posts_for["X"]))
+        log.info("X variant: %d post(s), link-free=%s.", len(posts_for["X"]), not settings.X_INCLUDE_CTA)
     if not _confirm(log, dry_run=dry_run, assume_yes=assume_yes):
         log.warning("Aborted by user before posting '%s'.", draft.title)
         return None
@@ -180,10 +208,12 @@ def _publish_one(
             )
             failures.append({"platform": platform, "draft": draft.title,
                              "error": f"partial thread ({len(exc.ids)} live): {exc.cause}"})
+            _park_x_if_quota_exhausted(platform, exc.cause, notion, log, dry_run=dry_run)
             ids = exc.ids
         except Exception as exc:
             log.error("FAILED on %s for '%s': %s", platform, draft.title, exc)
             failures.append({"platform": platform, "draft": draft.title, "error": str(exc)})
+            _park_x_if_quota_exhausted(platform, exc, notion, log, dry_run=dry_run)
             continue
         results[platform] = ids
         if not dry_run:
@@ -219,6 +249,31 @@ def _publish_one(
         "hook": hook_key,
         "num_tweets": len(first),
     }
+
+
+def _park_x_if_quota_exhausted(platform, exc, notion, log, *, dry_run: bool) -> None:
+    """On X's 402 (monthly write cap), park X until the 1st of next month so
+    later runs post Threads-only instead of failing every slot. Resume earlier
+    by deprecating/deleting the 'X Parked Until' rule in Agent Rules."""
+    if platform != "X" or dry_run:
+        return
+    msg = str(exc)
+    if not ("402" in msg or "Payment Required" in msg or "credits" in msg.lower()):
+        return
+    until = _first_of_next_month(hkt_now(settings.TZ_NAME).date())
+    try:
+        notion.park_x_until(until)
+        log.error(
+            "X monthly write quota exhausted — parked X until %s. "
+            "(Deprecate the '%s' rule in Agent Rules to resume earlier, e.g. after a tier upgrade.)",
+            until, "X Parked Until",
+        )
+    except Exception as e:
+        log.warning("Could not write the X park rule: %s", e)
+
+
+def _first_of_next_month(today: date) -> date:
+    return (today.replace(day=1) + timedelta(days=32)).replace(day=1)
 
 
 def _show_preview(log, draft, posts, reason, hook_key, cta_url, targets) -> None:

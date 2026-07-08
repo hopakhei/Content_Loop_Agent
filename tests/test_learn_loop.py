@@ -86,18 +86,34 @@ def test_refresh_routes_ids_to_their_platform():
     assert "page-DRYRUN-x" not in notion.updates
 
 
-def test_refresh_window_skips_measured_but_retries_empty():
+def test_refresh_reads_each_post_exactly_once():
+    # Reads spend the same monthly credit budget as writes: only the [24h,48h)
+    # window is read — older rows are NEVER re-read, even with no impressions.
     rows = [
-        _row("old-measured", "X", hours_ago=100, impressions=500.0),  # done — skip
-        _row("old-empty", "X", hours_ago=100, impressions=0.0),       # retry
+        _row("in-window", "X", hours_ago=30),
+        _row("too-old", "X", hours_ago=50, impressions=0.0),
+        _row("ancient-empty", "X", hours_ago=100, impressions=0.0),
     ]
     notion = FakeNotion(rows)
-    twitter = FakeTwitter({"old-empty": {"impressions": 80, "likes": 1, "replies": 0, "reposts": 0}})
+    twitter = FakeTwitter({"in-window": {"impressions": 80, "likes": 1, "replies": 0, "reposts": 0}})
 
     learn_loop.run(dry_run=False, notion=notion, twitter=twitter, threads=FakeThreads({}))
 
-    assert twitter.requested == ["old-empty"]
-    assert notion.updates["page-old-empty"][Performance.IMPRESSIONS] == 80
+    assert twitter.requested == ["in-window"]
+    assert notion.updates["page-in-window"][Performance.IMPRESSIONS] == 80
+
+
+def test_x_write_budget_telemetry_counts_x_rows_this_month():
+    rows = [
+        _row("x-post", "X", hours_ago=0.5),
+        _row("th-post", "Threads", hours_ago=0.5),
+        _row("DRYRUN-sim", "X", hours_ago=0.5),
+    ]
+    summary = learn_loop.run(
+        dry_run=False, notion=FakeNotion(rows),
+        twitter=FakeTwitter({}), threads=FakeThreads({}),
+    )
+    assert summary["x_writes_month"] == 1  # real X rows only
 
 
 def test_refresh_without_threads_service_leaves_threads_rows_alone():

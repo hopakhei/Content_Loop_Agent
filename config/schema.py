@@ -118,6 +118,10 @@ class AgentRules:
     RULE_BEST_SLOTS = "Best Slots"            # Rule Content = JSON array of slots
     RULE_BEST_CONTENT_TYPES = "Best Content Types"  # Rule Content = JSON array
     RULE_LEARN_SUMMARY = "LEARN Summary"      # Rule Content = human-readable prose
+    # Written by Loop 1 when X returns 402 (monthly write quota exhausted);
+    # Rule Content = ISO date until which X posting is parked. Deprecate or
+    # delete the row in Notion to resume X earlier.
+    RULE_X_PARKED = "X Parked Until"
 
 
 # Hook key (A/B/C) -> (Content Drafts hook field, Performance "Hook Used" option)

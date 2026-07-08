@@ -9,9 +9,19 @@ class FakeNotion:
         self._drafts = drafts
         self.marked = []
         self.performance = []
+        self.parked_until = None
 
     def get_rules(self):
         return None
+
+    def get_x_parked_until(self):
+        return self.parked_until
+
+    def park_x_until(self, until):
+        self.parked_until = until
+
+    def unpark_x(self):
+        self.parked_until = None
 
     def count_posts_today(self, ref):
         return 0, {}
@@ -158,6 +168,82 @@ def test_loop1_platform_failure_lands_in_summary_failures():
     assert len(summary["failures"]) == 1
     assert summary["failures"][0]["platform"] == "Threads"
     assert "Media ID" in summary["failures"][0]["error"]
+
+
+def _thread_draft():
+    return Draft(
+        id="d3",
+        title="#107-01 框架拆解",
+        post_body="鈎子推文\n---\n第二條\n---\n第三條",
+        hooks={"A": "", "B": "", "C": ""},
+        content_type="Thread",
+        platforms=["X", "Threads"],
+        status="Draft",
+        article_id="A",
+        argument_num=1,
+    )
+
+
+def test_loop1_caps_x_thread_at_root_but_threads_gets_full_chain():
+    notion = FakeNotion([_thread_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    # X: root tweet only (each chained tweet costs a monthly write credit).
+    assert len(twitter.threads[0]) == 1
+    assert twitter.threads[0][0].startswith("鈎子推文")
+    # Threads: full chain + its CTA tweet (Threads API is free).
+    assert len(threads.threads[0]) == 4
+    assert "👉" in threads.threads[0][-1]
+
+
+class QuotaExhaustedTwitter:
+    def post_thread(self, tweets):
+        raise RuntimeError(
+            "402 Payment Required\nYour enrolled account does not have any credits to fulfill this request."
+        )
+
+
+def test_loop1_402_parks_x_until_next_month():
+    notion = FakeNotion([_dual_draft()])
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=QuotaExhaustedTwitter(), threads=FakeThreads(),
+    )
+    assert notion.parked_until is not None and notion.parked_until.day == 1
+    assert summary["posted"][0]["platforms"] == ["Threads"]  # Threads unaffected
+    assert summary["failures"][0]["platform"] == "X"
+
+
+def test_loop1_parked_x_posts_threads_only_without_failures():
+    from datetime import date, timedelta
+
+    notion = FakeNotion([_dual_draft()])
+    notion.parked_until = date.today() + timedelta(days=5)
+    twitter, threads = FakeTwitter(), FakeThreads()
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    assert twitter.threads == []                      # X never attempted
+    assert summary["posted"][0]["platforms"] == ["Threads"]
+    assert summary["failures"] == []                  # parked ≠ failing
+
+
+def test_loop1_expired_park_resumes_x():
+    from datetime import date, timedelta
+
+    notion = FakeNotion([_dual_draft()])
+    notion.parked_until = date.today() - timedelta(days=40)
+    twitter, threads = FakeTwitter(), FakeThreads()
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    assert notion.parked_until is None                # rule deprecated
+    assert sorted(summary["posted"][0]["platforms"]) == ["Threads", "X"]
 
 
 class PartialTwitter:

@@ -24,7 +24,9 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="loop", description="LOOP — 90s.pm.investing content pipeline")
     p.add_argument("--loop", type=int, choices=[1, 2, 3], help="Which loop to run")
     p.add_argument("--check", action="store_true",
-                   help="Read-only preflight: verify Notion DB access + X credentials, then exit")
+                   help="Read-only preflight: verify Notion DB access (+ Threads), then exit")
+    p.add_argument("--with-x", action="store_true",
+                   help="With --check: also verify X credentials (costs one read from the monthly X credit budget)")
     p.add_argument("--inspect-threads", action="store_true",
                    help="Read-only: show how recently-posted Threads drafts composed (segments + CTA), then exit")
     p.add_argument("--inspect-days", type=int, default=3,
@@ -44,10 +46,10 @@ def build_parser() -> argparse.ArgumentParser:
     return p
 
 
-def _run_check(logger) -> int:
-    """Read-only preflight of Notion + X. Returns 0 if everything is reachable."""
+def _run_check(logger, with_x: bool = False) -> int:
+    """Read-only preflight of Notion (+ Threads; X only on demand — its
+    users/me lookup spends a read from the monthly X credit budget)."""
     from services.notion import NotionService
-    from services.twitter import TwitterService
 
     ok = True
     logger.info("Preflight — Notion databases:")
@@ -56,12 +58,16 @@ def _run_check(logger) -> int:
         ok = ok and good
 
     logger.info("Preflight — X credentials:")
-    try:
-        handle = TwitterService(dry_run=False, logger=logger).verify()
-        logger.info("  X auth             OK   — authenticated as @%s", handle)
-    except Exception as exc:
-        logger.error("  X auth             FAIL — %s", exc)
-        ok = False
+    if with_x:
+        from services.twitter import TwitterService
+        try:
+            handle = TwitterService(dry_run=False, logger=logger).verify()
+            logger.info("  X auth             OK   — authenticated as @%s", handle)
+        except Exception as exc:
+            logger.error("  X auth             FAIL — %s", exc)
+            ok = False
+    else:
+        logger.info("  X auth             SKIP — costs a monthly-budget read; pass --with-x to verify")
 
     logger.info("Preflight — Threads credentials:")
     if settings.THREADS_ACCESS_TOKEN:
@@ -126,7 +132,7 @@ def main(argv=None) -> int:
         logger, log_path = setup_logging("check", dry_run=False)
         logger.info("=== Preflight check start | log=%s ===", log_path)
         try:
-            return _run_check(logger)
+            return _run_check(logger, with_x=args.with_x)
         except Exception:
             logger.exception("Preflight failed with an unhandled error.")
             return 1

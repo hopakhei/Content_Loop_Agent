@@ -51,6 +51,12 @@ X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 # post link-free on X (maximise reach, conserve the write quota). Threads keeps
 # the CTA regardless. Flip on once the funnel is worth the reach/quota cost.
 X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", False)
+# Each tweet in a chain costs one write from the monthly credit budget, so a
+# 6-tweet thread = 6 posts' worth. Cap X at the root tweet by default — the
+# full chain still goes out on Threads (whose API is free).
+X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 1)
+# Free-tier monthly write allowance, for the LEARN budget telemetry.
+X_MONTHLY_WRITE_BUDGET = _int("X_MONTHLY_WRITE_BUDGET", 500)
 
 # ── Threads (Meta) ──────────────────────────────────────────────────────────
 THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()

@@ -25,11 +25,13 @@ MIN_DATA_POINTS = 20
 ANALYSIS_WINDOW_DAYS = 30
 # Data points at which a learned rule reaches full (100) confidence.
 FULL_CONFIDENCE_POINTS = 40
-# Refresh a post's metrics between 24h (engagement has matured) and 72h after
-# posting — normally two nights per post, to stay inside the X read quota.
-# Older rows that never got impressions are retried until the window closes.
+# Read each post's metrics EXACTLY ONCE, on the nightly run where its age
+# falls in [24h, 48h) — engagement has matured by 24h, and with LEARN at
+# 02:00 HKT every slot lands in this window on its second night. No re-reads:
+# X reads consume the same monthly credit budget as writes, so a retry rule
+# would leak quota every night for every post that never gets impressions.
 REFRESH_MIN_AGE_HOURS = 24
-REFRESH_MAX_AGE_HOURS = 72
+REFRESH_MAX_AGE_HOURS = 48
 
 
 def run(
@@ -50,6 +52,15 @@ def run(
     rows = notion.get_performance_rows(since_days=ANALYSIS_WINDOW_DAYS)
     log.info("Loaded %d performance rows.", len(rows))
 
+    x_writes = _x_writes_this_month(rows)
+    budget = settings.X_MONTHLY_WRITE_BUDGET
+    pct = 100 * x_writes / budget if budget else 0
+    log.info("X write budget: ≥%d/%d used this calendar month (%.0f%%) — "
+             "threads/CTA replies add extra; the developer portal is ground truth.",
+             x_writes, budget, pct)
+    if budget and pct >= 80:
+        log.warning("X write budget at %.0f%% — expect 402s soon; consider fewer X slots or a tier upgrade.", pct)
+
     refreshed = _refresh_metrics(rows, notion, twitter, threads, log, dry_run=dry_run)
     log.info("Refreshed metrics for %d posts.", refreshed)
 
@@ -69,6 +80,7 @@ def run(
 
     summary = {
         "rows": len(rows),
+        "x_writes_month": x_writes,
         "data_points": len(points),
         "best_slots": best_slots(points, top=2),
         "best_content_types": best_content_types(points),
@@ -112,6 +124,30 @@ def run(
     return summary
 
 
+def _x_writes_this_month(rows) -> int:
+    """Lower-bound estimate of X write credits used this calendar month: one
+    per X Performance row (with root-only threads and no CTA reply, one row =
+    one write; historical thread/CTA rows under-count, hence 'at least')."""
+    month_start = hkt_now_month_start()
+    count = 0
+    for r in rows:
+        pid = r.get("post_id") or ""
+        if pid.startswith("DRYRUN-") or not r.get("posted_at"):
+            continue
+        if (r.get("platform") or "X") != "X":
+            continue
+        posted = parse_notion_datetime(r["posted_at"], settings.TZ_NAME)
+        if posted >= month_start:
+            count += 1
+    return count
+
+
+def hkt_now_month_start():
+    from core.timeutil import now as hkt_now
+    ref = hkt_now(settings.TZ_NAME)
+    return ref.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+
 def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> int:
     """Pull fresh engagement for real (non dry-run) posts in the refresh window
     and write the numbers back to Notion. Rows are routed to the platform that
@@ -126,10 +162,8 @@ def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> i
             continue
         posted = parse_notion_datetime(r["posted_at"], settings.TZ_NAME).astimezone(timezone.utc)
         age_hours = (now - posted).total_seconds() / 3600
-        if age_hours < REFRESH_MIN_AGE_HOURS:
-            continue
-        if age_hours > REFRESH_MAX_AGE_HOURS and (r.get("impressions") or 0) > 0:
-            continue  # already measured; don't re-spend read quota on it
+        if not (REFRESH_MIN_AGE_HOURS <= age_hours < REFRESH_MAX_AGE_HOURS):
+            continue  # one read per post, on its second night — never again
         if (r.get("platform") or "X") == "Threads":
             threads_rows[pid] = r
         else:

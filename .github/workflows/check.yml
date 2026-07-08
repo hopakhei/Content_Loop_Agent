@@ -1,8 +1,14 @@
 name: Preflight check
 
-# Read-only validation of Notion DB access + X credentials (never posts).
+# Read-only validation of Notion DB access + Threads (never posts). X auth is
+# opt-in — its users/me lookup spends a read from the monthly X credit budget.
 on:
   workflow_dispatch:
+    inputs:
+      with_x:
+        description: "Also verify X credentials (costs one X read)"
+        type: boolean
+        default: false
 
 jobs:
   check:
@@ -26,4 +32,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
-      - run: python main.py --check
+      - run: |
+          EXTRA=""
+          if [ "${{ inputs.with_x }}" = "true" ]; then EXTRA="--with-x"; fi
+          python main.py --check $EXTRA

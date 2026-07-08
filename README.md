@@ -83,6 +83,22 @@ A dual-platform draft creates one Post Performance row per platform but counts
 as **one** posting event toward the daily limit. Without a Threads token the
 system behaves as X-only and Threads-only drafts (故事貼, 金句裂變) are skipped.
 
+**X credit budget:** every X API call — each tweet in a chain, and each
+metrics read — spends the same monthly credit allowance, so the system is
+tuned to run inside the Free tier:
+
+- X posts are link-free single tweets (`X_INCLUDE_CTA=false`) and chains are
+  capped at the root tweet (`X_MAX_THREAD_POSTS=1`); the full thread + CTA
+  still posts on **Threads, whose API is free**.
+- Loop 2 reads each post's metrics **exactly once** (age 24–48h, batched
+  100/request) and logs estimated writes used vs `X_MONTHLY_WRITE_BUDGET`
+  (default 500), warning at 80%.
+- `--check` skips the X credential read unless `--with-x` is passed.
+- On a **402** (monthly cap exhausted) Loop 1 writes an `X Parked Until` rule
+  into Agent Rules and posts **Threads-only** until the 1st of the next month
+  — no wasted attempts, no repeated alerts. Deprecate/delete that rule in
+  Notion to resume earlier (e.g. after upgrading the API tier).
+
 To enable Threads: create a Meta app at developers.facebook.com with the
 *Threads API* use case, add your account as a Threads tester (accept the invite
 in the Threads app under Settings → Account → Website permissions → Invites),
