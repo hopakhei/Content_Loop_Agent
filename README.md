@@ -161,13 +161,22 @@ others.
 
 ## Loop 3 — GENERATE (detail)
 
-Manual, per article. Sends the article's full text through the starter prompt in
-`prompts/generate.txt` (filling `{ISSUE_NUMBER}`, `{CTA_URL}`, `{ARTICLE_FULL_TEXT}`),
-parses the 12 units out of Claude's response, maps their labels to the Notion
-select/multi-select options, and inserts them into **Content Drafts** (Status =
-`Draft`, Generation = 1) related to the Article.
+Manual, per article. Two ways to produce the 12 units — generation and Notion
+insertion are decoupled:
 
-Default model is `claude-opus-4-8` (override with `CLAUDE_MODEL`).
+- **Claude API path** (`--article-file articles/<issue>.md`): sends the article
+  through `prompts/generate.txt` via the Anthropic API (`ANTHROPIC_API_KEY`,
+  default model `claude-opus-4-8`, override with `CLAUDE_MODEL`). This is the
+  only place in the whole system that spends API credits.
+- **Pre-generated units path** (`--units-file units/<issue>.md`) — *zero API
+  cost*: any Claude Code session (billed to the subscription, not the API key)
+  writes the units in the generate.txt output format to `units/<issue>.md`;
+  Loop 3 then just parses and inserts. The generate.yml workflow auto-detects
+  `units/<issue>.md` and takes this path without needing `ANTHROPIC_API_KEY`.
+
+Either way the units are parsed, their labels mapped to the Notion
+select/multi-select options, and inserted into **Content Drafts** (Status =
+`Draft`, Generation = 1) related to the Article.
 
 ---
 

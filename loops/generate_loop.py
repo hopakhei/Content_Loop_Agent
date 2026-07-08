@@ -21,7 +21,7 @@ ARTICLE_SUFFIXES = {".md", ".txt"}
 
 def run(
     issue_number,
-    article_text: str,
+    article_text: Optional[str] = None,
     cta_url: Optional[str] = None,
     article_id: Optional[str] = None,
     dry_run: bool = False,
@@ -29,10 +29,21 @@ def run(
     logger: Optional[logging.Logger] = None,
     notion: Optional[NotionService] = None,
     claude: Optional[ClaudeService] = None,
+    units_text: Optional[str] = None,
 ) -> dict:
+    """Fission an article into Content Drafts.
+
+    Two sources, exactly one required:
+    - `article_text` — the raw article; sent through the Claude API
+      (ANTHROPIC_API_KEY) to generate the 12 units.
+    - `units_text` — pre-generated units in the generate.txt output format
+      (e.g. written by Claude Code on a subscription); parsed and inserted
+      with NO Anthropic API call.
+    """
+    if not (article_text or units_text):
+        raise ValueError("Loop 3 needs article_text or units_text.")
     log = logger or logging.getLogger("loop.generate")
     notion = notion or NotionService(log)
-    claude = claude or ClaudeService(logger=log)
 
     # Resolve the Article (for relation + CTA inheritance) by id or Issue #.
     article = None
@@ -49,11 +60,16 @@ def run(
     if not cta_url:
         log.warning("No CTA URL resolved for issue %s; bodies will keep any {CTA_URL} placeholder.", issue_number)
 
-    log.info("Loop 3 GENERATE | issue=%s | article=%s | dry_run=%s", issue_number, article_id, dry_run)
+    log.info("Loop 3 GENERATE | issue=%s | article=%s | dry_run=%s | source=%s",
+             issue_number, article_id, dry_run, "units-file" if units_text else "claude-api")
 
-    raw = claude.generate_units(issue_number, cta_url or "", article_text)
+    if units_text:
+        raw = units_text  # pre-generated (subscription) — no API call
+    else:
+        claude = claude or ClaudeService(logger=log)
+        raw = claude.generate_units(issue_number, cta_url or "", article_text)
     units = parse_units(raw)
-    log.info("Claude returned %d parseable units.", len(units))
+    log.info("Parsed %d units.", len(units))
 
     source_article = map_source_article(issue_number)
 

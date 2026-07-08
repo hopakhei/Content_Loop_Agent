@@ -36,7 +36,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--slot", help="Loop 1: override the posting slot (HH:MM)")
     p.add_argument("--yes", action="store_true", help="Loop 1: skip the pre-post countdown (headless cron)")
     p.add_argument("--issue", help="Loop 3: article Issue #")
-    p.add_argument("--article-file", help="Loop 3: path to the article's full text")
+    p.add_argument("--article-file", help="Loop 3: path to the article's full text (fissioned via the Claude API)")
+    p.add_argument("--units-file",
+                   help="Loop 3: path to PRE-GENERATED units (generate.txt output format) — "
+                        "inserts into Notion without any Anthropic API call")
     p.add_argument("--all", action="store_true", help="Loop 3: fission every articles/<issue>.(md|txt)")
     p.add_argument("--articles-dir", default="articles", help="Loop 3: directory of article texts (with --all)")
     p.add_argument("--fresh", action="store_true",
@@ -176,11 +179,15 @@ def main(argv=None) -> int:
                 generate_loop.run_batch(
                     articles_dir=args.articles_dir, dry_run=dry_run, fresh=args.fresh, logger=logger
                 )
-            elif args.issue and args.article_file:
-                text = Path(args.article_file).read_text(encoding="utf-8")
+            elif args.issue and (args.article_file or args.units_file):
                 generate_loop.run(
                     issue_number=args.issue,
-                    article_text=text,
+                    article_text=(
+                        Path(args.article_file).read_text(encoding="utf-8") if args.article_file else None
+                    ),
+                    units_text=(
+                        Path(args.units_file).read_text(encoding="utf-8") if args.units_file else None
+                    ),
                     cta_url=args.cta_url,
                     article_id=args.article_id,
                     dry_run=dry_run,
@@ -188,7 +195,7 @@ def main(argv=None) -> int:
                     logger=logger,
                 )
             else:
-                build_parser().error("Loop 3 requires --all, or --issue with --article-file")
+                build_parser().error("Loop 3 requires --all, or --issue with --article-file or --units-file")
     except KeyboardInterrupt:
         logger.warning("Interrupted by user.")
         return 130
