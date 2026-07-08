@@ -141,6 +141,25 @@ def test_loop1_threads_only_draft_posts_when_threads_configured():
     assert notion.performance[0]["platform"] == "Threads"
 
 
+class ExplodingThreads:
+    def post_thread(self, posts):
+        raise RuntimeError("Threads publish failed: 400 Media ID is not available")
+
+
+def test_loop1_platform_failure_lands_in_summary_failures():
+    notion = FakeNotion([_dual_draft()])
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=FakeTwitter(), threads=ExplodingThreads(),
+    )
+    # X still posted and was recorded; the Threads failure is surfaced so
+    # main.py exits non-zero and the workflow files the failure notice.
+    assert summary["posted"][0]["platforms"] == ["X"]
+    assert len(summary["failures"]) == 1
+    assert summary["failures"][0]["platform"] == "Threads"
+    assert "Media ID" in summary["failures"][0]["error"]
+
+
 class PartialTwitter:
     """Posts the root tweet then dies — like hitting the write cap mid-thread."""
 

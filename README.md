@@ -209,6 +209,20 @@ IDs (including Agent Rules) are set inline in the workflows. Until these secrets
 exist, the scheduled `post`/`learn` runs **skip cleanly** (exit 0 with a notice)
 rather than failing.
 
+### Failure notices (closed loop)
+
+A platform failure during POST (or any LEARN crash) makes the workflow run
+**fail**, which does two things:
+
+1. GitHub emails you (Settings → Notifications → Actions, on by default for
+   failed runs you triggered/own).
+2. The job files an alert into a rolling GitHub Issue labelled `loop-alert`
+   (one comment per incident, with the run link and probable causes). Close
+   the issue once fixed — the next failure opens a fresh one.
+
+`skipped` outcomes (daily limit reached, no eligible draft) are not failures;
+only real platform errors (X 403, Threads 4xx/5xx, partial threads) alert.
+
 ### VPS cron (alternative)
 
 ```cron

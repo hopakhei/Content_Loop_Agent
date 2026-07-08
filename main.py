@@ -151,7 +151,16 @@ def main(argv=None) -> int:
     try:
         if args.loop == 1:
             from loops import post_loop
-            post_loop.run(dry_run=dry_run, slot=args.slot, assume_yes=args.yes, logger=logger)
+            summary = post_loop.run(dry_run=dry_run, slot=args.slot, assume_yes=args.yes, logger=logger)
+            failures = summary.get("failures") or []
+            if failures:
+                for f in failures:
+                    logger.error("Platform failure | %s | %s | %s", f["platform"], f["draft"], f["error"])
+                logger.error(
+                    "Loop 1 finished with %d platform failure(s) — exiting non-zero so the failure notice fires.",
+                    len(failures),
+                )
+                return 2
         elif args.loop == 2:
             from loops import learn_loop
             learn_loop.run(dry_run=dry_run, logger=logger)

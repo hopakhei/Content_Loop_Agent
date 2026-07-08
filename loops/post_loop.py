@@ -71,7 +71,9 @@ def run(
         ref.strftime("%Y-%m-%d %H:%M"), slot, dry_run, "+".join(sorted(publishers)), total_today, daily_limit,
     )
 
-    summary = {"slot": slot, "dry_run": dry_run, "posted": [], "skipped": None}
+    # `failures` closes the loop: main.py exits non-zero when it's non-empty,
+    # which fails the GitHub Actions job and fires the failure notice.
+    summary = {"slot": slot, "dry_run": dry_run, "posted": [], "skipped": None, "failures": []}
 
     articles_by_id = {a.id: a for a in notion.list_articles()}
 
@@ -96,6 +98,7 @@ def run(
         result = _publish_one(
             chosen, reason, rules, articles_by_id, notion, publishers, log,
             ref=ref, dry_run=dry_run, assume_yes=assume_yes,
+            failures=summary["failures"],
         )
         if result is None:  # aborted by user during preview
             summary["skipped"] = "aborted"
@@ -122,7 +125,9 @@ def _publish_one(
     ref: datetime,
     dry_run: bool,
     assume_yes: bool,
+    failures: Optional[list] = None,
 ) -> Optional[dict]:
+    failures = failures if failures is not None else []
     article = articles_by_id.get(draft.article_id) if draft.article_id else None
     if article is None and draft.article_id:
         article = notion.get_article(draft.article_id)
@@ -171,9 +176,12 @@ def _publish_one(
                 "PARTIAL on %s for '%s': %d/%d posts live before failure (%s) — recording the root post.",
                 platform, draft.title, len(exc.ids), len(posts_for[platform]), exc.cause,
             )
+            failures.append({"platform": platform, "draft": draft.title,
+                             "error": f"partial thread ({len(exc.ids)} live): {exc.cause}"})
             ids = exc.ids
         except Exception as exc:
             log.error("FAILED on %s for '%s': %s", platform, draft.title, exc)
+            failures.append({"platform": platform, "draft": draft.title, "error": str(exc)})
             continue
         results[platform] = ids
         if not dry_run:

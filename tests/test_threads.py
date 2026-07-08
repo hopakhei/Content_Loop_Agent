@@ -28,8 +28,12 @@ class FakeSession:
         self._creation = 0
         self._published = 0
 
+    container_status = "FINISHED"
+
     def get(self, url, params=None, timeout=None):
         self.gets.append((url, dict(params or {})))
+        if (params or {}).get("fields") == "status,error_message":
+            return _Resp({"status": self.container_status, "error_message": "boom detail"})
         if url.endswith("/insights"):
             return _Resp({"data": [
                 {"name": "views", "values": [{"value": 120}]},
@@ -166,6 +170,39 @@ def test_post_gives_up_after_exhausting_retries(monkeypatch):
 
     svc = ThreadsService(session=AlwaysDown(), access_token="tok", user_id="17800000")
     with pytest.raises(Exception):
+        svc.post_post("hello")
+
+
+def test_publish_retries_client_error_media_not_ready(monkeypatch):
+    # The 400 "Media ID is not available" seen in production: publish 400s
+    # once right after create, then succeeds on the retry.
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", (0.0, 0.0))
+
+    class NotReadyOnce(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.publish_attempts = 0
+
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/threads_publish"):
+                self.publish_attempts += 1
+                if self.publish_attempts == 1:
+                    return _Resp({"error": "Media ID is not available"}, status_code=400)
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = ThreadsService(session=NotReadyOnce(), access_token="tok", user_id="17800000")
+    assert svc.post_post("hello") == "901"
+    assert svc.session.publish_attempts == 2
+
+
+def test_container_error_status_raises_with_meta_detail(monkeypatch):
+    monkeypatch.setattr(threads_module, "CONTAINER_READY_DELAYS", (0.0,))
+
+    class ErrorContainer(FakeSession):
+        container_status = "ERROR"
+
+    svc = ThreadsService(session=ErrorContainer(), access_token="tok", user_id="17800000")
+    with pytest.raises(RuntimeError, match="ERROR.*boom detail"):
         svc.post_post("hello")
 
 

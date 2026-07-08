@@ -25,11 +25,15 @@ except ImportError:  # pragma: no cover - surfaced at runtime
 
 API_BASE = "https://graph.threads.net/v1.0"
 MAX_POST_LEN = 500  # Threads text limit
-# The Threads graph endpoints intermittently 5xx (especially threads_publish
-# right after container creation). Retry with these backoff delays before
-# giving up — this is what keeps a reply chain from truncating mid-thread and
-# leaving a hook-only post live. (Tests shrink this to avoid real sleeps.)
+# The Threads graph endpoints intermittently fail right after container
+# creation — 5xx, or 400 "Media ID is not available" when the container isn't
+# ready yet. Retry with these backoff delays before giving up — this is what
+# keeps a reply chain from truncating and leaving a hook-only post live.
+# (Tests shrink these to avoid real sleeps.)
 PUBLISH_RETRY_DELAYS = (2.0, 5.0)
+# Poll the container status this many times (with these delays) until it
+# reports FINISHED before attempting to publish, per Meta's guidance.
+CONTAINER_READY_DELAYS = (0.0, 2.0, 3.0, 5.0)
 
 
 class ThreadsService:
@@ -95,20 +99,52 @@ class ThreadsService:
             payload["reply_to_id"] = reply_to
         create = self._post_with_retry(f"{API_BASE}/{uid}/threads", payload, what="create container")
         creation_id = create.json()["id"]
+        self._await_container(creation_id)
+        # threads_publish 400s ("Media ID is not available") when the container
+        # still isn't ready despite the status poll — client errors are
+        # retryable here, unlike on create.
         publish = self._post_with_retry(
             f"{API_BASE}/{uid}/threads_publish",
             {"creation_id": creation_id, "access_token": self.token},
             what="publish",
+            retry_client_errors=True,
         )
         return str(publish.json()["id"])
 
-    def _post_with_retry(self, url: str, data: dict, *, what: str):
-        """POST to a Threads graph endpoint, retrying transient failures (5xx
-        status or a network error) with backoff. Raises the last error if every
-        attempt fails. 4xx (bad token, permission) is not retried — it won't fix
-        itself. Retrying is safe here: a 5xx means the server rejected the call,
-        so nothing was committed to duplicate."""
-        last_exc = None
+    def _await_container(self, creation_id: str) -> None:
+        """Poll the container until Meta reports it FINISHED (publishable).
+        Best-effort: status-check failures fall through to the publish attempt;
+        a terminal ERROR/EXPIRED status raises with Meta's error message."""
+        for delay in CONTAINER_READY_DELAYS:
+            if delay:
+                time.sleep(delay)
+            try:
+                r = self.session.get(
+                    f"{API_BASE}/{creation_id}",
+                    params={"fields": "status,error_message", "access_token": self.token},
+                    timeout=30,
+                )
+                r.raise_for_status()
+                data = r.json()
+            except Exception as exc:
+                self.log.warning("Container status check failed (%s) — proceeding to publish.", exc)
+                return
+            status = (data.get("status") or "").upper()
+            if status in ("FINISHED", "PUBLISHED", ""):
+                return
+            if status in ("ERROR", "EXPIRED"):
+                raise RuntimeError(
+                    f"Threads container {status}: {data.get('error_message') or 'no detail from Meta'}"
+                )
+        self.log.warning("Container %s still IN_PROGRESS after polling — attempting publish anyway.", creation_id)
+
+    def _post_with_retry(self, url: str, data: dict, *, what: str, retry_client_errors: bool = False):
+        """POST to a Threads graph endpoint, retrying transient failures (5xx or
+        a network error; also 4xx when `retry_client_errors`, for publish's
+        "Media ID is not available") with backoff. Error messages include the
+        response body so failures are diagnosable from the run log. Retrying is
+        safe here: a failed call committed nothing that could duplicate."""
+        last_detail = None
         for attempt, delay in enumerate((0.0,) + tuple(PUBLISH_RETRY_DELAYS)):
             more = attempt < len(PUBLISH_RETRY_DELAYS)
             if delay:
@@ -116,17 +152,19 @@ class ThreadsService:
             try:
                 r = self.session.post(url, data=data, timeout=30)
             except Exception as exc:  # network error (ConnectionError/Timeout)
-                last_exc = exc
                 if not more:
                     raise
                 self.log.warning("Threads %s network error (attempt %d): %s — retrying.", what, attempt + 1, exc)
                 continue
-            if getattr(r, "status_code", 200) >= 500 and more:
-                self.log.warning("Threads %s returned %s (attempt %d) — retrying.", what, r.status_code, attempt + 1)
+            status = getattr(r, "status_code", 200)
+            if status < 400:
+                return r
+            last_detail = f"{status} {_body_snippet(r)}".strip()
+            if more and (status >= 500 or retry_client_errors):
+                self.log.warning("Threads %s returned %s (attempt %d) — retrying.", what, last_detail, attempt + 1)
                 continue
-            r.raise_for_status()
-            return r
-        raise last_exc if last_exc else RuntimeError("unreachable")  # pragma: no cover
+            break
+        raise RuntimeError(f"Threads {what} failed: {last_detail}")
 
     def post_thread(self, posts: list[str]) -> list[str]:
         """Post a reply chain. Returns ids in order; ids[0] is the root post
@@ -190,6 +228,13 @@ class ThreadsService:
                 "quotes": vals.get("quotes", 0),
             }
         return out
+
+
+def _body_snippet(resp) -> str:
+    try:
+        return (getattr(resp, "text", "") or "")[:200]
+    except Exception:  # pragma: no cover - defensive
+        return ""
 
 
 def _insight_value(item: dict) -> float:
