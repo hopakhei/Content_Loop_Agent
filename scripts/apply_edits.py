@@ -9,10 +9,9 @@ All targeted properties must be rich_text (Post Body, Hook A/B/C).
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
-
-from config import settings
 
 try:
     from notion_client import Client
@@ -24,11 +23,12 @@ def main(path: str = "edits/pending.json") -> int:
     if Client is None:
         print("notion-client is not installed", file=sys.stderr)
         return 1
-    if not settings.NOTION_TOKEN:
+    token = os.getenv("NOTION_TOKEN", "").strip()
+    if not token:
         print("NOTION_TOKEN is not set", file=sys.stderr)
         return 1
     edits = json.loads(Path(path).read_text(encoding="utf-8"))
-    client = Client(auth=settings.NOTION_TOKEN)
+    client = Client(auth=token)
     for page_id, props in edits.items():
         payload = {
             name: {"rich_text": [{"text": {"content": text}}]}
