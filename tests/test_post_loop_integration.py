@@ -170,6 +170,30 @@ def test_loop1_platform_failure_lands_in_summary_failures():
     assert "Media ID" in summary["failures"][0]["error"]
 
 
+def _three_hook_draft():
+    d = _draft()
+    d.hooks = {"A": "鈎A開場", "B": "鈎B開場", "C": "鈎C開場"}
+    d.platforms = ["X", "Threads"]
+    return d
+
+
+def test_loop1_dual_platform_uses_different_hooks():
+    notion = FakeNotion([_three_hook_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    summary = post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    x_open = twitter.threads[0][0].splitlines()[0]
+    th_open = threads.threads[0][0].splitlines()[0]
+    assert x_open != th_open                      # cross-platform hook A/B
+    hooks_used = summary["posted"][0]["hooks_used"]
+    assert hooks_used["X"] != hooks_used["Threads"]
+    # Each Performance row records its own platform's hook.
+    labels = {r["platform"]: r["hook_label"] for r in notion.performance}
+    assert labels["X"] != labels["Threads"]
+
+
 def _thread_draft():
     return Draft(
         id="d3",

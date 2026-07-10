@@ -155,15 +155,6 @@ def _publish_one(
         article = notion.get_article(draft.article_id)
 
     cta_url = effective_cta_url(draft, article.cta_url if article else None)
-    hook_key, hook_text = select_hook(draft, rules)
-    posts = compose_posts(draft, hook_text, cta_url)
-
-    if not posts:
-        log.warning("SKIP draft %s: composed to empty content.", draft.title)
-        return None
-
-    for warning in length_warnings(posts):
-        log.warning("Length: %s", warning)
 
     # Target every platform the draft names that we have a publisher for
     # (a draft with no platforms defaults to X).
@@ -172,31 +163,43 @@ def _publish_one(
         log.warning("SKIP draft %s: no configured publisher for %s.", draft.title, draft.platforms)
         return None
 
-    # Platform-specific final form: on X we post link-free while the follower
-    # count is low (skip the CTA — one tweet, no link suppression, half the
-    # write quota; X_INCLUDE_CTA=true restores it), and cap chains at
-    # X_MAX_THREAD_POSTS — every tweet in a chain costs one monthly write
-    # credit, so a 6-tweet thread posts only its root on X while the full
-    # chain still goes out on Threads.
-    posts_for = {p: posts for p in targets}
-    if "X" in posts_for:
-        x_posts = posts if settings.X_INCLUDE_CTA else strip_cta(posts, cta_url)
-        cap = max(1, settings.X_MAX_THREAD_POSTS)
-        if len(x_posts) > cap:
-            log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(x_posts))
-            x_posts = x_posts[:cap]
-        posts_for["X"] = x_posts
+    # Per-platform personalisation. The platforms rank differently, so each
+    # gets its own final form:
+    #  - Hook: X keeps the rules-weighted pick; a dual-platform draft gives
+    #    Threads the NEXT hook variant — a cross-platform A/B on every post.
+    #  - X posts link-free while the follower count is low (X_INCLUDE_CTA
+    #    restores it) and chains are capped at X_MAX_THREAD_POSTS (every
+    #    chained tweet costs a monthly write credit). Threads keeps the CTA
+    #    and the full chain, and gets its own 500-char limit.
+    hook_for = _pick_hooks_per_platform(draft, rules, targets)
+    posts_for: dict = {}
+    for platform in targets:
+        base = compose_posts(draft, hook_for[platform][1], cta_url)
+        if platform == "X":
+            if not settings.X_INCLUDE_CTA:
+                base = strip_cta(base, cta_url)
+            cap = max(1, settings.X_MAX_THREAD_POSTS)
+            if len(base) > cap:
+                log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(base))
+                base = base[:cap]
+        posts_for[platform] = base
+        limit = 500 if platform == "Threads" else 280
+        for warning in length_warnings(base, limit=limit):
+            log.warning("Length (%s): %s", platform, warning)
 
-    _show_preview(log, draft, posts, reason, hook_key, cta_url, targets)
-    if posts_for.get("X") is not None and posts_for["X"] != posts:
-        log.info("X variant: %d post(s), link-free=%s.", len(posts_for["X"]), not settings.X_INCLUDE_CTA)
+    if not any(posts_for.values()):
+        log.warning("SKIP draft %s: composed to empty content.", draft.title)
+        return None
+
+    _show_preview(log, draft, posts_for, hook_for, reason, cta_url)
     if not _confirm(log, dry_run=dry_run, assume_yes=assume_yes):
         log.warning("Aborted by user before posting '%s'.", draft.title)
         return None
 
-    hook_label = HOOK_FIELDS[hook_key][1] if hook_key else None
     results: dict = {}
     for platform in targets:
+        hook_key = hook_for[platform][0]
+        hook_label = HOOK_FIELDS[hook_key][1] if hook_key else None
         try:
             ids = publishers[platform].post_thread(posts_for[platform])
         except PartialThreadError as exc:
@@ -235,9 +238,10 @@ def _publish_one(
     for platform, ids in results.items():
         log.info(
             "POSTED ✓ '%s' | platform=%s | reason=%s | hook=%s | posts=%d | post_id=%s",
-            draft.title, platform, reason, hook_key or "none", len(ids), ids[0],
+            draft.title, platform, reason, hook_for[platform][0] or "none", len(ids), ids[0],
         )
     first = next(iter(results.values()))
+    primary = "X" if "X" in results else next(iter(results))
     return {
         "draft_id": draft.id,
         "title": draft.title,
@@ -246,9 +250,24 @@ def _publish_one(
         "post_id": first[0],
         "tweet_ids": results.get("X", first),
         "reason": reason,
-        "hook": hook_key,
+        "hook": hook_for[primary][0],
+        "hooks_used": {p: hook_for[p][0] for p in results},
         "num_tweets": len(first),
     }
+
+
+def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
+    """{platform: (hook_key, hook_text)}. X keeps the rules-weighted pick; on a
+    dual-platform draft Threads takes the NEXT hook variant (cyclic order), so
+    every dual post is also a cross-platform hook A/B experiment."""
+    base = select_hook(draft, rules)
+    picks = {p: base for p in targets}
+    available = draft.available_hooks()
+    if "X" in picks and "Threads" in picks and base[0] and len(available) >= 2:
+        keys = sorted(available)
+        alt = keys[(keys.index(base[0]) + 1) % len(keys)]
+        picks["Threads"] = (alt, available[alt])
+    return picks
 
 
 def _park_x_if_quota_exhausted(platform, exc, notion, log, *, dry_run: bool) -> None:
@@ -276,18 +295,25 @@ def _first_of_next_month(today: date) -> date:
     return (today.replace(day=1) + timedelta(days=32)).replace(day=1)
 
 
-def _show_preview(log, draft, posts, reason, hook_key, cta_url, targets) -> None:
+def _show_preview(log, draft, posts_for: dict, hook_for: dict, reason, cta_url) -> None:
     sep = "─" * 56
     log.info(sep)
-    log.info("PREVIEW | %s | type=%s | reason=%s | hook=%s | → %s",
-             draft.title, draft.content_type or "?", reason, hook_key or "none",
-             " + ".join(targets))
+    plat_desc = " + ".join(
+        f"{p}(hook={hook_for[p][0] or 'none'}, {len(posts_for[p])} post{'s' if len(posts_for[p]) > 1 else ''})"
+        for p in posts_for
+    )
+    log.info("PREVIEW | %s | type=%s | reason=%s | → %s",
+             draft.title, draft.content_type or "?", reason, plat_desc)
     log.info("CTA: %s", cta_url or "(none)")
-    for i, text in enumerate(posts, start=1):
-        tag = f"[{i}/{len(posts)}]" if len(posts) > 1 else ""
-        log.info("%s (%d chars)", tag, len(text))
+    primary = "X" if "X" in posts_for else next(iter(posts_for))
+    for i, text in enumerate(posts_for[primary], start=1):
+        tag = f"[{i}/{len(posts_for[primary])}]" if len(posts_for[primary]) > 1 else ""
+        log.info("%s (%s, %d chars)", tag, primary, len(text))
         for line in text.splitlines() or [""]:
             log.info("  | %s", line)
+    for p, posts in posts_for.items():
+        if p != primary and posts:
+            log.info("(%s opens with) | %s", p, posts[0].splitlines()[0] if posts[0] else "")
     log.info(sep)
 
 

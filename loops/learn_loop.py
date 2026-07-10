@@ -75,7 +75,12 @@ def run(
     _log_ranking(log, "Slot", slot_rank)
     _log_ranking(log, "Content Type", type_rank)
     _log_ranking(log, "Hook", hook_rank)
-    # v1 = CTA inline in the X root post; v2 = link-free root, CTA self-reply.
+    # Hooks are now picked per platform (X vs Threads diverge on dual posts),
+    # so also rank within each platform's own audience.
+    for plat in ("X", "Threads"):
+        plat_points = [p for p in points if p.platform == plat]
+        if plat_points:
+            _log_ranking(log, f"Hook · {plat}", ranked(plat_points, lambda p: p.hook))
     _log_ranking(log, "Composition", comp_rank)
 
     summary = {
@@ -221,6 +226,7 @@ def _to_point(row: dict) -> DataPoint:
         slot=slot,
         content_type=row.get("content_type"),
         hook=hook,
+        platform=row.get("platform") or "X",
         composition=f"v{int(row.get('loop_version') or 1)}",
         impressions=row.get("impressions", 0.0),
         likes=row.get("likes", 0.0),
