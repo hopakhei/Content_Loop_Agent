@@ -116,18 +116,19 @@ opening lines* used by the A/B/C experiment.
 - **Hook**: Loop 1 picks one hook variant (weighted toward the winning hook from
   the Agent Rules, else random among the non-empty hooks) and prepends it to the
   first post/tweet. If no hook fields have text, the body is posted as-is.
-- **CTA**: effective URL = draft override → else Article CTA URL.
-  - If the body contains a CTA placeholder — `{CTA_URL}` or the human `[連結]` (also `[link]`/`[CTA]`) — it is substituted with the URL.
-  - Otherwise, if no CTA is present, the standard line is appended:
-    `完整框架＋案例在 Substack 👉 {url}` (a new final tweet for threads).
-  - **On X the post is link-free by default** (`X_INCLUDE_CTA=false`): the CTA
-    is stripped entirely. While the follower count is low the funnel matters
-    less than raw reach, and dropping the link both avoids X's link-suppression
-    penalty and halves the write-quota cost (one tweet, not two) — important on
-    the X Free tier's monthly post cap. Set `X_INCLUDE_CTA=true` to keep the CTA
-    inline once the funnel is worth it. **Threads always keeps the CTA.** Rows
-    are stamped `Loop Version` (1 = CTA inline, 2 = CTA self-reply, 3 = X
-    link-free) so Loop 2 can compare the eras' engagement rates.
+- **CTA**: effective URL = draft override → else Article CTA URL. The CTA is a
+  **bare link** — just the URL on its own line, no "完整框架＋案例在 Substack 👉"
+  sell copy and no "click here" gesture.
+  - A CTA placeholder in the body — `{CTA_URL}` or the human `[連結]` (also
+    `[link]`/`[CTA]`) — is substituted with the URL; if no CTA is present the
+    bare link is appended (a new final tweet for threads).
+  - Older drafts baked the salesy `完整框架…👉 URL` line into their body; that
+    line is **softened to the bare link at compose time**, so no draft rewrite
+    is needed.
+  - **X carries the link by default** (`X_INCLUDE_CTA=true`). Set it `false` to
+    post X link-free (max reach, no link suppression, no write-quota CTA cost)
+    while growing followers — **Threads keeps the link regardless.** Rows are
+    stamped `Loop Version` so Loop 2 can compare composition eras.
 - **Threads**: a `Thread` body is split into tweets **only** on an explicit
   separator line — 3+ dashes/em-dashes (`---` or `———`). Blank lines inside a
   tweet are preserved; a body with no separator posts as a single tweet. (We do

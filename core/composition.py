@@ -20,7 +20,11 @@ from typing import Optional
 
 from core.models import Draft, Rules
 
-CTA_TEMPLATE = "完整框架＋案例在 Substack 👉 {url}"
+# The CTA is just the bare link — no "完整框架＋案例在 Substack 👉" sell copy,
+# no "click here" gesture. `👉` is still recognised so the salesy CTA line that
+# Loop 3 baked into older draft bodies gets softened to a plain link at compose
+# time (no need to rewrite every draft in Notion).
+CTA_TEMPLATE = "{url}"
 CTA_MARKER = "👉"
 # Tokens a draft may use where the CTA URL should be substituted. Drafts in the
 # wild use the human placeholder [連結]; Loop 3 emits {CTA_URL}. Both are filled.
@@ -93,6 +97,15 @@ def _has_cta(text: str, cta_url: Optional[str]) -> bool:
     return bool(cta_url) and cta_url in text
 
 
+def _bare_cta(segment: str, cta_url: str) -> str:
+    """Collapse a sell-copy CTA line (has both 👉 and the URL) to the bare link."""
+    lines = [
+        cta_url if (CTA_MARKER in ln and cta_url in ln) else ln
+        for ln in segment.splitlines()
+    ]
+    return "\n".join(lines)
+
+
 def compose_posts(
     draft: Draft,
     hook_text: Optional[str],
@@ -116,6 +129,12 @@ def compose_posts(
             segments.append(cta_line)
         else:
             segments[-1] = (segments[-1] + "\n\n" + cta_line).strip()
+
+    # 1b. Soften any baked-in sell-copy CTA line ("完整框架…👉 url") down to the
+    # bare link. Only a line carrying BOTH the 👉 marker and the URL is touched,
+    # so an inline link inside a sentence is left alone.
+    if cta_url:
+        segments = [_bare_cta(s, cta_url) for s in segments]
 
     # 2. Prepend the chosen hook to the first post/tweet — unless the body
     # already opens with that exact hook (some drafts lead with Hook A's text;

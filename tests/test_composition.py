@@ -44,35 +44,31 @@ def test_select_hook_biases_to_winner():
     assert picks.count("C") > picks.count("B")
 
 
-def test_compose_single_appends_cta_when_missing():
+def test_compose_single_appends_bare_link_when_missing():
     d = _draft(content_type="反共識", post_body="市場不是賭場。")
     posts = compose_posts(d, hook_text=None, cta_url=CTA)
     assert len(posts) == 1
-    assert CTA in posts[0]
     assert posts[0].startswith("市場不是賭場。")
+    # The CTA is a bare link — no sell copy, no 👉.
+    assert posts[0].rstrip().endswith(CTA)
+    assert "👉" not in posts[0] and "完整框架" not in posts[0]
 
 
-def test_compose_does_not_duplicate_existing_cta():
-    body = f"市場不是賭場。\n\n{CTA_TEMPLATE.format(url=CTA)}"
+def test_compose_softens_baked_in_sell_copy_cta():
+    body = "市場不是賭場。\n\n完整框架＋案例在 Substack 👉 " + CTA
     d = _draft(content_type="反共識", post_body=body)
     posts = compose_posts(d, hook_text=None, cta_url=CTA)
-    assert posts[0].count("👉") == 1
+    assert "👉" not in posts[0] and "完整框架" not in posts[0]
+    assert posts[0].count(CTA) == 1
+    assert posts[0].rstrip().endswith(CTA)
 
 
-def test_compose_substitutes_placeholder():
-    d = _draft(content_type="反共識", post_body="看這裡 👉 {CTA_URL}")
+def test_compose_substitutes_placeholder_to_bare_link():
+    d = _draft(content_type="反共識", post_body="主體\n\n完整框架＋案例在 Substack 👉 {CTA_URL}")
     posts = compose_posts(d, hook_text=None, cta_url=CTA)
     assert "{CTA_URL}" not in posts[0]
-    assert CTA in posts[0]
-
-
-def test_compose_substitutes_bracket_placeholder():
-    # Real drafts end the CTA with the human placeholder [連結].
-    d = _draft(content_type="反共識", post_body="主體\n\n完整框架＋案例在 Substack 👉 [連結]")
-    posts = compose_posts(d, hook_text=None, cta_url=CTA)
-    assert "[連結]" not in posts[0]
-    assert posts[0].count("👉") == 1
-    assert CTA in posts[0]
+    assert "👉" not in posts[0] and "完整框架" not in posts[0]
+    assert posts[0].count(CTA) == 1
 
 
 def test_compose_prepends_hook():
@@ -134,8 +130,10 @@ def test_strip_cta_drops_a_threads_dedicated_cta_tweet():
 
 def test_strip_cta_leaves_link_free_posts_unchanged():
     assert strip_cta(["no cta here"], CTA) == ["no cta here"]
-    # Recognises the 👉 marker even without the URL passed in.
-    assert strip_cta([f"body\n{CTA_TEMPLATE.format(url=CTA)}"]) == ["body"]
+    # A bare-link CTA line is stripped when the URL is provided.
+    assert strip_cta([f"body\n{CTA}"], CTA) == ["body"]
+    # Legacy 👉 marker still recognised even without the URL passed in.
+    assert strip_cta(["body\n完整框架 👉 x"]) == ["body"]
 
 
 def test_strip_cta_never_returns_empty():

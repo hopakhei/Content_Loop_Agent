@@ -79,11 +79,12 @@ def test_loop1_posts_and_records():
     assert len(notion.performance) == 1
     assert notion.performance[0]["platform"] == "X"
     assert notion.performance[0]["loop_version"] == post_loop.COMPOSITION_VERSION
-    # X posts link-free while followers are low: one tweet, no CTA link.
+    # X carries the CTA as a bare link (default on) — one tweet, no sell copy.
     assert len(twitter.threads[0]) == 1
     root = twitter.threads[0][0]
     assert root.startswith("反共識鈎")
-    assert "👉" not in root
+    assert "👉" not in root and "完整框架" not in root
+    assert "https://90spm.substack.com/p/102?r=x" in root
 
 
 def test_loop1_dry_run_writes_nothing():
@@ -132,9 +133,12 @@ def test_loop1_posts_to_both_platforms():
     # One posting event, one draft marked, but a Performance row per platform.
     assert notion.marked == ["d1"]
     assert sorted(r["platform"] for r in notion.performance) == ["Threads", "X"]
-    # Platform-specific form: X link-free (no CTA); Threads keeps the CTA inline.
-    assert len(twitter.threads[0]) == 1 and "👉" not in twitter.threads[0][0]
-    assert len(threads.threads[0]) == 1 and "👉" in threads.threads[0][0]
+    # Both platforms carry the bare-link CTA — no 👉 sell copy on either.
+    link = "https://90spm.substack.com/p/102?r=x"
+    assert len(twitter.threads[0]) == 1 and link in twitter.threads[0][0]
+    assert "👉" not in twitter.threads[0][0]
+    assert len(threads.threads[0]) == 1 and link in threads.threads[0][0]
+    assert "👉" not in threads.threads[0][0]
 
 
 def test_loop1_threads_only_draft_posts_when_threads_configured():
@@ -218,9 +222,9 @@ def test_loop1_caps_x_thread_at_root_but_threads_gets_full_chain():
     # X: root tweet only (each chained tweet costs a monthly write credit).
     assert len(twitter.threads[0]) == 1
     assert twitter.threads[0][0].startswith("鈎子推文")
-    # Threads: full chain + its CTA tweet (Threads API is free).
+    # Threads: full chain + its CTA tweet (a bare link; Threads API is free).
     assert len(threads.threads[0]) == 4
-    assert "👉" in threads.threads[0][-1]
+    assert threads.threads[0][-1] == "https://90spm.substack.com/p/102?r=x"
 
 
 class QuotaExhaustedTwitter:
