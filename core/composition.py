@@ -98,9 +98,13 @@ def _has_cta(text: str, cta_url: Optional[str]) -> bool:
 
 
 def _bare_cta(segment: str, cta_url: str) -> str:
-    """Collapse a sell-copy CTA line (has both 👉 and the URL) to the bare link."""
+    """Collapse a sell-copy CTA line (👉 plus a link) to the bare effective CTA.
+
+    Keyed on the 👉 marker + any http link, not the exact URL, so a baked-in
+    Substack sell line also swaps to a platform-specific CTA (e.g. the GitHub
+    repo on X) when compose is given a different destination."""
     lines = [
-        cta_url if (CTA_MARKER in ln and cta_url in ln) else ln
+        cta_url if (CTA_MARKER in ln and ("http" in ln or cta_url in ln)) else ln
         for ln in segment.splitlines()
     ]
     return "\n".join(lines)

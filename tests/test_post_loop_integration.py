@@ -198,6 +198,31 @@ def test_loop1_dual_platform_uses_different_hooks():
     assert labels["X"] != labels["Threads"]
 
 
+def _bip_draft():
+    # Build-in-public series (2xx): X carries the GitHub repo instead of the
+    # Substack CTA (X_CTA_BY_ISSUE default mapping for issue 201).
+    d = _draft()
+    d.title = "#201-04 數據衝擊"
+    d.post_body = "主體內容。\n\n{CTA_URL}"
+    d.platforms = ["X", "Threads"]
+    return d
+
+
+def test_loop1_x_uses_github_cta_for_build_in_public_issue():
+    notion = FakeNotion([_bip_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    x_post = twitter.threads[0][0]
+    th_post = threads.threads[0][0]
+    assert "github.com/Draw-Tree/tree-quant-ledger" in x_post
+    assert "substack" not in x_post
+    assert "https://90spm.substack.com/p/102?r=x" in th_post
+    assert "github.com" not in th_post
+
+
 def _thread_draft():
     return Draft(
         id="d3",

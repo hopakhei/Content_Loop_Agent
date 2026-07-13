@@ -5,6 +5,7 @@ All values are read once at import time. Secrets come from the environment
 """
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -58,6 +59,26 @@ X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", True)
 X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 1)
 # Free-tier monthly write allowance, for the LEARN budget telemetry.
 X_MONTHLY_WRITE_BUDGET = _int("X_MONTHLY_WRITE_BUDGET", 500)
+
+
+def _json_map(name: str, default: dict) -> dict:
+    raw = os.getenv(name, "").strip()
+    if not raw:
+        return dict(default)
+    try:
+        val = json.loads(raw)
+        return {str(k): str(v) for k, v in val.items()} if isinstance(val, dict) else dict(default)
+    except ValueError:
+        return dict(default)
+
+
+# Per-issue CTA override applied ONLY on X ({"issue": "url"}). X suppresses
+# Substack links harder than most domains, and the build-in-public pieces have
+# a natural X-native destination (the GitHub repo) — Threads keeps the
+# article's own CTA. Override via the X_CTA_BY_ISSUE env var (JSON).
+X_CTA_BY_ISSUE = _json_map("X_CTA_BY_ISSUE", {
+    "201": "https://github.com/Draw-Tree/tree-quant-ledger",
+})
 
 # ── Threads (Meta) ──────────────────────────────────────────────────────────
 THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()

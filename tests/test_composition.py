@@ -63,6 +63,17 @@ def test_compose_softens_baked_in_sell_copy_cta():
     assert posts[0].rstrip().endswith(CTA)
 
 
+def test_compose_swaps_baked_cta_to_platform_destination():
+    # A baked-in Substack sell line composes to the PLATFORM's CTA when a
+    # different destination is passed (e.g. the GitHub repo on X).
+    body = "主體。\n\n完整框架＋案例在 Substack 👉 https://old.example/p/1?r=x"
+    d = _draft(content_type="反共識", post_body=body)
+    posts = compose_posts(d, hook_text=None, cta_url="https://github.com/Draw-Tree/tree-quant-ledger")
+    assert posts[0].rstrip().endswith("https://github.com/Draw-Tree/tree-quant-ledger")
+    assert "old.example" not in posts[0]
+    assert "👉" not in posts[0]
+
+
 def test_compose_substitutes_placeholder_to_bare_link():
     d = _draft(content_type="反共識", post_body="主體\n\n完整框架＋案例在 Substack 👉 {CTA_URL}")
     posts = compose_posts(d, hook_text=None, cta_url=CTA)

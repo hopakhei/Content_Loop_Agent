@@ -11,6 +11,7 @@ Post Performance row per platform, but one posting event toward the daily limit.
 from __future__ import annotations
 
 import logging
+import re
 import time
 from datetime import date, datetime, timedelta
 from typing import Optional
@@ -174,10 +175,16 @@ def _publish_one(
     hook_for = _pick_hooks_per_platform(draft, rules, targets)
     posts_for: dict = {}
     for platform in targets:
-        base = compose_posts(draft, hook_for[platform][1], cta_url)
+        # X may carry a different destination than the article CTA (e.g. the
+        # GitHub repo for build-in-public pieces — X suppresses Substack links
+        # hardest). Threads always keeps the article's own CTA.
+        plat_cta = _x_cta_for(draft, cta_url) if platform == "X" else cta_url
+        if platform == "X" and plat_cta != cta_url:
+            log.info("X CTA override: %s", plat_cta)
+        base = compose_posts(draft, hook_for[platform][1], plat_cta)
         if platform == "X":
             if not settings.X_INCLUDE_CTA:
-                base = strip_cta(base, cta_url)
+                base = strip_cta(base, plat_cta)
             cap = max(1, settings.X_MAX_THREAD_POSTS)
             if len(base) > cap:
                 log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(base))
@@ -254,6 +261,18 @@ def _publish_one(
         "hooks_used": {p: hook_for[p][0] for p in results},
         "num_tweets": len(first),
     }
+
+
+_ISSUE_RE = re.compile(r"^#(\d+)-")
+
+
+def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
+    """The CTA to use on X: the per-issue override (X_CTA_BY_ISSUE, keyed by
+    the issue number in the draft title '#201-04 …') or the article CTA."""
+    m = _ISSUE_RE.match(draft.title or "")
+    if m:
+        return settings.X_CTA_BY_ISSUE.get(m.group(1)) or default_cta
+    return default_cta
 
 
 def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
