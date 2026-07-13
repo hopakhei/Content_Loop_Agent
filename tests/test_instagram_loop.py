@@ -1,9 +1,24 @@
 """Instagram loop: candidate selection, card render, caption + Performance row."""
+from pathlib import Path
+
 import pytest
 
 from config import settings as _settings
 from core.models import Draft, Rules
 from loops import instagram_loop
+
+
+@pytest.fixture(autouse=True)
+def _stub_render(monkeypatch):
+    """This suite tests orchestration, not font rendering (imagecard has its own
+    test). Stub render_card so the loop needs no CJK font on the bare CI runner,
+    while still writing the file so the `.exists()` assertions hold."""
+    def _fake(quote, issue, out_path, *a, **k):
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(out_path).write_bytes(b"\x89PNG stub")
+        return out_path
+
+    monkeypatch.setattr(instagram_loop, "render_card", _fake)
 
 
 class FakeNotion:
