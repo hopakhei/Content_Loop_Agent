@@ -49,11 +49,21 @@ Notion 草稿 (Quote Card, Platform 含 Instagram)
 
 ## 分階段
 
-| 階段 | 內容 | 驗收 |
+| 階段 | 內容 | 狀態 |
 |---|---|---|
-| P1 | imagecard.py 渲染器 + 樣板圖 | 3 張樣板人工過目 |
-| P2 | instagram.py + Loop 1 接入（dry-run → 實發一張） | IG 上見到圖卡 |
-| P3 | IG insights 入 Loop 2（reach/likes/saves → 同一互動率框架） | 夜間報告出現 IG 行 |
+| **P1** | `services/imagecard.py` 渲染器 + 3 張樣板圖 | ✅ 已完成，待人工過目樣板 |
+| P2 | `services/instagram.py` + Loop 1 接入（dry-run → 實發一張） | 待你完成下方 Meta 設定 |
+| P3 | IG insights 入 Loop 2（reach/likes/saves → tag 化，同一框架） | P2 之後 |
+
+### P1 實作備註
+
+- `services.imagecard.render_card(quote, issue, out_path)` → 1080×1350 PNG。
+  深色底 + 品牌綠、「」引號、大字自動縮放換行、左上 `90s.pm 投資 · #<issue>`、
+  右下 `@90s.pm.investing`。純 Pillow，無網路，CI 跑得到。
+- **字體解析**：`IG_FONT_PATH` → `assets/fonts/NotoSansTC-Bold.otf`（本地，17MB，
+  已 gitignore）→ 系統 Noto/WenQuanYi。CI 由 workflow `apt-get install -y
+  fonts-noto-cjk` 提供，唔使 commit 大字體檔。
+- 內容來源：每篇文章 3 個 Quote Card 單位的 Post Body（去 CTA 行）。
 
 ## 風險
 

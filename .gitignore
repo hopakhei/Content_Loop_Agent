@@ -17,3 +17,7 @@ logs/*
 .DS_Store
 .idea/
 .vscode/
+
+# Bundled CJK font (large; CI apt-installs fonts-noto-cjk instead)
+assets/fonts/*.otf
+assets/fonts/*.ttc
