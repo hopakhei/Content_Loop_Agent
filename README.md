@@ -18,6 +18,7 @@ to the same spec.
 Loop 1 — POST      讀草稿 → 發佈 → 標記已發        (cron, 5×/day)
 Loop 2 — LEARN     讀數據 → 分析 → 更新規則        (cron, 02:00 HKT)
 Loop 3 — GENERATE  讀文章 → 裂變 → 寫入草稿庫        (manual, per article)
+Instagram          金句 → 圖卡 → 發佈              (cron, 1×/day 12:30 HKT)
 ```
 
 Each loop runs independently and never blocks the others. **Notion is the single
@@ -107,6 +108,38 @@ generate a long-lived user token with `threads_basic` +
 Loop 2 read views/likes for Threads posts), and set the `THREADS_ACCESS_TOKEN`
 secret (`THREADS_USER_ID` optional — auto-resolved). Tokens last ~60 days;
 refresh via `GET /refresh_access_token`.
+
+## Instagram — Quote Cards (detail)
+
+Instagram is a **separate low-cadence image loop**, not part of the 5×/day
+text loop — IG posts are image-only and the Graph API needs the picture at a
+public URL. Once a day (`instagram.yml`, 12:30 HKT) the loop:
+
+1. Picks the next `Quote Card` draft (`Content Type = Quote Card`) that has no
+   Instagram Performance row yet, lowest `Argument #` first.
+2. Renders the quote onto a branded 1080×1350 PNG (`services/imagecard.py`,
+   Pillow-only, CJK font from `IG_FONT_PATH` → local asset → system
+   `fonts-noto-cjk`). The card text is the Post Body minus its CTA/link line.
+3. **Commits the PNG** into `cards/` so `raw.githubusercontent.com` serves it
+   as the public `image_url`.
+4. Publishes via the two-step Graph flow (create media container → poll until
+   `FINISHED` → publish). The caption = hook + quote + a bio-CTA line +
+   hashtags (IG rewards hashtags; caption links aren't clickable, so the
+   Substack link lives in the bio).
+5. Writes an `Instagram` Performance row (tagged like every other platform, so
+   Loop 2 can rank hooks for IG separately).
+
+```bash
+python main.py --instagram --dry-run   # render + preview the card, no publish
+python main.py --instagram             # render, then publish (needs IG token)
+```
+
+To enable Instagram: switch the IG account to **Professional**, add the
+**Instagram** product to the same Meta app used for Threads, generate a token
+with `instagram_business_basic` + `instagram_business_content_publish`, and set
+the `IG_ACCESS_TOKEN` secret (`IG_USER_ID` optional — auto-resolved). The
+workflow sets `IG_CARD_URL_BASE` from the repo + branch automatically. Until
+the token is set, the workflow renders + previews but skips the publish.
 
 ### Composition model
 

@@ -27,6 +27,8 @@ def build_parser() -> argparse.ArgumentParser:
                    help="Read-only preflight: verify Notion DB access (+ Threads), then exit")
     p.add_argument("--with-x", action="store_true",
                    help="With --check: also verify X credentials (costs one read from the monthly X credit budget)")
+    p.add_argument("--instagram", action="store_true",
+                   help="Post one Quote Card to Instagram (image card). Use --dry-run to render + preview only")
     p.add_argument("--inspect-threads", action="store_true",
                    help="Read-only: show how recently-posted Threads drafts composed (segments + CTA), then exit")
     p.add_argument("--inspect-days", type=int, default=3,
@@ -147,6 +149,18 @@ def main(argv=None) -> int:
             return _run_inspect_threads(logger, args.inspect_days)
         except Exception:
             logger.exception("Inspect failed with an unhandled error.")
+            return 1
+
+    if args.instagram:
+        dry_run = bool(args.dry_run)
+        logger, log_path = setup_logging("instagram", dry_run)
+        logger.info("=== Instagram post | dry_run=%s | log=%s ===", dry_run, log_path)
+        try:
+            from loops import instagram_loop
+            instagram_loop.run(dry_run=dry_run, logger=logger)
+            return 0
+        except Exception:
+            logger.exception("Instagram post failed with an unhandled error.")
             return 1
 
     if not args.loop:

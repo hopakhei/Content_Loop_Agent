@@ -89,6 +89,18 @@ X_CTA_BY_ISSUE = _json_map("X_CTA_BY_ISSUE", {
 THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()
 THREADS_USER_ID = os.getenv("THREADS_USER_ID", "").strip()
 
+# ── Instagram (Meta) — optional; posts Quote Cards as image cards ────────────
+IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "").strip()
+IG_USER_ID = os.getenv("IG_USER_ID", "").strip()          # auto-resolved from /me
+# Public base URL where committed cards/ PNGs are reachable (IG's media create
+# needs a public image_url). instagram.yml sets this from the repo + branch.
+IG_CARD_URL_BASE = os.getenv("IG_CARD_URL_BASE", "").strip()
+# IG bio holds the Substack link (caption links aren't clickable); this line is
+# appended to the caption.
+IG_CTA_LINE = os.getenv("IG_CTA_LINE", "完整框架在 Substack，連結見 bio 🔗").strip()
+# Hashtags appended to the IG caption (IG rewards them, unlike X).
+IG_HASHTAGS = os.getenv("IG_HASHTAGS", "#投資 #價值投資 #財經 #stockmarket").strip()
+
 # ── Claude (Loop 3) ─────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 # `or` (not a getenv default) so a set-but-empty env var still falls back.

@@ -505,6 +505,24 @@ class NotionService:
             confidence=100, evidence="", loop=loop_iteration,
         )
 
+    def quote_card_drafts(self) -> list[Draft]:
+        """Draft/Scheduled Quote Card drafts — the Instagram image source."""
+        out: list[Draft] = []
+        for status in (Drafts.STATUS_DRAFT, Drafts.STATUS_SCHEDULED):
+            out += [d for d in self.query_drafts_by_status(status)
+                    if (d.content_type or "") == "Quote Card"]
+        return out
+
+    def instagram_posted_draft_ids(self, since_days: int = 90) -> set:
+        """Draft ids that already have an Instagram Performance row — so the IG
+        loop never re-posts the same card (the shared draft's Status can't track
+        a per-platform posting that lives in a different loop)."""
+        ids: set = set()
+        for r in self.get_performance_rows(since_days=since_days):
+            if r.get("platform") == "Instagram" and r.get("draft_id"):
+                ids.add(r["draft_id"])
+        return ids
+
     def get_next_loop_iteration(self) -> int:
         """The next LEARN iteration number = max existing `Loop` + 1 (>=1)."""
         if not settings.NOTION_AGENT_RULES_DB:

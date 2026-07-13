@@ -34,6 +34,18 @@ _FONT_CANDIDATES = (
 )
 
 
+def card_quote(post_body: str) -> str:
+    """The card text = the Post Body minus its CTA line (the {CTA_URL}
+    placeholder / a 👉 sell line / a bare link line)."""
+    kept = []
+    for ln in (post_body or "").splitlines():
+        s = ln.strip()
+        if "{CTA_URL}" in s or "👉" in s or s.startswith("http"):
+            continue
+        kept.append(ln)
+    return "\n".join(kept).strip()
+
+
 def _font_path() -> str:
     for p in _FONT_CANDIDATES:
         if p and Path(p).exists():
