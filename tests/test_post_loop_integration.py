@@ -1,7 +1,17 @@
 """End-to-end Loop 1 flow with fake Notion/X services (no network)."""
+import pytest
+
+from config import settings as _settings
 from core.models import Article, Draft
 from loops import post_loop
 from services.errors import PartialThreadError
+
+
+@pytest.fixture(autouse=True)
+def _deterministic_x_link(monkeypatch):
+    """Disable the randomized X link A/B by default so link-presence assertions
+    are deterministic; the A/B itself is exercised explicitly below."""
+    monkeypatch.setattr(_settings, "X_LINK_AB", False)
 
 
 class FakeNotion:
@@ -153,6 +163,34 @@ def test_loop1_threads_only_draft_posts_when_threads_configured():
     assert twitter.threads == []          # X untouched
     assert len(threads.threads) == 1
     assert notion.performance[0]["platform"] == "Threads"
+
+
+def test_loop1_x_link_ab_no_link_arm_strips_and_tags(monkeypatch):
+    monkeypatch.setattr(_settings, "X_LINK_AB", True)
+    monkeypatch.setattr(post_loop.random, "random", lambda: 0.1)  # < 0.5 → no_link
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                  notion=notion, twitter=twitter, threads=threads)
+    x_post = twitter.threads[0][0]
+    assert "substack" not in x_post                      # link stripped
+    xrow = next(r for r in notion.performance if r["platform"] == "X")
+    assert xrow["tags"]["x_link_arm"] == "no_link"
+    assert xrow["tags"]["has_link"] is False
+    # Threads is never in the A/B — keeps its link.
+    assert "substack" in threads.threads[0][0]
+
+
+def test_loop1_x_link_ab_link_arm_keeps_and_tags(monkeypatch):
+    monkeypatch.setattr(_settings, "X_LINK_AB", True)
+    monkeypatch.setattr(post_loop.random, "random", lambda: 0.9)  # >= 0.5 → link
+    notion = FakeNotion([_dual_draft()])
+    twitter = FakeTwitter()
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True, notion=notion, twitter=twitter)
+    xrow = next(r for r in notion.performance if r["platform"] == "X")
+    assert xrow["tags"]["x_link_arm"] == "link"
+    assert xrow["tags"]["has_link"] is True
+    assert "substack" in twitter.threads[0][0]
 
 
 class ExplodingThreads:

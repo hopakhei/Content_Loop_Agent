@@ -91,6 +91,19 @@ class TwitterService:
         data = getattr(me, "data", None)
         return getattr(data, "username", None) or "unknown"
 
+    def get_follower_count(self) -> Optional[int]:
+        """Loop 2 growth telemetry: current follower count (1 read/day). None on
+        any failure — never raise into the nightly run."""
+        if self.dry_run or self.client is None:
+            return None
+        try:
+            me = self.client.get_me(user_fields=["public_metrics"], user_auth=True)
+            pm = getattr(getattr(me, "data", None), "public_metrics", None) or {}
+            return pm.get("followers_count")
+        except Exception as exc:
+            self.log.warning("X follower count unavailable: %s", exc)
+            return None
+
     def get_metrics(self, tweet_ids: list[str]) -> dict[str, dict[str, float]]:
         """Loop 2: fetch engagement for own tweets. Returns {id: {metric: value}}.
 
@@ -116,30 +129,38 @@ class TwitterService:
                     "replies": pm.get("reply_count", 0),
                     "reposts": pm.get("retweet_count", 0),
                     "quotes": pm.get("quote_count", 0),
+                    "bookmarks": pm.get("bookmark_count", 0),  # follow/reference proxy
                 }
                 npm = getattr(tw, "non_public_metrics", None) or {}
                 if npm:
                     m["impressions"] = npm.get("impression_count", 0)
                     m["link_clicks"] = npm.get("url_link_clicks", 0)
+                org = getattr(tw, "organic_metrics", None) or {}
+                if org:
+                    m["profile_clicks"] = org.get("user_profile_clicks", 0)
+                    m.setdefault("impressions", org.get("impression_count", 0))
                 out[str(tw.id)] = m
         return out
 
+    # tweet_fields tried in order; the first that the tier accepts wins. Each is
+    # a superset drop of the previous — organic_metrics (profile clicks) is the
+    # richest and the most likely to be rejected on the free tier.
+    _METRIC_FIELD_SETS = (
+        ["public_metrics", "non_public_metrics", "organic_metrics"],
+        ["public_metrics", "non_public_metrics"],
+        ["public_metrics"],
+    )
+
     def _lookup_tweets(self, ids: list[str]):
-        try:
-            return self.client.get_tweets(
-                ids=ids,
-                tweet_fields=["public_metrics", "non_public_metrics"],
-                user_auth=True,
-            )
-        except Exception as exc:
-            self.log.warning(
-                "Tweet lookup with non_public_metrics failed (%s) — retrying public-only.", exc
-            )
-        try:
-            return self.client.get_tweets(ids=ids, tweet_fields=["public_metrics"], user_auth=True)
-        except Exception as exc:
-            self.log.warning("Tweet metrics lookup failed for %d ids: %s", len(ids), exc)
-            return None
+        last_exc = None
+        for fields in self._METRIC_FIELD_SETS:
+            try:
+                return self.client.get_tweets(ids=ids, tweet_fields=fields, user_auth=True)
+            except Exception as exc:
+                last_exc = exc
+                self.log.warning("Tweet lookup %s rejected (%s) — trying a smaller field set.", fields, exc)
+        self.log.warning("Tweet metrics lookup failed for %d ids: %s", len(ids), last_exc)
+        return None
 
 
 def _preview(text: str, limit: int = 80) -> str:

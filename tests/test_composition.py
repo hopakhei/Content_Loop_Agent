@@ -44,6 +44,15 @@ def test_select_hook_biases_to_winner():
     assert picks.count("C") > picks.count("B")
 
 
+def test_select_hook_winner_override_beats_pooled_rule():
+    d = _draft(hooks={"A": "a", "B": "b", "C": "c"})
+    rules = Rules(best_hook_type="C")           # pooled says C
+    rng = random.Random(42)
+    picks = [select_hook(d, rules, rng, winner_override="A")[0] for _ in range(400)]
+    assert picks.count("A") > picks.count("C")  # per-platform override wins
+    assert picks.count("A") > picks.count("B")
+
+
 def test_compose_single_appends_bare_link_when_missing():
     d = _draft(content_type="反共識", post_body="市場不是賭場。")
     posts = compose_posts(d, hook_text=None, cta_url=CTA)

@@ -52,6 +52,7 @@ class Rules:
 
     best_slots: list[str] = field(default_factory=list)
     best_content_types: list[str] = field(default_factory=list)
-    best_hook_type: Optional[str] = None   # "A" / "B" / "C"
+    best_hook_type: Optional[str] = None   # "A" / "B" / "C" (pooled fallback)
+    best_hook_by_platform: dict = field(default_factory=dict)  # {"X": "A", "Threads": "C"}
     daily_limit: Optional[int] = None
     notes: str = ""

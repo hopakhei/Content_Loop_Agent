@@ -11,6 +11,7 @@ Post Performance row per platform, but one posting event toward the daily limit.
 from __future__ import annotations
 
 import logging
+import random
 import re
 import time
 from datetime import date, datetime, timedelta
@@ -27,17 +28,12 @@ from core.composition import (
 )
 from core.models import Draft
 from core.selection import make_eligibility, select_draft
+from core.tagging import COMPOSITION_VERSION, build_tags
 from core.timeutil import nearest_slot, now as hkt_now
 from services.errors import PartialThreadError
 from services.notion import NotionService
 from services.threads import ThreadsService
 from services.twitter import TwitterService
-
-# Stamped on every Post Performance row so Loop 2 can compare eras.
-#   1 = CTA inline in the X post
-#   2 = X post link-free, CTA in a self-reply
-#   3 = X post link-free, no CTA (funnel de-prioritised while followers are low)
-COMPOSITION_VERSION = 3
 
 
 def run(
@@ -174,6 +170,8 @@ def _publish_one(
     #    and the full chain, and gets its own 500-char limit.
     hook_for = _pick_hooks_per_platform(draft, rules, targets)
     posts_for: dict = {}
+    cta_for: dict = {}
+    x_link_arm = _x_link_arm()  # W5: randomized link/no-link A/B on X
     for platform in targets:
         # X may carry a different destination than the article CTA (e.g. the
         # GitHub repo for build-in-public pieces — X suppresses Substack links
@@ -183,16 +181,21 @@ def _publish_one(
             log.info("X CTA override: %s", plat_cta)
         base = compose_posts(draft, hook_for[platform][1], plat_cta)
         if platform == "X":
-            if not settings.X_INCLUDE_CTA:
+            # Link-free when the flag is off, or when the A/B assigns this post
+            # to the no-link arm.
+            if (not settings.X_INCLUDE_CTA) or x_link_arm == "no_link":
                 base = strip_cta(base, plat_cta)
             cap = max(1, settings.X_MAX_THREAD_POSTS)
             if len(base) > cap:
                 log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(base))
                 base = base[:cap]
         posts_for[platform] = base
+        cta_for[platform] = plat_cta
         limit = 500 if platform == "Threads" else 280
         for warning in length_warnings(base, limit=limit):
             log.warning("Length (%s): %s", platform, warning)
+    if "X" in targets and settings.X_INCLUDE_CTA and settings.X_LINK_AB:
+        log.info("X link A/B: this post is in the '%s' arm.", x_link_arm)
 
     if not any(posts_for.values()):
         log.warning("SKIP draft %s: composed to empty content.", draft.title)
@@ -227,6 +230,14 @@ def _publish_one(
             continue
         results[platform] = ids
         if not dry_run:
+            plat_posts = posts_for[platform]
+            plat_cta = cta_for[platform]
+            cta_present = bool(plat_cta) and any(plat_cta in p for p in plat_posts)
+            extra = {"x_link_arm": x_link_arm} if platform == "X" else None
+            tags = build_tags(
+                platform=platform, hook=hook_for[platform][0], posts=plat_posts,
+                cta_url=plat_cta, cta_present=cta_present, title=draft.title, extra=extra,
+            )
             notion.create_performance_record(
                 draft_id=draft.id,
                 post_id=ids[0],
@@ -234,6 +245,7 @@ def _publish_one(
                 posted_at=ref,
                 hook_label=hook_label,
                 loop_version=COMPOSITION_VERSION,
+                tags=tags,
             )
 
     if not results:
@@ -266,6 +278,18 @@ def _publish_one(
 _ISSUE_RE = re.compile(r"^#(\d+)-")
 
 
+def _x_link_arm() -> str:
+    """W5 randomized X link A/B — returns 'link' or 'no_link' for this post.
+    Off (all 'no_link') when X_INCLUDE_CTA is false; all 'link' when the A/B
+    itself is disabled; a fair coin otherwise. The tag always reflects the
+    actual composition."""
+    if not settings.X_INCLUDE_CTA:
+        return "no_link"
+    if not settings.X_LINK_AB:
+        return "link"
+    return "no_link" if random.random() < 0.5 else "link"
+
+
 def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
     """The CTA to use on X: the per-issue override (X_CTA_BY_ISSUE, keyed by
     the issue number in the draft title '#201-04 …') or the article CTA."""
@@ -276,15 +300,18 @@ def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
 
 
 def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
-    """{platform: (hook_key, hook_text)}. X keeps the rules-weighted pick; on a
-    dual-platform draft Threads takes the NEXT hook variant (cyclic order), so
-    every dual post is also a cross-platform hook A/B experiment."""
-    base = select_hook(draft, rules)
-    picks = {p: base for p in targets}
+    """{platform: (hook_key, hook_text)}. Each platform is biased toward ITS OWN
+    learned winner (Best Hook (X) / Best Hook (Threads), falling back to the
+    pooled winner, else random). To keep cross-platform exploration, if a
+    dual-platform draft independently picks the SAME variant for both, Threads
+    is shifted to the next variant in cyclic order."""
+    by_plat = getattr(rules, "best_hook_by_platform", {}) or {}
+    picks = {p: select_hook(draft, rules, winner_override=by_plat.get(p)) for p in targets}
     available = draft.available_hooks()
-    if "X" in picks and "Threads" in picks and base[0] and len(available) >= 2:
+    if ("X" in picks and "Threads" in picks and len(available) >= 2
+            and picks["X"][0] and picks["X"][0] == picks["Threads"][0]):
         keys = sorted(available)
-        alt = keys[(keys.index(base[0]) + 1) % len(keys)]
+        alt = keys[(keys.index(picks["Threads"][0]) + 1) % len(keys)]
         picks["Threads"] = (alt, available[alt])
     return picks
 

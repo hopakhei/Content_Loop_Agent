@@ -57,6 +57,11 @@ X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", True)
 # 6-tweet thread = 6 posts' worth. Cap X at the root tweet by default — the
 # full chain still goes out on Threads (whose API is free).
 X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 1)
+# Randomized per-post X link A/B: when on (and X_INCLUDE_CTA is on), each X
+# post flips a fair coin between carrying its link and going link-free, tagged
+# on the Performance row so Loop 2 measures the reach cost cleanly instead of
+# guessing. Set false to stop the experiment.
+X_LINK_AB = _flag("X_LINK_AB", True)
 # Free-tier monthly write allowance, for the LEARN budget telemetry.
 X_MONTHLY_WRITE_BUDGET = _int("X_MONTHLY_WRITE_BUDGET", 500)
 

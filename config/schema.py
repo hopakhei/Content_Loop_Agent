@@ -118,6 +118,15 @@ class AgentRules:
     RULE_BEST_SLOTS = "Best Slots"            # Rule Content = JSON array of slots
     RULE_BEST_CONTENT_TYPES = "Best Content Types"  # Rule Content = JSON array
     RULE_LEARN_SUMMARY = "LEARN Summary"      # Rule Content = human-readable prose
+    # Per-platform winning hook (X vs Threads audiences differ). Loop 1 biases
+    # each platform by its own winner; the pooled RULE_BEST_HOOK stays as a
+    # fallback. Rule Content = "A" / "B" / "C".
+    RULE_BEST_HOOK_X = "Best Hook (X)"
+    RULE_BEST_HOOK_THREADS = "Best Hook (Threads)"
+    # Nightly follower snapshots. Rule Content = JSON {"YYYY-MM-DD": count} of
+    # the most recent 90 days. Loop 2 reports deltas; Loop 1 ignores these.
+    RULE_FOLLOWERS_X = "Follower History (X)"
+    RULE_FOLLOWERS_THREADS = "Follower History (Threads)"
     # Written by Loop 1 when X returns 402 (monthly write quota exhausted);
     # Rule Content = ISO date until which X posting is parked. Deprecate or
     # delete the row in Notion to resume X earlier.

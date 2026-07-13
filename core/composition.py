@@ -53,11 +53,13 @@ def select_hook(
     draft: Draft,
     rules: Optional[Rules] = None,
     rng: Optional[random.Random] = None,
+    winner_override: Optional[str] = None,
 ) -> tuple[Optional[str], Optional[str]]:
     """Pick a hook variant. Returns (key, text) e.g. ("B", "...") or (None, None).
 
-    Honours the A/B/C experiment design: bias toward the winning hook from the
-    rules but keep exploring the others.
+    Honours the A/B/C experiment design: bias toward the winning hook but keep
+    exploring the others. `winner_override` (a per-platform winner) takes
+    precedence over the pooled `rules.best_hook_type`.
     """
     rng = rng or random
     available = draft.available_hooks()
@@ -65,7 +67,7 @@ def select_hook(
         return None, None
 
     keys = sorted(available)
-    winner = rules.best_hook_type if rules and rules.best_hook_type else None
+    winner = winner_override or (rules.best_hook_type if rules and rules.best_hook_type else None)
     if winner in available and len(keys) > 1:
         others = [k for k in keys if k != winner]
         weights = []

@@ -194,8 +194,14 @@ class NotionService:
         daily_limit = best_hook = None
         best_slots: list = []
         best_content_types: list = []
+        best_hook_by_platform: dict = {}
         notes = ""
         found = False
+
+        def _hook_key(text: str):
+            key = (text[:1] or "").upper()
+            return key if key in {"A", "B", "C"} else None
+
         for pg in pages:
             p = pg.get("properties", {})
             title = _plain_text(p.get(AgentRules.RULE_TITLE)).strip()
@@ -208,8 +214,15 @@ class NotionService:
                     pass
             elif title == AgentRules.RULE_BEST_HOOK:
                 found = True
-                key = content[:1].upper()
-                best_hook = key if key in {"A", "B", "C"} else None
+                best_hook = _hook_key(content)
+            elif title == AgentRules.RULE_BEST_HOOK_X:
+                found = True
+                if _hook_key(content):
+                    best_hook_by_platform["X"] = _hook_key(content)
+            elif title == AgentRules.RULE_BEST_HOOK_THREADS:
+                found = True
+                if _hook_key(content):
+                    best_hook_by_platform["Threads"] = _hook_key(content)
             elif title == AgentRules.RULE_BEST_SLOTS:
                 found = True
                 best_slots = _safe_json_list(content)
@@ -225,6 +238,7 @@ class NotionService:
             best_slots=best_slots,
             best_content_types=best_content_types,
             best_hook_type=best_hook,
+            best_hook_by_platform=best_hook_by_platform,
             daily_limit=daily_limit,
             notes=notes,
         )
@@ -325,8 +339,11 @@ class NotionService:
         posted_at: datetime,
         hook_label: Optional[str] = None,
         loop_version: int = 1,
+        tags: Optional[dict] = None,
     ) -> str:
-        """Create the (initially blank-metrics) Post Performance row."""
+        """Create the (initially blank-metrics) Post Performance row. `tags` is
+        the machine-tag dict (see core.tagging); it is stored as compact JSON in
+        the `AI Notes` property and is the experiment substrate for Loop 2."""
         props: dict[str, Any] = {
             Performance.POST_ID: {"title": [{"text": {"content": post_id}}]},
             Performance.DRAFT: {"relation": [{"id": draft_id}]},
@@ -336,16 +353,40 @@ class NotionService:
         }
         if hook_label:
             props[Performance.HOOK_USED] = {"select": {"name": hook_label}}
+        if tags:
+            props[Performance.AI_NOTES] = {
+                "rich_text": [{"text": {"content": json.dumps(tags, ensure_ascii=False)}}]
+            }
         page = self.client.pages.create(
             parent={"type": "data_source_id", "data_source_id": settings.NOTION_PERFORMANCE_LOG_DB},
             properties=props,
         )
         return page["id"]
 
-    def update_performance_metrics(self, page_id: str, metrics: dict[str, float]) -> None:
+    def update_performance_metrics(
+        self, page_id: str, metrics: dict[str, float], tags_merge: Optional[dict] = None
+    ) -> None:
         """Loop 2: write engagement numbers onto an existing Post Performance row.
-        `metrics` keys are config.schema.Performance property names (numbers only)."""
-        props = {name: {"number": value} for name, value in metrics.items() if value is not None}
+        `metrics` keys are config.schema.Performance property names (numbers only).
+        `tags_merge`, when given, is merged INTO the existing `AI Notes` tags
+        (post-time tags win over refresh-time keys they don't set)."""
+        props: dict[str, Any] = {
+            name: {"number": value} for name, value in metrics.items() if value is not None
+        }
+        if tags_merge:
+            existing = {}
+            try:
+                page = self.client.pages.retrieve(page_id=page_id)
+                raw = _plain_text(page.get("properties", {}).get(Performance.AI_NOTES))
+                existing = json.loads(raw) if raw.strip() else {}
+                if not isinstance(existing, dict):
+                    existing = {}
+            except Exception:  # blank / malformed / network — start from the merge
+                existing = {}
+            merged = {**tags_merge, **existing}  # post-time tags win
+            props[Performance.AI_NOTES] = {
+                "rich_text": [{"text": {"content": json.dumps(merged, ensure_ascii=False)}}]
+            }
         if props:
             self.client.pages.update(page_id=page_id, properties=props)
 
@@ -370,6 +411,13 @@ class NotionService:
                     draft_type_cache[did] = draft.content_type
                 content_type = draft_type_cache[did]
             date = _date(p.get(Performance.POSTED_AT))
+            tags_raw = _plain_text(p.get(Performance.AI_NOTES))
+            try:
+                tags = json.loads(tags_raw) if tags_raw.strip() else {}
+                if not isinstance(tags, dict):
+                    tags = {}
+            except (json.JSONDecodeError, ValueError):
+                tags = {}
             rows.append({
                 "page_id": pg["id"],
                 "post_id": _plain_text(p.get(Performance.POST_ID)),
@@ -378,6 +426,7 @@ class NotionService:
                 "platform": _select(p.get(Performance.PLATFORM)),
                 "hook_used": _select(p.get(Performance.HOOK_USED)),
                 "loop_version": _number(p.get(Performance.LOOP_VERSION)) or 1,
+                "tags": tags,
                 "content_type": content_type,
                 "impressions": _number(p.get(Performance.IMPRESSIONS)) or 0.0,
                 "likes": _number(p.get(Performance.LIKES)) or 0.0,
@@ -426,6 +475,35 @@ class NotionService:
                 page_id=page["id"],
                 properties={AgentRules.STATUS: {"select": {"name": AgentRules.STATUS_DEPRECATED}}},
             )
+
+    # Follower snapshots (Loop 2). Rule Content = JSON {"YYYY-MM-DD": count}.
+    _FOLLOWER_RULE = {"X": AgentRules.RULE_FOLLOWERS_X, "Threads": AgentRules.RULE_FOLLOWERS_THREADS}
+
+    def read_follower_history(self, platform: str) -> dict:
+        """{date: count} for a platform, or {} if unset/absent."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return {}
+        page = self._find_rule_page(self._FOLLOWER_RULE[platform])
+        if not page:
+            return {}
+        raw = _plain_text(page.get("properties", {}).get(AgentRules.RULE_CONTENT)).strip()
+        try:
+            val = json.loads(raw) if raw else {}
+            return val if isinstance(val, dict) else {}
+        except (json.JSONDecodeError, ValueError):
+            return {}
+
+    def write_follower_history(self, platform: str, history: dict, loop_iteration: int = 0) -> None:
+        """Upsert the platform's follower-history rule, trimmed to the most
+        recent 90 dated entries."""
+        if not settings.NOTION_AGENT_RULES_DB:
+            return
+        trimmed = dict(sorted(history.items())[-90:])
+        self._upsert_rule(
+            self._FOLLOWER_RULE[platform], AgentRules.CAT_META,
+            json.dumps(trimmed, ensure_ascii=False),
+            confidence=100, evidence="", loop=loop_iteration,
+        )
 
     def get_next_loop_iteration(self) -> int:
         """The next LEARN iteration number = max existing `Loop` + 1 (>=1)."""
@@ -496,6 +574,7 @@ class NotionService:
         evidence_post_ids: list[str],
         loop_iteration: int,
         summary: str,
+        best_hook_by_platform: Optional[dict] = None,
     ) -> bool:
         """Loop 2: upsert the operational rules (+ a human summary) into Agent
         Rules as `Active` rows. No-op (returns False) if the DB is not configured."""
@@ -514,6 +593,11 @@ class NotionService:
                 AgentRules.RULE_BEST_HOOK, AgentRules.CAT_HOOK, best_hook,
                 confidence, evidence, loop_iteration,
             )
+        for platform, title in (("X", AgentRules.RULE_BEST_HOOK_X),
+                                ("Threads", AgentRules.RULE_BEST_HOOK_THREADS)):
+            hook = (best_hook_by_platform or {}).get(platform)
+            if hook:
+                self._upsert_rule(title, AgentRules.CAT_HOOK, hook, confidence, evidence, loop_iteration)
         self._upsert_rule(
             AgentRules.RULE_BEST_SLOTS, AgentRules.CAT_TIMING,
             json.dumps(best_slots, ensure_ascii=False), confidence, evidence, loop_iteration,

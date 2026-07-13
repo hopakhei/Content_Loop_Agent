@@ -9,59 +9,89 @@ def _iso(hours_ago: float) -> str:
     return (datetime.now(timezone.utc) - timedelta(hours=hours_ago)).isoformat()
 
 
-def _row(pid, platform, hours_ago, impressions=0.0):
-    return {
+def _row(pid, platform, hours_ago, impressions=0.0, hook="A", tags=None, **metrics):
+    row = {
         "page_id": f"page-{pid}",
         "post_id": pid,
         "draft_id": "d1",
         "posted_at": _iso(hours_ago),
         "platform": platform,
-        "hook_used": "A - 反共識",
+        "hook_used": f"{hook} - x",
         "content_type": "反共識",
         "impressions": impressions,
         "likes": 0.0,
         "replies": 0.0,
         "reposts": 0.0,
         "link_clicks": 0.0,
+        "tags": {"platform": platform, "hook": hook, **(tags or {})},
     }
+    row.update(metrics)
+    return row
+
+
+def _aged_row(pid, platform, days_ago, impressions=200.0, hook="A", tags=None, **metrics):
+    # Older than the refresh window so it counts as an analysis point without
+    # triggering a metrics read.
+    return _row(pid, platform, hours_ago=days_ago * 24, impressions=impressions,
+                hook=hook, tags=tags, **metrics)
 
 
 class FakeNotion:
     def __init__(self, rows):
         self._rows = rows
         self.updates = {}
+        self.tag_merges = {}
+        self.rules_written = None
+        self.followers = {}
 
     def get_performance_rows(self, since_days=30):
         return self._rows
 
-    def update_performance_metrics(self, page_id, metrics):
+    def update_performance_metrics(self, page_id, metrics, tags_merge=None):
         self.updates[page_id] = metrics
+        if tags_merge:
+            self.tag_merges[page_id] = tags_merge
 
     def get_next_loop_iteration(self):
         return 1
 
     def write_rules(self, **kwargs):
+        self.rules_written = kwargs
         return True
+
+    def read_follower_history(self, platform):
+        return dict(self.followers.get(platform, {}))
+
+    def write_follower_history(self, platform, history, loop_iteration=0):
+        self.followers[platform] = dict(history)
 
 
 class FakeTwitter:
-    def __init__(self, metrics):
+    def __init__(self, metrics, followers=None):
         self.requested = []
         self._metrics = metrics
+        self._followers = followers
 
     def get_metrics(self, ids):
         self.requested.extend(ids)
         return {i: self._metrics[i] for i in ids if i in self._metrics}
 
+    def get_follower_count(self):
+        return self._followers
+
 
 class FakeThreads:
-    def __init__(self, metrics):
+    def __init__(self, metrics, followers=None):
         self.requested = []
         self._metrics = metrics
+        self._followers = followers
 
     def get_insights(self, ids):
         self.requested.extend(ids)
         return {i: self._metrics[i] for i in ids if i in self._metrics}
+
+    def get_follower_count(self):
+        return self._followers
 
 
 def test_refresh_routes_ids_to_their_platform():
@@ -126,6 +156,74 @@ def test_refresh_without_threads_service_leaves_threads_rows_alone():
     assert twitter.requested == []
     assert notion.updates == {}
     assert summary["rows"] == 1
+
+
+def test_per_platform_best_hook_uses_growth_on_x_engagement_on_threads():
+    rows = []
+    # X hook A: profile clicks (growth) but zero engagement.
+    rows += [_aged_row(f"xa{i}", "X", 3, hook="A", tags={"profile_clicks": 50}) for i in range(10)]
+    # X hook B: high engagement but zero growth signals.
+    rows += [_aged_row(f"xb{i}", "X", 3, hook="B", likes=100.0) for i in range(10)]
+    # Threads hook C: high engagement.
+    rows += [_aged_row(f"tc{i}", "Threads", 3, hook="C", replies=20.0) for i in range(10)]
+    notion = FakeNotion(rows)
+
+    summary = learn_loop.run(dry_run=False, notion=notion,
+                             twitter=FakeTwitter({}), threads=FakeThreads({}))
+
+    bhp = summary["best_hook_by_platform"]
+    assert bhp["X"] == "A"          # growth (profile clicks), not engagement
+    assert bhp["Threads"] == "C"
+    assert notion.rules_written["best_hook_by_platform"] == bhp
+
+
+def test_min_cell_n_blocks_a_thin_platform_winner():
+    rows = [_aged_row(f"t{i}", "Threads", 3, hook="C", replies=10.0) for i in range(20)]
+    rows += [_aged_row(f"x{i}", "X", 3, hook="A", tags={"profile_clicks": 40}) for i in range(3)]
+    notion = FakeNotion(rows)
+
+    summary = learn_loop.run(dry_run=False, notion=notion,
+                             twitter=FakeTwitter({}), threads=FakeThreads({}))
+
+    assert "Threads" in summary["best_hook_by_platform"]
+    assert "X" not in summary["best_hook_by_platform"]   # only 3 X points (< 8)
+
+
+def test_follower_snapshot_records_and_reports_delta():
+    seven_days = (datetime.now(timezone.utc)).date().toordinal() - 7
+    from datetime import date
+    baseline_day = date.fromordinal(seven_days).isoformat()
+    notion = FakeNotion([_aged_row("x1", "X", 3)])
+    notion.followers["X"] = {baseline_day: 950}
+    twitter = FakeTwitter({}, followers=1000)
+
+    summary = learn_loop.run(dry_run=False, notion=notion, twitter=twitter, threads=FakeThreads({}))
+
+    assert summary["follower_deltas"]["X"] == 50
+    today = datetime.now(timezone.utc).date().isoformat()
+    assert notion.followers["X"][today] == 1000
+
+
+def test_growth_signals_merged_into_tags_on_refresh():
+    notion = FakeNotion([_row("111", "X", hours_ago=30, impressions=300.0)])
+    twitter = FakeTwitter({"111": {"impressions": 300, "likes": 2, "replies": 1,
+                                   "reposts": 0, "bookmarks": 5, "profile_clicks": 8}})
+
+    learn_loop.run(dry_run=False, notion=notion, twitter=twitter, threads=FakeThreads({}))
+
+    merged = notion.tag_merges["page-111"]
+    assert merged["bookmarks"] == 5 and merged["profile_clicks"] == 8
+    assert "impressions" not in merged   # numbers go to columns, not tags
+
+
+def test_follower_delta_helper():
+    from datetime import date
+    ord_today = date.today().toordinal()
+    hist = {date.fromordinal(ord_today - 10).isoformat(): 900,
+            date.fromordinal(ord_today - 6).isoformat(): 980}
+    # 7d baseline = the ≤7-days-ago entry (the -10 one); current 1000 → +100.
+    assert learn_loop._follower_delta(hist, 1000, days=7) == 100
+    assert learn_loop._follower_delta({}, 1000) is None
 
 
 def test_public_only_metrics_do_not_zero_existing_impressions():

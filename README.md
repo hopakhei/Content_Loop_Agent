@@ -140,23 +140,45 @@ opening lines* used by the A/B/C experiment.
 
 Nightly (02:00 HKT). Refreshes engagement metrics **per platform** — X post ids
 go to the X API (user-context auth; impressions/link clicks are
-`non_public_metrics` and only exist for your own tweets), Threads post ids go to
+`non_public_metrics`, plus `bookmark_count` and `organic_metrics.user_profile_clicks`
+as follower-growth proxies when the tier grants them), Threads post ids go to
 the Threads Insights API (`views` → Impressions; needs the
-`threads_manage_insights` token scope). To conserve the small X read quota,
-each post is refreshed in a **24h–72h window** after posting (engagement has
-matured by 24h); older rows that never received impressions are retried until
-data arrives. It then aggregates **engagement rate** = `(likes + replies +
-reposts) / impressions` over a 30-day window, grouped by slot / content type /
-hook. With at least **20 data points** it writes the winners back into the
-**Agent Rules** as `Active` rows (with a `Confidence` score and the supporting
-`Evidence Post IDs`), which Loop 1 then reads on its next run. The A/B/C hook
-design biases Loop 1 toward the winning hook while continuing to explore the
-others.
+`threads_manage_insights` scope). Each post is read **exactly once**, in the
+24h–48h age window (never re-read — reads spend the same monthly credit as
+writes).
 
-> Note: metrics are blank until a post crosses the 24h maturity line **and**
-> the next nightly LEARN run picks it up — expect the first numbers the second
-> night after a post goes out. If X rejects the non-public metrics request,
-> LEARN degrades to public counts (likes/replies/reposts) instead of failing.
+**Tag-driven, per-platform experiments.** Every Performance row carries a
+machine-tag JSON in its `AI Notes` property (`core.tagging`): platform, hook,
+`has_link`, `link_domain`, `chain_len`, `series` (1xx/2xx), `len_bucket`,
+`x_link_arm`. Loop 2 ranks any tag, **within each platform separately** (X
+impressions and Threads views are not comparable). A cell must reach
+**≥8 points** before it can set a written rule (guards against a 3-post fluke).
+
+**Per-platform objectives.** X is in follower-growth mode, so `Best Hook (X)`
+is learned on a **growth proxy** (`3·replies + 2·reposts + 2·bookmarks +
+1·quotes + 4·profile_clicks` per impression); `Best Hook (Threads)` stays on
+engagement rate. Loop 1 biases each platform toward its own winner (falling
+back to the pooled `Best Hook`), still shifting Threads to a different variant
+when both platforms pick the same one, so exploration continues.
+
+**Follower telemetry.** Each night LEARN snapshots both platforms' follower
+counts into `Follower History (X/Threads)` rules (90-day JSON) and reports the
+7-day delta.
+
+**X link A/B.** With `X_LINK_AB` on, each X post is randomly assigned to a
+`link` or `no_link` arm (tagged), so "does dropping the Substack link help?" is
+answered by a clean randomized test rather than a confounded before/after. LEARN
+reports engagement per arm; it never auto-flips `X_INCLUDE_CTA` — you decide.
+
+With ≥20 usable points it writes the winners into **Agent Rules** as `Active`
+rows (with `Confidence` + `Evidence Post IDs`) that Loop 1 reads next run.
+
+> Note: metrics are blank until a post crosses 24h **and** the next nightly LEARN
+> picks it up — expect the first numbers the second night after posting. If X
+> rejects the richer metric fields, LEARN degrades through non-public → public
+> counts instead of failing.
+>
+> The implementation follows `docs/eval-upgrade-plan.md`.
 
 ---
 

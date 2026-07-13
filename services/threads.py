@@ -188,6 +188,28 @@ class ThreadsService:
         return ids
 
     # ── insights (Loop 2) ────────────────────────────────────────────────────
+    def get_follower_count(self) -> Optional[int]:
+        """Loop 2 growth telemetry: current Threads follower count. Needs the
+        threads_manage_insights scope. None on any failure — never raise."""
+        if self.dry_run or self.session is None:
+            return None
+        try:
+            uid = self._resolve_user_id()
+            r = self.session.get(
+                f"{API_BASE}/{uid}/threads_insights",
+                params={"metric": "followers_count", "access_token": self.token},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json().get("data", [])
+            return int(_insight_value(data[0])) if data else None
+        except Exception as exc:
+            self.log.warning(
+                "Threads follower count unavailable: %s (needs threads_manage_insights scope).",
+                _err_detail(exc),
+            )
+            return None
+
     def get_insights(self, post_ids: list[str]) -> dict[str, dict[str, float]]:
         """Loop 2: lifetime insights per post. Returns {id: {metric: value}}
         with Threads `views` mapped to `impressions` (link clicks don't exist
