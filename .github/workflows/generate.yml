@@ -17,6 +17,10 @@ on:
         description: "Single Issue # (blank = all articles/<issue>.md)"
         type: string
         default: ""
+      cta_url:
+        description: "CTA URL override (needed when no Article page exists for the issue)"
+        type: string
+        default: ""
 
 concurrency:
   group: loop-generate
@@ -48,6 +52,7 @@ jobs:
           EXTRA=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="$EXTRA --dry-run"; fi
           if [ "${{ inputs.fresh }}" = "true" ]; then EXTRA="$EXTRA --fresh"; fi
+          if [ -n "${{ inputs.cta_url }}" ]; then EXTRA="$EXTRA --cta-url ${{ inputs.cta_url }}"; fi
           ISSUE="${{ inputs.issue }}"
           # Pre-generated units (written by Claude Code on the subscription)
           # take priority — that path needs NO Anthropic API key.

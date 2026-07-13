@@ -108,6 +108,7 @@ def map_platforms(label: str) -> list[str]:
 
 
 # Issue # -> Content Drafts `Source Article` select option.
+# 1xx = 分析流程 series; 2xx = build-in-public series.
 SOURCE_ARTICLE_BY_ISSUE = {
     101: "101 - 前言",
     102: "102 - 北極星",
@@ -116,6 +117,7 @@ SOURCE_ARTICLE_BY_ISSUE = {
     105: "105 - 畫樹",
     106: "106 - 下注",
     107: "107 - 組合",
+    201: "201 - Build in Public",
 }
 
 
