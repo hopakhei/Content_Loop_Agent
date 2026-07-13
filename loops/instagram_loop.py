@@ -57,7 +57,8 @@ def run(
         rules = None
 
     quote = card_quote(draft.post_body)
-    hook_key, hook_text = select_hook(draft, rules)
+    ig_winner = (rules.best_hook_by_platform.get("Instagram") if rules else None)
+    hook_key, hook_text = select_hook(draft, rules, winner_override=ig_winner)
     caption = _build_caption(hook_text, quote)
     out_path = f"{cards_dir.rstrip('/')}/{_slug(draft)}.png"
     render_card(quote, _issue_of(draft), out_path)

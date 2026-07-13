@@ -25,6 +25,15 @@ MAX_CAPTION_LEN = 2200
 PUBLISH_RETRY_DELAYS = (2.0, 5.0)
 # IG media containers take a moment to finish processing before they publish.
 CONTAINER_READY_DELAYS = (1.0, 2.0, 3.0, 5.0, 8.0)
+# Media-insight metric sets, tried in order — IG rejects the whole call if any
+# single metric is unavailable for that media/API version, so we degrade from
+# the richest set (with growth signals `saved`/`profile_visits` and the
+# `views` impression proxy) down to a minimal one that always resolves.
+INSIGHT_METRIC_SETS = (
+    "views,reach,likes,comments,saved,shares,profile_visits",
+    "reach,likes,comments,saved,shares",
+    "reach,likes,comments",
+)
 
 
 class InstagramService:
@@ -41,6 +50,7 @@ class InstagramService:
         self.token = access_token or settings.IG_ACCESS_TOKEN
         self.user_id = user_id or settings.IG_USER_ID
         self._dry_counter = 0
+        self._ok_metric_set: Optional[str] = None   # pinned after first insights success
         if session is not None:
             self.session = session
         elif dry_run:
@@ -127,6 +137,81 @@ class InstagramService:
                 raise RuntimeError(f"IG container {status}: {data.get('status') or 'no detail from Meta'}")
         self.log.warning("IG container %s still IN_PROGRESS after polling — attempting publish anyway.", creation_id)
 
+    # ── insights (Loop 2) ────────────────────────────────────────────────────
+    def get_follower_count(self) -> Optional[int]:
+        """Loop 2 growth telemetry: current Instagram follower count. None on
+        any failure — never raise (telemetry must not fail the run)."""
+        if self.dry_run or self.session is None:
+            return None
+        try:
+            uid = self._resolve_user_id()
+            r = self.session.get(
+                f"{API_BASE}/{uid}",
+                params={"fields": "followers_count", "access_token": self.token},
+                timeout=30,
+            )
+            r.raise_for_status()
+            val = r.json().get("followers_count")
+            return int(val) if val is not None else None
+        except Exception as exc:
+            self.log.warning("Instagram follower count unavailable: %s", _err_detail(exc))
+            return None
+
+    def get_insights(self, media_ids: list[str]) -> dict[str, dict[str, float]]:
+        """Loop 2: per-media insights, normalized to the shared metric schema so
+        the analysis treats IG like the other platforms:
+
+            impressions ← views (fallback reach)   replies      ← comments
+            likes       ← likes                     reposts      ← shares
+            bookmarks   ← saved (growth signal)     profile_clicks ← profile_visits
+
+        Returns {media_id: {metric: value}}. `bookmarks`/`profile_clicks` feed
+        the same follower-growth proxy as X. Never raises — a failing media is
+        skipped. The working metric set is remembered after the first success so
+        later media don't re-probe the fallback ladder."""
+        if self.dry_run or self.session is None or not media_ids:
+            return {}
+        out: dict[str, dict[str, float]] = {}
+        failures = 0
+        for mid in media_ids:
+            vals = self._media_insight_values(mid)
+            if vals is None:
+                failures += 1
+                if failures == 1:
+                    self.log.warning("Instagram insights failed for %s — check the token scope.", mid)
+                if failures >= 3 and not out:
+                    self.log.warning("Instagram insights failing consistently — skipping the rest.")
+                    break
+                continue
+            out[mid] = {
+                "impressions": vals.get("views", vals.get("reach", 0)),
+                "likes": vals.get("likes", 0),
+                "replies": vals.get("comments", 0),
+                "reposts": vals.get("shares", 0),
+                "bookmarks": vals.get("saved", 0),
+                "profile_clicks": vals.get("profile_visits", 0),
+            }
+        return out
+
+    def _media_insight_values(self, media_id: str) -> Optional[dict]:
+        """GET one media's insights, degrading through INSIGHT_METRIC_SETS until
+        a set resolves. Returns {metric_name: value} or None if all sets fail.
+        The first set that works is pinned for the rest of the run."""
+        sets = (self._ok_metric_set,) if self._ok_metric_set else INSIGHT_METRIC_SETS
+        for metric in sets:
+            try:
+                r = self.session.get(
+                    f"{API_BASE}/{media_id}/insights",
+                    params={"metric": metric, "access_token": self.token},
+                    timeout=30,
+                )
+                r.raise_for_status()
+            except Exception:
+                continue
+            self._ok_metric_set = metric
+            return {item.get("name"): _insight_value(item) for item in r.json().get("data", [])}
+        return None
+
     def _post_with_retry(self, url: str, data: dict, *, what: str, retry_client_errors: bool = False):
         """POST to a graph endpoint, retrying transient failures (5xx or network;
         also 4xx when `retry_client_errors`) with backoff. Error messages carry
@@ -164,3 +249,22 @@ def _body_snippet(resp) -> str:
         return (getattr(resp, "text", "") or "")[:200]
     except Exception:  # pragma: no cover - defensive
         return ""
+
+
+def _insight_value(item: dict) -> float:
+    """IG insights come back as either total_value or a values[] series."""
+    tv = item.get("total_value")
+    if isinstance(tv, dict) and "value" in tv:
+        return tv["value"]
+    vals = item.get("values") or []
+    return (vals[0] or {}).get("value", 0) if vals else 0
+
+
+def _err_detail(exc: Exception) -> str:
+    resp = getattr(exc, "response", None)
+    if resp is not None:
+        try:
+            return f"{exc} | {resp.text[:200]}"
+        except Exception:  # pragma: no cover - defensive
+            pass
+    return str(exc)

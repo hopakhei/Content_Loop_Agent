@@ -117,6 +117,25 @@ def test_ig_loop_picks_lowest_argument_num_first(monkeypatch, tmp_path):
     assert notion.performance[0]["draft_id"] == "d1"
 
 
+def test_ig_loop_passes_instagram_winner_to_hook_selection(monkeypatch, tmp_path):
+    monkeypatch.setattr(_settings, "IG_CARD_URL_BASE", "https://x/")
+    captured = {}
+
+    def _spy(draft, rules=None, rng=None, winner_override=None):
+        captured["winner"] = winner_override
+        return "C", "鈎C"
+
+    monkeypatch.setattr(instagram_loop, "select_hook", _spy)
+
+    class RulesNotion(FakeNotion):
+        def get_rules(self):
+            return Rules(best_hook_by_platform={"Instagram": "C"})
+
+    instagram_loop.run(dry_run=False, notion=RulesNotion([_card_draft()]),
+                       ig=FakeIG(), cards_dir=str(tmp_path / "cards"))
+    assert captured["winner"] == "C"
+
+
 def test_ig_loop_real_publish_needs_url_base(monkeypatch, tmp_path):
     monkeypatch.setattr(_settings, "IG_CARD_URL_BASE", "")
     notion, ig = FakeNotion([_card_draft()]), FakeIG()

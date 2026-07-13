@@ -101,3 +101,79 @@ def test_dry_run_never_touches_network():
     mid = svc.publish_image("https://host/c.png", "x")
     assert mid.startswith("DRYRUN-IG-")
     assert svc.session is None
+
+
+# ── insights (Loop 2) ─────────────────────────────────────────────────────────
+
+class InsightSession:
+    """GET /{media}/insights returns a data[] series; /{uid} returns followers."""
+    followers = 1234
+
+    def __init__(self, reject_metrics=()):
+        self.reject_metrics = set(reject_metrics)   # metric-set strings that 400
+        self.insight_calls = []
+
+    def get(self, url, params=None, timeout=None):
+        params = params or {}
+        if url.endswith("/insights"):
+            metric = params.get("metric", "")
+            self.insight_calls.append(metric)
+            if metric in self.reject_metrics:
+                return _Resp({"error": "unsupported metric"}, status_code=400)
+            names = metric.split(",")
+            data = [{"name": n, "values": [{"value": _V.get(n, 0)}]} for n in names]
+            return _Resp({"data": data})
+        if params.get("fields") == "followers_count":
+            return _Resp({"followers_count": self.followers, "id": "178000"})
+        return _Resp({"user_id": "178000", "username": "ninetypm_ig"})
+
+
+_V = {"views": 900, "reach": 800, "likes": 40, "comments": 6,
+      "saved": 12, "shares": 3, "profile_visits": 25}
+
+
+def test_get_insights_normalizes_to_shared_schema():
+    svc = _svc(InsightSession())
+    out = svc.get_insights(["M1"])
+    assert out["M1"] == {
+        "impressions": 900,      # views
+        "likes": 40,
+        "replies": 6,            # comments
+        "reposts": 3,            # shares
+        "bookmarks": 12,         # saved (growth signal)
+        "profile_clicks": 25,    # profile_visits (growth signal)
+    }
+
+
+def test_get_insights_falls_back_when_metric_set_rejected():
+    # The richest set (with views/profile_visits) 400s; the loop degrades to the
+    # next set, which resolves — impressions then come from reach.
+    session = InsightSession(
+        reject_metrics={"views,reach,likes,comments,saved,shares,profile_visits"})
+    svc = _svc(session)
+    out = svc.get_insights(["M1"])
+    assert out["M1"]["impressions"] == 800     # reach (views set was rejected)
+    assert out["M1"]["bookmarks"] == 12
+    # first media probed 2 sets; the working set is then pinned for the rest
+    assert session.insight_calls[0].startswith("views,")
+    assert session.insight_calls[1].startswith("reach,")
+
+
+def test_get_insights_pins_working_set_after_first_success():
+    session = InsightSession(reject_metrics={
+        "views,reach,likes,comments,saved,shares,profile_visits"})
+    svc = _svc(session)
+    svc.get_insights(["M1", "M2"])
+    # M1 probes 2 sets (reject then ok); M2 uses only the pinned set → 3 total.
+    assert len(session.insight_calls) == 3
+    assert session.insight_calls[2].startswith("reach,")
+
+
+def test_get_follower_count():
+    assert _svc(InsightSession()).get_follower_count() == 1234
+
+
+def test_insights_and_followers_are_noop_in_dry_run():
+    svc = InstagramService(dry_run=True, access_token="", user_id="")
+    assert svc.get_insights(["M1"]) == {}
+    assert svc.get_follower_count() is None

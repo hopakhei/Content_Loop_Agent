@@ -176,27 +176,32 @@ go to the X API (user-context auth; impressions/link clicks are
 `non_public_metrics`, plus `bookmark_count` and `organic_metrics.user_profile_clicks`
 as follower-growth proxies when the tier grants them), Threads post ids go to
 the Threads Insights API (`views` → Impressions; needs the
-`threads_manage_insights` scope). Each post is read **exactly once**, in the
-24h–48h age window (never re-read — reads spend the same monthly credit as
-writes).
+`threads_manage_insights` scope), and Instagram media ids go to the IG Insights
+API (`views`/`reach` → Impressions, `comments` → replies, `shares` → reposts,
+`saved` → bookmarks and `profile_visits` → profile clicks as growth proxies;
+metric set degrades gracefully across API versions). Each post is read **exactly
+once**, in the 24h–48h age window (never re-read — reads spend the same monthly
+credit as writes).
 
 **Tag-driven, per-platform experiments.** Every Performance row carries a
 machine-tag JSON in its `AI Notes` property (`core.tagging`): platform, hook,
 `has_link`, `link_domain`, `chain_len`, `series` (1xx/2xx), `len_bucket`,
 `x_link_arm`. Loop 2 ranks any tag, **within each platform separately** (X
-impressions and Threads views are not comparable). A cell must reach
+impressions, Threads views and IG views are not comparable). A cell must reach
 **≥8 points** before it can set a written rule (guards against a 3-post fluke).
 
 **Per-platform objectives.** X is in follower-growth mode, so `Best Hook (X)`
 is learned on a **growth proxy** (`3·replies + 2·reposts + 2·bookmarks +
-1·quotes + 4·profile_clicks` per impression); `Best Hook (Threads)` stays on
-engagement rate. Loop 1 biases each platform toward its own winner (falling
-back to the pooled `Best Hook`), still shifting Threads to a different variant
-when both platforms pick the same one, so exploration continues.
+1·quotes + 4·profile_clicks` per impression); `Best Hook (Threads)` and
+`Best Hook (Instagram)` stay on engagement rate. Each posting flow biases toward
+its own platform's winner (Loop 1 for X/Threads, the Instagram loop for IG),
+falling back to the pooled `Best Hook`; Loop 1 still shifts Threads to a
+different variant when both platforms pick the same one, so exploration
+continues.
 
-**Follower telemetry.** Each night LEARN snapshots both platforms' follower
-counts into `Follower History (X/Threads)` rules (90-day JSON) and reports the
-7-day delta.
+**Follower telemetry.** Each night LEARN snapshots every configured platform's
+follower count into `Follower History (X/Threads/Instagram)` rules (90-day JSON)
+and reports the 7-day delta.
 
 **X link A/B.** With `X_LINK_AB` on, each X post is randomly assigned to a
 `link` or `no_link` arm (tagged), so "does dropping the Substack link help?" is

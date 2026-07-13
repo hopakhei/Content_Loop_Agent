@@ -51,9 +51,9 @@ Notion 草稿 (Quote Card, Platform 含 Instagram)
 
 | 階段 | 內容 | 狀態 |
 |---|---|---|
-| **P1** | `services/imagecard.py` 渲染器 + 3 張樣板圖 | ✅ 已完成，待人工過目樣板 |
-| P2 | `services/instagram.py` + Loop 1 接入（dry-run → 實發一張） | 待你完成下方 Meta 設定 |
-| P3 | IG insights 入 Loop 2（reach/likes/saves → tag 化，同一框架） | P2 之後 |
+| **P1** | `services/imagecard.py` 渲染器 + 3 張樣板圖 | ✅ 已完成 |
+| **P2** | `services/instagram.py` + 獨立 `instagram_loop`（dry-run → 實發一張）+ `instagram.yml` | ✅ 已完成（程式碼齊，實發待你完成下方 Meta 設定 + `IG_ACCESS_TOKEN`） |
+| **P3** | IG insights 入 Loop 2（views/reach/saved/profile_visits → 同一 tag 框架，per-platform 排名 + `Best Hook (Instagram)` + follower 快照） | ✅ 已完成 |
 
 ### P1 實作備註
 

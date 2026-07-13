@@ -223,6 +223,10 @@ class NotionService:
                 found = True
                 if _hook_key(content):
                     best_hook_by_platform["Threads"] = _hook_key(content)
+            elif title == AgentRules.RULE_BEST_HOOK_INSTAGRAM:
+                found = True
+                if _hook_key(content):
+                    best_hook_by_platform["Instagram"] = _hook_key(content)
             elif title == AgentRules.RULE_BEST_SLOTS:
                 found = True
                 best_slots = _safe_json_list(content)
@@ -477,7 +481,11 @@ class NotionService:
             )
 
     # Follower snapshots (Loop 2). Rule Content = JSON {"YYYY-MM-DD": count}.
-    _FOLLOWER_RULE = {"X": AgentRules.RULE_FOLLOWERS_X, "Threads": AgentRules.RULE_FOLLOWERS_THREADS}
+    _FOLLOWER_RULE = {
+        "X": AgentRules.RULE_FOLLOWERS_X,
+        "Threads": AgentRules.RULE_FOLLOWERS_THREADS,
+        "Instagram": AgentRules.RULE_FOLLOWERS_INSTAGRAM,
+    }
 
     def read_follower_history(self, platform: str) -> dict:
         """{date: count} for a platform, or {} if unset/absent."""
@@ -612,7 +620,8 @@ class NotionService:
                 confidence, evidence, loop_iteration,
             )
         for platform, title in (("X", AgentRules.RULE_BEST_HOOK_X),
-                                ("Threads", AgentRules.RULE_BEST_HOOK_THREADS)):
+                                ("Threads", AgentRules.RULE_BEST_HOOK_THREADS),
+                                ("Instagram", AgentRules.RULE_BEST_HOOK_INSTAGRAM)):
             hook = (best_hook_by_platform or {}).get(platform)
             if hook:
                 self._upsert_rule(title, AgentRules.CAT_HOOK, hook, confidence, evidence, loop_iteration)

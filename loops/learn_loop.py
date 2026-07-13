@@ -19,6 +19,7 @@ from core.analysis import (
     DataPoint, best_content_types, best_hook, best_slots, ranked, ranked_by_tag,
 )
 from core.timeutil import nearest_slot, now as hkt_now, parse_notion_datetime
+from services.instagram import InstagramService
 from services.notion import NotionService
 from services.threads import ThreadsService
 from services.twitter import TwitterService
@@ -53,16 +54,19 @@ def run(
     notion: Optional[NotionService] = None,
     twitter: Optional[TwitterService] = None,
     threads: Optional[ThreadsService] = None,
+    instagram: Optional[InstagramService] = None,
 ) -> dict:
     log = logger or logging.getLogger("loop.learn")
     notion = notion or NotionService(log)
     twitter = twitter or TwitterService(dry_run=dry_run, logger=log)
     if threads is None and settings.THREADS_ACCESS_TOKEN:
         threads = ThreadsService(dry_run=dry_run, logger=log)
+    if instagram is None and settings.IG_ACCESS_TOKEN:
+        instagram = InstagramService(dry_run=dry_run, logger=log)
 
     log.info("Loop 2 LEARN | dry_run=%s | window=%dd", dry_run, ANALYSIS_WINDOW_DAYS)
 
-    follower_deltas = _snapshot_followers(notion, twitter, threads, log, dry_run=dry_run)
+    follower_deltas = _snapshot_followers(notion, twitter, threads, instagram, log, dry_run=dry_run)
 
     rows = notion.get_performance_rows(since_days=ANALYSIS_WINDOW_DAYS)
     log.info("Loaded %d performance rows.", len(rows))
@@ -76,7 +80,7 @@ def run(
     if budget and pct >= 80:
         log.warning("X write budget at %.0f%% — expect 402s soon; consider fewer X slots or a tier upgrade.", pct)
 
-    refreshed = _refresh_metrics(rows, notion, twitter, threads, log, dry_run=dry_run)
+    refreshed = _refresh_metrics(rows, notion, twitter, threads, instagram, log, dry_run=dry_run)
     log.info("Refreshed metrics for %d posts.", refreshed)
 
     points = [_to_point(r) for r in rows]
@@ -85,6 +89,7 @@ def run(
 
     x_points = [p for p in points if p.platform == "X"]
     th_points = [p for p in points if p.platform == "Threads"]
+    ig_points = [p for p in points if p.platform == "Instagram"]
 
     slot_rank = ranked(points, lambda p: p.slot)
     type_rank = ranked(points, lambda p: p.content_type)
@@ -95,8 +100,9 @@ def run(
     _log_ranking(log, "Hook · X (growth)", ranked(x_points, lambda p: p.hook, metric=_growth))
     _log_ranking(log, "Hook · X (engagement)", ranked(x_points, lambda p: p.hook))
     _log_ranking(log, "Hook · Threads (engagement)", ranked(th_points, lambda p: p.hook))
+    _log_ranking(log, "Hook · Instagram (engagement)", ranked(ig_points, lambda p: p.hook))
     # Per-platform tag rankings — only when the tag has ≥2 distinct values.
-    for plat, pts in (("X", x_points), ("Threads", th_points)):
+    for plat, pts in (("X", x_points), ("Threads", th_points), ("Instagram", ig_points)):
         for tag in REPORT_TAGS:
             r = ranked_by_tag(pts, tag)
             if len({k for k, _, _ in r}) >= 2:
@@ -108,6 +114,7 @@ def run(
     best_hook_by_platform = {
         "X": best_hook(x_points, min_n=MIN_CELL_N, metric=_growth),
         "Threads": best_hook(th_points, min_n=MIN_CELL_N),
+        "Instagram": best_hook(ig_points, min_n=MIN_CELL_N),
     }
     best_hook_by_platform = {k: v for k, v in best_hook_by_platform.items() if v}
 
@@ -153,10 +160,11 @@ def run(
         summary=notes,
     )
     log.info(
-        "Agent Rules %s (loop iteration %d, confidence %d) | hooks X=%s Threads=%s.",
+        "Agent Rules %s (loop iteration %d, confidence %d) | hooks X=%s Threads=%s IG=%s.",
         "updated" if summary["rules_updated"] else "not written (DB unset)",
         loop_iteration, confidence,
         best_hook_by_platform.get("X", "—"), best_hook_by_platform.get("Threads", "—"),
+        best_hook_by_platform.get("Instagram", "—"),
     )
     return summary
 
@@ -185,14 +193,15 @@ def hkt_now_month_start():
     return ref.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
 
-def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> int:
+def _refresh_metrics(rows, notion, twitter, threads, instagram, log, *, dry_run: bool) -> int:
     """Pull fresh engagement for real (non dry-run) posts in the refresh window
     and write the numbers back to Notion. Rows are routed to the platform that
     published them — X ids to the X API, Threads ids to the Threads insights
-    API. Mutates `rows` in place."""
+    API, Instagram media ids to the IG insights API. Mutates `rows` in place."""
     now = datetime.now(timezone.utc)
     x_rows: dict[str, dict] = {}
     threads_rows: dict[str, dict] = {}
+    ig_rows: dict[str, dict] = {}
     for r in rows:
         pid = r.get("post_id") or ""
         if not pid or pid.startswith("DRYRUN-") or not r.get("posted_at"):
@@ -201,12 +210,15 @@ def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> i
         age_hours = (now - posted).total_seconds() / 3600
         if not (REFRESH_MIN_AGE_HOURS <= age_hours < REFRESH_MAX_AGE_HOURS):
             continue  # one read per post, on its second night — never again
-        if (r.get("platform") or "X") == "Threads":
+        platform = r.get("platform") or "X"
+        if platform == "Threads":
             threads_rows[pid] = r
+        elif platform == "Instagram":
+            ig_rows[pid] = r
         else:
             x_rows[pid] = r
 
-    if dry_run or not (x_rows or threads_rows):
+    if dry_run or not (x_rows or threads_rows or ig_rows):
         return 0
 
     metrics: dict[str, dict] = {}
@@ -223,8 +235,16 @@ def _refresh_metrics(rows, notion, twitter, threads, log, *, dry_run: bool) -> i
                 metrics.update(threads.get_insights(list(threads_rows)))
             except Exception as exc:
                 log.warning("Threads insights refresh failed: %s", exc)
+    if ig_rows:
+        if instagram is None:
+            log.info("Skipping %d Instagram rows — IG_ACCESS_TOKEN not set.", len(ig_rows))
+        else:
+            try:
+                metrics.update(instagram.get_insights(list(ig_rows)))
+            except Exception as exc:
+                log.warning("Instagram insights refresh failed: %s", exc)
 
-    by_id = {**x_rows, **threads_rows}
+    by_id = {**x_rows, **threads_rows, **ig_rows}
     updated = 0
     for pid, m in metrics.items():
         row = by_id.get(pid)
@@ -291,13 +311,14 @@ def _log_ranking(log, label, rows) -> None:
     log.info("%s ranking: %s", label, pretty)
 
 
-def _snapshot_followers(notion, twitter, threads, log, *, dry_run: bool) -> dict:
+def _snapshot_followers(notion, twitter, threads, instagram, log, *, dry_run: bool) -> dict:
     """Record today's follower count for each platform and return the 7-day
     delta per platform. Best-effort: any failure logs and skips that platform."""
     today = hkt_now(settings.TZ_NAME).date().isoformat()
     deltas: dict[str, Optional[int]] = {}
     getters = {"X": getattr(twitter, "get_follower_count", None),
-               "Threads": getattr(threads, "get_follower_count", None) if threads else None}
+               "Threads": getattr(threads, "get_follower_count", None) if threads else None,
+               "Instagram": getattr(instagram, "get_follower_count", None) if instagram else None}
     for platform, getter in getters.items():
         if getter is None:
             continue

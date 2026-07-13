@@ -94,6 +94,20 @@ class FakeThreads:
         return self._followers
 
 
+class FakeInstagram:
+    def __init__(self, metrics=None, followers=None):
+        self.requested = []
+        self._metrics = metrics or {}
+        self._followers = followers
+
+    def get_insights(self, ids):
+        self.requested.extend(ids)
+        return {i: self._metrics[i] for i in ids if i in self._metrics}
+
+    def get_follower_count(self):
+        return self._followers
+
+
 def test_refresh_routes_ids_to_their_platform():
     rows = [
         _row("111", "X", hours_ago=30),
@@ -224,6 +238,61 @@ def test_follower_delta_helper():
     # 7d baseline = the ≤7-days-ago entry (the -10 one); current 1000 → +100.
     assert learn_loop._follower_delta(hist, 1000, days=7) == 100
     assert learn_loop._follower_delta({}, 1000) is None
+
+
+def test_refresh_routes_instagram_ids_to_instagram():
+    rows = [
+        _row("111", "X", hours_ago=30),
+        _row("IG9", "Instagram", hours_ago=30),
+    ]
+    notion = FakeNotion(rows)
+    twitter = FakeTwitter({"111": {"impressions": 100, "likes": 3, "replies": 1, "reposts": 2}})
+    instagram = FakeInstagram({"IG9": {"impressions": 700, "likes": 40, "replies": 6,
+                                       "reposts": 3, "bookmarks": 12, "profile_clicks": 25}})
+
+    learn_loop.run(dry_run=False, notion=notion, twitter=twitter,
+                   threads=FakeThreads({}), instagram=instagram)
+
+    assert instagram.requested == ["IG9"]
+    assert notion.updates["page-IG9"][Performance.IMPRESSIONS] == 700
+    assert notion.updates["page-IG9"][Performance.LIKES] == 40
+    # IG growth signals (saved/profile_visits) merge into the row's tags.
+    assert notion.tag_merges["page-IG9"] == {"bookmarks": 12, "profile_clicks": 25}
+
+
+def test_instagram_rows_skipped_without_instagram_service():
+    rows = [_row("IG9", "Instagram", hours_ago=30)]
+    notion = FakeNotion(rows)
+
+    summary = learn_loop.run(dry_run=False, notion=notion, twitter=FakeTwitter({}),
+                             threads=FakeThreads({}), instagram=None)
+
+    assert notion.updates == {}
+    assert summary["rows"] == 1
+
+
+def test_instagram_hook_ranked_and_written():
+    rows = [_aged_row(f"ig{i}", "Instagram", 3, hook="B", likes=30.0) for i in range(10)]
+    rows += [_aged_row(f"th{i}", "Threads", 3, hook="C", replies=20.0) for i in range(10)]
+    notion = FakeNotion(rows)
+
+    summary = learn_loop.run(dry_run=False, notion=notion, twitter=FakeTwitter({}),
+                             threads=FakeThreads({}), instagram=FakeInstagram())
+
+    assert summary["best_hook_by_platform"]["Instagram"] == "B"
+    assert notion.rules_written["best_hook_by_platform"]["Instagram"] == "B"
+
+
+def test_instagram_follower_snapshot_recorded():
+    notion = FakeNotion([_aged_row("ig1", "Instagram", 3)])
+    instagram = FakeInstagram(followers=500)
+
+    summary = learn_loop.run(dry_run=False, notion=notion, twitter=FakeTwitter({}),
+                             threads=FakeThreads({}), instagram=instagram)
+
+    today = datetime.now(timezone.utc).date().isoformat()
+    assert notion.followers["Instagram"][today] == 500
+    assert "Instagram" in summary["follower_deltas"]
 
 
 def test_public_only_metrics_do_not_zero_existing_impressions():

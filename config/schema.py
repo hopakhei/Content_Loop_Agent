@@ -123,10 +123,12 @@ class AgentRules:
     # fallback. Rule Content = "A" / "B" / "C".
     RULE_BEST_HOOK_X = "Best Hook (X)"
     RULE_BEST_HOOK_THREADS = "Best Hook (Threads)"
+    RULE_BEST_HOOK_INSTAGRAM = "Best Hook (Instagram)"
     # Nightly follower snapshots. Rule Content = JSON {"YYYY-MM-DD": count} of
     # the most recent 90 days. Loop 2 reports deltas; Loop 1 ignores these.
     RULE_FOLLOWERS_X = "Follower History (X)"
     RULE_FOLLOWERS_THREADS = "Follower History (Threads)"
+    RULE_FOLLOWERS_INSTAGRAM = "Follower History (Instagram)"
     # Written by Loop 1 when X returns 402 (monthly write quota exhausted);
     # Rule Content = ISO date until which X posting is parked. Deprecate or
     # delete the row in Notion to resume X earlier.
