@@ -45,6 +45,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run Loop 3
         run: |
+          set -f   # no globbing — CTA URLs carry ? and & which are glob/shell metachars
           if [ -z "$NOTION_TOKEN" ]; then
             echo "::notice::NOTION_TOKEN not set — skipping. Add repo secrets to enable."
             exit 0
