@@ -26,6 +26,8 @@ jobs:
       X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
       THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
       THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

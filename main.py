@@ -86,6 +86,18 @@ def _run_check(logger, with_x: bool = False) -> int:
     else:
         logger.info("  Threads auth       SKIP — THREADS_ACCESS_TOKEN not set (optional)")
 
+    logger.info("Preflight — Instagram credentials:")
+    if settings.IG_ACCESS_TOKEN:
+        from services.instagram import InstagramService
+        try:
+            handle = InstagramService(dry_run=False, logger=logger).verify()
+            logger.info("  Instagram auth     OK   — authenticated as @%s", handle)
+        except Exception as exc:
+            logger.error("  Instagram auth     FAIL — %s", exc)
+            ok = False
+    else:
+        logger.info("  Instagram auth     SKIP — IG_ACCESS_TOKEN not set (optional)")
+
     logger.info("Preflight %s", "PASSED ✓" if ok else "FAILED ✗")
     return 0 if ok else 1
 
