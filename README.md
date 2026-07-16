@@ -123,9 +123,11 @@ public URL. Once a day (`instagram.yml`, 12:30 HKT) the loop:
 3. **Commits the PNG** into `cards/` so `raw.githubusercontent.com` serves it
    as the public `image_url`.
 4. Publishes via the two-step Graph flow (create media container → poll until
-   `FINISHED` → publish). The caption = hook + quote + a bio-CTA line +
-   hashtags (IG rewards hashtags; caption links aren't clickable, so the
-   Substack link lives in the bio).
+   `FINISHED` → publish). The caption = hook + quote + the card's **real
+   per-article CTA link** (the same per-issue link X/Threads carry, resolved via
+   the draft/Article CTA) + hashtags. IG caption links aren't clickable, but the
+   correct URL beats a generic pointer; when no article link resolves it falls
+   back to `IG_CTA_LINE` ("link in bio").
 5. Writes an `Instagram` Performance row (tagged like every other platform, so
    Loop 2 can rank hooks for IG separately).
 

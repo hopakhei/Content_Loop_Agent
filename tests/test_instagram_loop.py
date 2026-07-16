@@ -36,6 +36,9 @@ class FakeNotion:
     def get_rules(self):
         return Rules()
 
+    def get_article(self, article_id):
+        return None
+
     def create_performance_record(self, **kwargs):
         self.performance.append(kwargs)
         return "perf-ig-1"
@@ -83,6 +86,40 @@ def test_ig_loop_publishes_and_records(monkeypatch, tmp_path):
     assert row["platform"] == "Instagram"
     assert row["post_id"] == "IG-900"
     assert row["tags"]["platform"] == "Instagram"
+
+
+def test_ig_loop_caption_carries_article_cta(monkeypatch, tmp_path):
+    from core.models import Article
+
+    monkeypatch.setattr(_settings, "IG_CARD_URL_BASE", "https://x/")
+    link = "https://open.substack.com/pub/90spminvesting/p/90spminvesting-102-e0e?r=25kdss"
+    d = _card_draft(id="d1", title="#102-06 Quote Card")
+    d.article_id = "A102"
+
+    class ArtNotion(FakeNotion):
+        def get_article(self, article_id):
+            return Article(id=article_id, cta_url=link)
+
+    notion, ig = ArtNotion([d]), FakeIG()
+    instagram_loop.run(dry_run=False, notion=notion, ig=ig, cards_dir=str(tmp_path / "cards"))
+
+    _, caption = ig.published[0]
+    assert link in caption                          # the real per-article link
+    assert _settings.IG_CTA_LINE not in caption      # generic "link in bio" replaced
+    assert "👉" not in caption                       # bare link, no sell copy
+    tags = notion.performance[0]["tags"]
+    assert tags["has_link"] is True
+    assert tags["link_domain"] == "substack.com"
+
+
+def test_ig_loop_falls_back_to_bio_line_without_cta(monkeypatch, tmp_path):
+    monkeypatch.setattr(_settings, "IG_CARD_URL_BASE", "https://x/")
+    # No article_id, no draft CTA → keep the generic bio line.
+    notion, ig = FakeNotion([_card_draft(id="d1", title="#201-06 誠實")]), FakeIG()
+    instagram_loop.run(dry_run=False, notion=notion, ig=ig, cards_dir=str(tmp_path / "cards"))
+    _, caption = ig.published[0]
+    assert _settings.IG_CTA_LINE in caption
+    assert notion.performance[0]["tags"]["has_link"] is False
 
 
 def test_ig_loop_dry_run_renders_without_publishing(tmp_path):

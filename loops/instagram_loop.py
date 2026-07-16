@@ -17,7 +17,7 @@ from typing import Optional
 
 from config import settings
 from config.schema import HOOK_FIELDS
-from core.composition import select_hook
+from core.composition import effective_cta_url, select_hook
 from core.tagging import COMPOSITION_VERSION, build_tags
 from core.timeutil import now as hkt_now
 from services.imagecard import card_quote, render_card
@@ -56,10 +56,21 @@ def run(
     except Exception:  # rules are optional
         rules = None
 
+    # Resolve this card's real CTA (draft override → its Article's CTA), the same
+    # per-issue link X/Threads carry, so the caption points at the right article
+    # instead of a generic "link in bio".
+    article = None
+    if draft.article_id:
+        try:
+            article = notion.get_article(draft.article_id)
+        except Exception:  # article lookup is best-effort; never fail the post on it
+            article = None
+    cta = effective_cta_url(draft, article.cta_url if article else None)
+
     quote = card_quote(draft.post_body)
     ig_winner = (rules.best_hook_by_platform.get("Instagram") if rules else None)
     hook_key, hook_text = select_hook(draft, rules, winner_override=ig_winner)
-    caption = _build_caption(hook_text, quote)
+    caption = _build_caption(hook_text, quote, cta)
     out_path = f"{cards_dir.rstrip('/')}/{_slug(draft)}.png"
     render_card(quote, _issue_of(draft), out_path)
 
@@ -87,18 +98,23 @@ def run(
         hook_label=HOOK_FIELDS[hook_key][1] if hook_key else None,
         loop_version=COMPOSITION_VERSION,
         tags=build_tags(platform="Instagram", hook=hook_key, posts=[quote],
-                        cta_url=None, cta_present=False, title=draft.title),
+                        cta_url=cta, cta_present=bool(cta), title=draft.title),
     )
     log.info("POSTED ✓ IG | '%s' | media_id=%s", draft.title, media_id)
     return {"posted": media_id, "card": out_path, "draft": draft.title, "image_url": image_url}
 
 
-def _build_caption(hook_text: Optional[str], quote: str) -> str:
+def _build_caption(hook_text: Optional[str], quote: str, cta_url: Optional[str] = None) -> str:
     parts = []
     if hook_text and hook_text.strip():
         parts.append(hook_text.strip())
     parts.append(quote)
-    if settings.IG_CTA_LINE:
+    # The card's real article link (bare, no sell copy) when we have one; else
+    # fall back to the generic "link in bio" line. IG caption links aren't
+    # clickable, but showing the correct URL beats pointing at a generic bio.
+    if cta_url:
+        parts.append(cta_url)
+    elif settings.IG_CTA_LINE:
         parts.append(settings.IG_CTA_LINE)
     if settings.IG_HASHTAGS:
         parts.append(settings.IG_HASHTAGS)
