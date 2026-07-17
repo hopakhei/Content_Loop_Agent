@@ -11,14 +11,24 @@ from loops import instagram_loop
 @pytest.fixture(autouse=True)
 def _stub_render(monkeypatch):
     """This suite tests orchestration, not font rendering (imagecard has its own
-    test). Stub render_card so the loop needs no CJK font on the bare CI runner,
-    while still writing the file so the `.exists()` assertions hold."""
+    test). Stub render_card/render_carousel so the loop needs no CJK font on the
+    bare CI runner, while still writing files so `.exists()` assertions hold."""
     def _fake(quote, issue, out_path, *a, **k):
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
         Path(out_path).write_bytes(b"\x89PNG stub")
         return out_path
 
+    def _fake_carousel(spec, out_dir, *a, **k):
+        paths = []
+        for i in range(len(spec["slides"])):
+            p = Path(out_dir) / f"{i + 1:02d}.png"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            p.write_bytes(b"\x89PNG stub")
+            paths.append(str(p))
+        return paths
+
     monkeypatch.setattr(instagram_loop, "render_card", _fake)
+    monkeypatch.setattr(instagram_loop, "render_carousel", _fake_carousel)
 
 
 class FakeNotion:
@@ -47,10 +57,15 @@ class FakeNotion:
 class FakeIG:
     def __init__(self):
         self.published = []
+        self.carousels = []
 
     def publish_image(self, image_url, caption):
         self.published.append((image_url, caption))
         return "IG-900"
+
+    def publish_carousel(self, image_urls, caption):
+        self.carousels.append((list(image_urls), caption))
+        return "IG-CAR-1"
 
 
 def _card_draft(id="d1", title="#201-06 誠實", body="我哋公開每一步。\n止蝕唔係紀律。\n\n👉 完整框架\n{CTA_URL}"):
@@ -171,6 +186,59 @@ def test_ig_loop_passes_instagram_winner_to_hook_selection(monkeypatch, tmp_path
     instagram_loop.run(dry_run=False, notion=RulesNotion([_card_draft()]),
                        ig=FakeIG(), cards_dir=str(tmp_path / "cards"))
     assert captured["winner"] == "C"
+
+
+def _write_spec(tmp_path, issue="102", n_slides=9):
+    import json
+
+    slides = [{"kind": "cover", "kicker": "k", "head": "H", "sub": "s"}]
+    slides += [{"kicker": f"{i:02d} · t", "head": "h", "body": "b"} for i in range(1, n_slides - 1)]
+    slides += [{"kind": "cta", "head": "Save", "body": "b", "follow": "f", "link": "l"}]
+    spec = {"issue": issue, "cta_url": "https://sub.example.com/p/102?r=x",
+            "caption": "hook 一句\n\n全文：{CTA_URL}\n\n#tags", "slides": slides}
+    d = tmp_path / "carousels"
+    d.mkdir(exist_ok=True)
+    (d / f"{issue}.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+    return str(d)
+
+
+def test_ig_carousel_publishes_and_records(monkeypatch, tmp_path):
+    monkeypatch.setattr(_settings, "IG_CARD_URL_BASE", "https://raw.host/repo/br/")
+    spec_dir = _write_spec(tmp_path)
+    notion, ig = FakeNotion([]), FakeIG()
+    summary = instagram_loop.run_carousel(
+        "102", dry_run=False, notion=notion, ig=ig,
+        cards_dir=str(tmp_path / "cards"), spec_dir=spec_dir,
+    )
+
+    assert summary["posted"] == "IG-CAR-1"
+    urls, caption = ig.carousels[0]
+    assert len(urls) == 9
+    assert urls[0] == "https://raw.host/repo/br/" + str(tmp_path / "cards") + "/carousel-102/01.png"
+    # {CTA_URL} resolved to the real article link.
+    assert "https://sub.example.com/p/102?r=x" in caption
+    assert "{CTA_URL}" not in caption
+    row = notion.performance[0]
+    assert row["draft_id"] is None                 # no single source draft
+    assert row["platform"] == "Instagram"
+    tags = row["tags"]
+    assert tags["format"] == "carousel"
+    assert tags["chain_len"] == 9
+    assert tags["has_link"] is True and tags["link_domain"] == "example.com"
+    assert tags["series"] == "1xx"
+
+
+def test_ig_carousel_dry_run_renders_without_publishing(tmp_path):
+    spec_dir = _write_spec(tmp_path)
+    notion, ig = FakeNotion([]), FakeIG()
+    summary = instagram_loop.run_carousel(
+        "102", dry_run=True, notion=notion, ig=ig,
+        cards_dir=str(tmp_path / "cards"), spec_dir=spec_dir,
+    )
+    assert summary.get("dry_run") is True
+    assert len(summary["slides"]) == 9
+    assert (tmp_path / "cards" / "carousel-102" / "09.png").exists()
+    assert ig.carousels == [] and notion.performance == []
 
 
 def test_ig_loop_real_publish_needs_url_base(monkeypatch, tmp_path):

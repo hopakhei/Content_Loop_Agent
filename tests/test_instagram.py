@@ -103,6 +103,36 @@ def test_dry_run_never_touches_network():
     assert svc.session is None
 
 
+# ── carousel publish ──────────────────────────────────────────────────────────
+
+def test_publish_carousel_three_step():
+    svc = _svc()
+    mid = svc.publish_carousel(["https://h/1.png", "https://h/2.png", "https://h/3.png"], "一輯拆解")
+    assert mid == "901"
+    posts = svc.session.posts
+    items = [p for p in posts if p[1].get("is_carousel_item") == "true"]
+    assert len(items) == 3
+    assert [p[1]["image_url"] for p in items] == ["https://h/1.png", "https://h/2.png", "https://h/3.png"]
+    container = next(p for p in posts if p[1].get("media_type") == "CAROUSEL")
+    assert container[1]["children"] == "C1,C2,C3"
+    assert container[1]["caption"] == "一輯拆解"
+    publish = next(p for p in posts if p[0].endswith("/media_publish"))
+    assert publish[1]["creation_id"] == "C4"
+
+
+def test_publish_carousel_rejects_bad_slide_count():
+    svc = _svc()
+    with pytest.raises(ValueError):
+        svc.publish_carousel(["https://h/1.png"], "x")
+    with pytest.raises(ValueError):
+        svc.publish_carousel([f"https://h/{i}.png" for i in range(11)], "x")
+
+
+def test_publish_carousel_dry_run_never_touches_network():
+    svc = InstagramService(dry_run=True, access_token="", user_id="")
+    assert svc.publish_carousel(["u1", "u2"], "x").startswith("DRYRUN-IG-")
+
+
 # ── insights (Loop 2) ─────────────────────────────────────────────────────────
 
 class InsightSession:

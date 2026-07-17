@@ -337,7 +337,7 @@ class NotionService:
 
     def create_performance_record(
         self,
-        draft_id: str,
+        draft_id: Optional[str],
         post_id: str,
         platform: str,
         posted_at: datetime,
@@ -347,14 +347,17 @@ class NotionService:
     ) -> str:
         """Create the (initially blank-metrics) Post Performance row. `tags` is
         the machine-tag dict (see core.tagging); it is stored as compact JSON in
-        the `AI Notes` property and is the experiment substrate for Loop 2."""
+        the `AI Notes` property and is the experiment substrate for Loop 2.
+        `draft_id` may be None for posts with no single source draft (e.g. an
+        Instagram carousel cut from a whole article)."""
         props: dict[str, Any] = {
             Performance.POST_ID: {"title": [{"text": {"content": post_id}}]},
-            Performance.DRAFT: {"relation": [{"id": draft_id}]},
             Performance.POSTED_AT: {"date": {"start": posted_at.isoformat()}},
             Performance.PLATFORM: {"select": {"name": platform}},
             Performance.LOOP_VERSION: {"number": loop_version},
         }
+        if draft_id:
+            props[Performance.DRAFT] = {"relation": [{"id": draft_id}]}
         if hook_label:
             props[Performance.HOOK_USED] = {"select": {"name": hook_label}}
         if tags:

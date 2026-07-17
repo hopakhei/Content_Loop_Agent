@@ -113,6 +113,47 @@ class InstagramService:
         )
         return str(publish.json()["id"])
 
+    def publish_carousel(self, image_urls: list[str], caption: str) -> str:
+        """Publish a 2-10 image carousel. Three-step Graph flow: one item
+        container per image (is_carousel_item) → a CAROUSEL container listing
+        the children → publish. Returns the published media id."""
+        if not (2 <= len(image_urls) <= 10):
+            raise ValueError(f"IG carousels take 2-10 images, got {len(image_urls)}.")
+        caption = (caption or "")[:MAX_CAPTION_LEN]
+        if self.dry_run:
+            self._dry_counter += 1
+            stamp = datetime.now(timezone.utc).strftime("%H%M%S")
+            self.log.info("[dry-run] would post IG carousel (%d slides): %s | %s",
+                          len(image_urls), image_urls[0], _preview(caption))
+            return f"DRYRUN-IG-{stamp}-{self._dry_counter}"
+
+        uid = self._resolve_user_id()
+        children = []
+        for url in image_urls:
+            r = self._post_with_retry(
+                f"{API_BASE}/{uid}/media",
+                {"image_url": url, "is_carousel_item": "true", "access_token": self.token},
+                what="create carousel item",
+            )
+            children.append(str(r.json()["id"]))
+        for cid in children:
+            self._await_container(cid)
+        container = self._post_with_retry(
+            f"{API_BASE}/{uid}/media",
+            {"media_type": "CAROUSEL", "children": ",".join(children),
+             "caption": caption, "access_token": self.token},
+            what="create carousel container",
+        )
+        creation_id = container.json()["id"]
+        self._await_container(creation_id)
+        publish = self._post_with_retry(
+            f"{API_BASE}/{uid}/media_publish",
+            {"creation_id": creation_id, "access_token": self.token},
+            what="publish",
+            retry_client_errors=True,
+        )
+        return str(publish.json()["id"])
+
     def _await_container(self, creation_id: str) -> None:
         """Poll until IG reports the container FINISHED. Best-effort: a failed
         status check falls through to publish; a terminal ERROR/EXPIRED raises."""

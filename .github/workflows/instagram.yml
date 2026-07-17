@@ -12,6 +12,10 @@ on:
         description: "Render + preview only (no commit, no publish)"
         type: boolean
         default: false
+      carousel_issue:
+        description: "Publish carousels/<issue>.json as a multi-slide carousel (blank = daily Quote Card)"
+        type: string
+        default: ""
 
 concurrency:
   group: loop-instagram
@@ -44,7 +48,10 @@ jobs:
             echo "::notice::NOTION_TOKEN not set — skipping Instagram."
             exit 0
           fi
-          python main.py --instagram --dry-run
+          set -f
+          CAROUSEL=""
+          if [ -n "${{ inputs.carousel_issue }}" ]; then CAROUSEL="--carousel ${{ inputs.carousel_issue }}"; fi
+          python main.py --instagram $CAROUSEL --dry-run
       - name: Commit rendered card
         if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
@@ -68,7 +75,10 @@ jobs:
             echo "::notice::IG_ACCESS_TOKEN not set — skipping publish."
             exit 0
           fi
-          python main.py --instagram
+          set -f
+          CAROUSEL=""
+          if [ -n "${{ inputs.carousel_issue }}" ]; then CAROUSEL="--carousel ${{ inputs.carousel_issue }}"; fi
+          python main.py --instagram $CAROUSEL
       - name: Upload run log
         if: always()
         uses: actions/upload-artifact@v4
