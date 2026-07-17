@@ -154,6 +154,52 @@ def test_publish_carousel_dry_run_never_touches_network():
     assert svc.publish_carousel(["u1", "u2"], "x").startswith("DRYRUN-IG-")
 
 
+# ── comment-to-DM plumbing ────────────────────────────────────────────────────
+
+class SocialSession(FakeSession):
+    """GET media/comments edges; POST /messages for private replies."""
+
+    def get(self, url, params=None, timeout=None):
+        self.gets.append((url, dict(params or {})))
+        if url.endswith("/media"):
+            return _Resp({"data": [{"id": "M1", "timestamp": "2026-07-17T08:00:00+0000"}]})
+        if url.endswith("/comments"):
+            return _Resp({"data": [
+                {"id": "c1", "text": "想要全文", "username": "fan1",
+                 "timestamp": "2026-07-17T09:00:00+0000"},
+            ]})
+        return super().get(url, params=params, timeout=timeout)
+
+
+def test_get_recent_media_and_comments():
+    svc = _svc(SocialSession())
+    media = svc.get_recent_media()
+    assert media[0]["id"] == "M1"
+    comments = svc.get_comments("M1")
+    assert comments[0]["username"] == "fan1"
+
+
+def test_send_private_reply_posts_to_messages_edge():
+    import json as _json
+
+    svc = _svc(SocialSession())
+    assert svc.send_private_reply("c1", "全文在這裡：https://x/y") is not None
+    url, data = svc.session.posts[0]
+    assert url.endswith("/178000/messages")
+    assert _json.loads(data["recipient"]) == {"comment_id": "c1"}
+    assert _json.loads(data["message"]) == {"text": "全文在這裡：https://x/y"}
+
+
+def test_send_private_reply_failure_returns_none(monkeypatch):
+    monkeypatch.setattr(ig_module, "PUBLISH_RETRY_DELAYS", (0.0,))
+
+    class Denied(SocialSession):
+        def post(self, url, data=None, timeout=None):
+            return _Resp({"error": "missing scope"}, status_code=403)
+
+    assert _svc(Denied()).send_private_reply("c1", "x") is None
+
+
 # ── insights (Loop 2) ─────────────────────────────────────────────────────────
 
 class InsightSession:

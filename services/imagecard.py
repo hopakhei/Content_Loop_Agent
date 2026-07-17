@@ -133,10 +133,14 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
             d.text((W - MARGIN - cw - 70, H - 232), cue, font=f, fill=SUB)
             d.text((W - MARGIN - 56, H - 244), "→", font=F(56), fill=ACCENT)
         elif kind == "cta":
-            # Drawn bookmark glyph (fonts here have no colour emoji).
-            bx, by, bw, bh = MARGIN, 150, 64, 88
-            d.polygon([(bx, by), (bx + bw, by), (bx + bw, by + bh),
-                       (bx + bw / 2, by + bh - 26), (bx, by + bh)], fill=ACCENT)
+            if s.get("bookmark", True):
+                # Drawn bookmark glyph (fonts here have no colour emoji) — only
+                # when the slide actually asks for a Save.
+                bx, by, bw, bh = MARGIN, 150, 64, 88
+                d.polygon([(bx, by), (bx + bw, by), (bx + bw, by + bh),
+                           (bx + bw / 2, by + bh - 26), (bx, by + bh)], fill=ACCENT)
+            else:
+                d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
             y = _text_block(d, s.get("head", ""), F(104), MARGIN, 340, W - 2 * MARGIN, FG, 1.35)
             y = _text_block(d, s.get("body", ""), F(46), MARGIN, y + 36, W - 2 * MARGIN, SUB, 1.55)
             d.text((MARGIN, y + 70), s.get("follow", ""), font=F(52), fill=ACCENT)

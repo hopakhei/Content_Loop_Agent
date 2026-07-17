@@ -101,6 +101,22 @@ IG_CTA_LINE = os.getenv("IG_CTA_LINE", "完整框架在 Substack，連結見 bio
 # Hashtags appended to the IG caption (IG rewards them, unlike X).
 IG_HASHTAGS = os.getenv("IG_HASHTAGS", "#投資 #價值投資 #財經 #stockmarket").strip()
 
+# ── Instagram comment-to-DM ─────────────────────────────────────────────────
+# A comment containing IG_DM_KEYWORD triggers ONE private reply carrying the
+# post's article link — the only automated path to a TAPPABLE IG link. Needs
+# instagram_business_manage_comments + instagram_business_manage_messages.
+IG_DM_KEYWORD = os.getenv("IG_DM_KEYWORD", "全文").strip()
+# DM every comment instead of keyword-matches only (aggressive; default off).
+IG_DM_ALL = _flag("IG_DM_ALL", False)
+# {url} is replaced with the post's article link.
+IG_DM_TEXT = os.getenv("IG_DM_TEXT", "謝謝留言 🙏 全文在這裡：{url}").strip()
+# When a post carries no per-article link tag, DM this instead.
+IG_DM_FALLBACK_URL = os.getenv(
+    "IG_DM_FALLBACK_URL", "https://90spminvesting.substack.com/?r=25kdss"
+).strip()
+# Per-run send cap — spam brake.
+IG_DM_MAX_PER_RUN = _int("IG_DM_MAX_PER_RUN", 20)
+
 # ── Claude (Loop 3) ─────────────────────────────────────────────────────────
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
 # `or` (not a getenv default) so a set-but-empty env var still falls back.

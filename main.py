@@ -32,6 +32,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--carousel", metavar="ISSUE",
                    help="With --instagram: publish carousels/<ISSUE>.json as a multi-slide carousel "
                         "instead of the daily Quote Card")
+    p.add_argument("--instagram-dm", action="store_true",
+                   help="Comment-to-DM: private-reply the article link to keyword comments on "
+                        "recent IG posts. --dry-run reads real comments but sends nothing")
     p.add_argument("--inspect-threads", action="store_true",
                    help="Read-only: show how recently-posted Threads drafts composed (segments + CTA), then exit")
     p.add_argument("--inspect-days", type=int, default=3,
@@ -164,6 +167,18 @@ def main(argv=None) -> int:
             return _run_inspect_threads(logger, args.inspect_days)
         except Exception:
             logger.exception("Inspect failed with an unhandled error.")
+            return 1
+
+    if args.instagram_dm:
+        dry_run = bool(args.dry_run)
+        logger, log_path = setup_logging("igdm", dry_run)
+        logger.info("=== Instagram comment-to-DM | dry_run=%s | log=%s ===", dry_run, log_path)
+        try:
+            from loops import dm_loop
+            dm_loop.run(dry_run=dry_run, logger=logger)
+            return 0
+        except Exception:
+            logger.exception("Comment-to-DM failed with an unhandled error.")
             return 1
 
     if args.instagram:

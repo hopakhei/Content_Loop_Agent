@@ -100,7 +100,8 @@ def run(
         hook_label=HOOK_FIELDS[hook_key][1] if hook_key else None,
         loop_version=COMPOSITION_VERSION,
         tags=build_tags(platform="Instagram", hook=hook_key, posts=[quote],
-                        cta_url=cta, cta_present=bool(cta), title=draft.title),
+                        cta_url=cta, cta_present=bool(cta), title=draft.title,
+                        extra={"cta": cta}),
     )
     log.info("POSTED ✓ IG | '%s' | media_id=%s", draft.title, media_id)
     return {"posted": media_id, "card": out_path, "draft": draft.title, "image_url": image_url}
@@ -160,7 +161,8 @@ def run_carousel(
         loop_version=COMPOSITION_VERSION,
         tags=build_tags(platform="Instagram", hook=None, posts=slide_texts,
                         cta_url=cta or None, cta_present=bool(cta and cta in caption),
-                        title=f"#{issue}-carousel", extra={"format": "carousel"}),
+                        title=f"#{issue}-carousel",
+                        extra={"format": "carousel", "cta": cta or None}),
     )
     log.info("POSTED ✓ IG CAROUSEL | #%s | %d slides | media_id=%s", issue, len(paths), media_id)
     return {"posted": media_id, "slides": paths, "image_urls": image_urls}

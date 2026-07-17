@@ -8,6 +8,7 @@ docs/instagram-plan.md.
 """
 from __future__ import annotations
 
+import json
 import logging
 import time
 from datetime import datetime, timezone
@@ -198,6 +199,58 @@ class InstagramService:
                 "IG first-comment failed (needs instagram_business_manage_comments "
                 "scope on the token): %s", exc,
             )
+            return None
+
+    # ── comment-to-DM ─────────────────────────────────────────────────────────
+    def get_recent_media(self, limit: int = 25) -> list[dict]:
+        """Our most recent media ({id, timestamp}), newest first. Raises on
+        API errors so the DM loop can surface a scope problem loudly."""
+        if self.session is None:
+            return []
+        uid = self._resolve_user_id()
+        r = self.session.get(
+            f"{API_BASE}/{uid}/media",
+            params={"fields": "id,timestamp", "limit": limit, "access_token": self.token},
+            timeout=30,
+        )
+        r.raise_for_status()
+        return r.json().get("data", [])
+
+    def get_comments(self, media_id: str, limit: int = 50) -> list[dict]:
+        """Top-level comments on one media ({id, text, username, timestamp}).
+        Needs instagram_business_manage_comments."""
+        if self.session is None:
+            return []
+        r = self.session.get(
+            f"{API_BASE}/{media_id}/comments",
+            params={"fields": "id,text,username,timestamp", "limit": limit,
+                    "access_token": self.token},
+            timeout=30,
+        )
+        r.raise_for_status()
+        return r.json().get("data", [])
+
+    def send_private_reply(self, comment_id: str, text: str) -> Optional[str]:
+        """DM the author of a comment on our media (IG 'private reply') — the
+        only automated path to a TAPPABLE link. One reply per comment, within
+        7 days of the comment. Needs instagram_business_manage_messages.
+        Returns a message id, or None on failure (never raises)."""
+        if self.dry_run or self.session is None:
+            self.log.info("[dry-run] would DM comment %s: %s", comment_id, _preview(text))
+            return None
+        try:
+            uid = self._resolve_user_id()
+            r = self._post_with_retry(
+                f"{API_BASE}/{uid}/messages",
+                {"recipient": json.dumps({"comment_id": comment_id}),
+                 "message": json.dumps({"text": text}),
+                 "access_token": self.token},
+                what="private reply",
+            )
+            data = r.json()
+            return str(data.get("message_id") or data.get("id") or "sent")
+        except Exception as exc:
+            self.log.warning("IG private reply failed for comment %s: %s", comment_id, exc)
             return None
 
     # ── insights (Loop 2) ────────────────────────────────────────────────────

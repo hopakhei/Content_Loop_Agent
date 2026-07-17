@@ -1,7 +1,7 @@
 {
   "issue": "101",
   "cta_url": "https://90spminvesting.substack.com/p/90spminvesting-101?r=25kdss",
-  "caption": "股價腰斬後，你連錯在哪都說不清？\n\n會搜尋、會看研究的你，已經是最用功的一群。缺的是一套能過濾資訊、拆解故事、驗證假設的系統。\n\n這輯講：財經內容為什麼是寫來說服你的、世界是網而分析是樹，以及我為什麼把整套框架免費攤開。\n\n全文：{CTA_URL}\n\n#投資 #價值投資 #財經 #stockmarket",
+  "caption": "股價腰斬後，你連錯在哪都說不清？\n\n會搜尋、會看研究的你，已經是最用功的一群。缺的是一套能過濾資訊、拆解故事、驗證假設的系統。\n\n這輯講：財經內容為什麼是寫來說服你的、世界是網而分析是樹，以及我為什麼把整套框架免費攤開。\n\n想看全文：留言「全文」，我 DM 給你。\n\n全文：{CTA_URL}\n\n#投資 #價值投資 #財經 #stockmarket",
   "slides": [
     {"kind": "cover",
      "kicker": "90s.pm 投資 · #101 前言",
@@ -28,10 +28,10 @@
     {"kicker": "07 · 為什麼免費",
      "head": "秘密攤開，連用法都教",
      "body": "MECE、假設驅動本來就是公開的方法論。我不做付費牆、不分層賣。當更多人學會畫樹，社群的集體智慧比課程收入值錢。"},
-    {"kind": "cta",
-     "head": "先 Save，\n跟住一步步畫樹",
-     "body": "#101 是這個系列的起點：\n用科學畫樹，看清真相再下注。",
-     "follow": "Follow @90s.pm.investing",
-     "link": "全文：90spminvesting.substack.com（連結在留言）"}
+    {"kind": "cta", "bookmark": false,
+     "head": "市場永遠\n充滿童話故事",
+     "body": "我們的工作，是用科學畫出一棵樹，\n在看清真相的那一刻，下注。",
+     "follow": "留言「全文」，我 DM 給你",
+     "link": "@90s.pm.investing · #101 前言"}
   ]
 }
