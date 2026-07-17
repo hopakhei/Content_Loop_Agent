@@ -90,6 +90,8 @@ def run(
 
     image_url = settings.IG_CARD_URL_BASE.rstrip("/") + "/" + out_path
     media_id = ig.publish_image(image_url, caption)
+    if cta:
+        ig.post_comment(media_id, f"全文：{cta}")
     notion.create_performance_record(
         draft_id=draft.id,
         post_id=media_id,
@@ -145,6 +147,8 @@ def run_carousel(
     base = settings.IG_CARD_URL_BASE.rstrip("/")
     image_urls = [f"{base}/{p}" for p in paths]
     media_id = ig.publish_carousel(image_urls, caption)
+    if cta:
+        ig.post_comment(media_id, f"全文：{cta}")
 
     notion = notion or NotionService(log)
     slide_texts = [s.get("head", "") for s in spec["slides"]]

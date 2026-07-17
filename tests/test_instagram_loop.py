@@ -58,6 +58,7 @@ class FakeIG:
     def __init__(self):
         self.published = []
         self.carousels = []
+        self.comments = []
 
     def publish_image(self, image_url, caption):
         self.published.append((image_url, caption))
@@ -66,6 +67,10 @@ class FakeIG:
     def publish_carousel(self, image_urls, caption):
         self.carousels.append((list(image_urls), caption))
         return "IG-CAR-1"
+
+    def post_comment(self, media_id, text):
+        self.comments.append((media_id, text))
+        return "C-1"
 
 
 def _card_draft(id="d1", title="#201-06 誠實", body="我哋公開每一步。\n止蝕唔係紀律。\n\n👉 完整框架\n{CTA_URL}"):
@@ -125,6 +130,7 @@ def test_ig_loop_caption_carries_article_cta(monkeypatch, tmp_path):
     tags = notion.performance[0]["tags"]
     assert tags["has_link"] is True
     assert tags["link_domain"] == "substack.com"
+    assert ig.comments == [("IG-900", f"全文：{link}")]  # first comment carries the link
 
 
 def test_ig_loop_falls_back_to_bio_line_without_cta(monkeypatch, tmp_path):
@@ -135,6 +141,7 @@ def test_ig_loop_falls_back_to_bio_line_without_cta(monkeypatch, tmp_path):
     _, caption = ig.published[0]
     assert _settings.IG_CTA_LINE in caption
     assert notion.performance[0]["tags"]["has_link"] is False
+    assert ig.comments == []                     # nothing to link to — no comment
 
 
 def test_ig_loop_dry_run_renders_without_publishing(tmp_path):
@@ -226,6 +233,8 @@ def test_ig_carousel_publishes_and_records(monkeypatch, tmp_path):
     assert tags["chain_len"] == 9
     assert tags["has_link"] is True and tags["link_domain"] == "example.com"
     assert tags["series"] == "1xx"
+    # First comment carries the copyable article link.
+    assert ig.comments == [("IG-CAR-1", "全文：https://sub.example.com/p/102?r=x")]
 
 
 def test_ig_carousel_dry_run_renders_without_publishing(tmp_path):

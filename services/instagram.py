@@ -178,6 +178,28 @@ class InstagramService:
                 raise RuntimeError(f"IG container {status}: {data.get('status') or 'no detail from Meta'}")
         self.log.warning("IG container %s still IN_PROGRESS after polling — attempting publish anyway.", creation_id)
 
+    def post_comment(self, media_id: str, text: str) -> Optional[str]:
+        """Best-effort first comment on our own media (the CTA link lives here —
+        visible and copyable; IG comment links are never tappable). Needs the
+        instagram_business_manage_comments scope; returns the comment id, or
+        None on any failure (a missing scope must not fail the post)."""
+        if self.dry_run or self.session is None:
+            self.log.info("[dry-run] would comment on %s: %s", media_id, _preview(text))
+            return None
+        try:
+            r = self._post_with_retry(
+                f"{API_BASE}/{media_id}/comments",
+                {"message": text, "access_token": self.token},
+                what="comment",
+            )
+            return str(r.json().get("id"))
+        except Exception as exc:
+            self.log.warning(
+                "IG first-comment failed (needs instagram_business_manage_comments "
+                "scope on the token): %s", exc,
+            )
+            return None
+
     # ── insights (Loop 2) ────────────────────────────────────────────────────
     def get_follower_count(self) -> Optional[int]:
         """Loop 2 growth telemetry: current Instagram follower count. None on

@@ -103,6 +103,27 @@ def test_dry_run_never_touches_network():
     assert svc.session is None
 
 
+# ── first comment ─────────────────────────────────────────────────────────────
+
+def test_post_comment_hits_comments_edge():
+    svc = _svc()
+    cid = svc.post_comment("M9", "全文：https://x/y")
+    assert cid == "C1"
+    url, data = svc.session.posts[0]
+    assert url.endswith("/M9/comments")
+    assert data["message"] == "全文：https://x/y"
+
+
+def test_post_comment_failure_returns_none_never_raises(monkeypatch):
+    monkeypatch.setattr(ig_module, "PUBLISH_RETRY_DELAYS", (0.0,))
+
+    class Denied(FakeSession):
+        def post(self, url, data=None, timeout=None):
+            return _Resp({"error": "missing permission"}, status_code=403)
+
+    assert _svc(Denied()).post_comment("M9", "x") is None
+
+
 # ── carousel publish ──────────────────────────────────────────────────────────
 
 def test_publish_carousel_three_step():
