@@ -8,6 +8,7 @@ fonts-noto-cjk). P1 of docs/instagram-plan.md.
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import Optional
 
@@ -53,18 +54,38 @@ def _font_path() -> str:
     raise RuntimeError("No CJK font found; set IG_FONT_PATH or install fonts-noto-cjk.")
 
 
+_LATIN_RUN = re.compile(r"[A-Za-z0-9$%&@#'./\-]+|.")
+_NO_LINE_START = "。，、．：；！？…—」』）%％"   # closers hang on the previous line
+_NO_LINE_END = "「『（"                          # openers move to the next line
+
+
 def _wrap_cjk(text: str, font, draw, max_w: float) -> list[str]:
-    """Wrap by character — CJK has no spaces. Explicit newlines are kept."""
+    """Wrap by character — CJK has no spaces — but keep latin/number runs
+    ("Berkshire", "P/E", "$0", "30-50%") unbroken and apply kinsoku rules.
+    Explicit newlines are kept."""
     lines: list[str] = []
     for para in text.split("\n"):
         cur = ""
-        for ch in para:
-            if draw.textlength(cur + ch, font=font) <= max_w or not cur:
-                cur += ch
+        for tok in _LATIN_RUN.findall(para):
+            if not cur and draw.textlength(tok, font=font) > max_w:
+                for ch in tok:
+                    if cur and draw.textlength(cur + ch, font=font) > max_w:
+                        lines.append(cur)
+                        cur = ""
+                    cur += ch
+                continue
+            if (draw.textlength(cur + tok, font=font) <= max_w or not cur
+                    or tok in _NO_LINE_START):
+                cur += tok
             else:
-                lines.append(cur)
-                cur = ch
-        lines.append(cur)
+                line = cur.rstrip(" ")
+                carry = ""
+                while line and line[-1] in _NO_LINE_END:
+                    carry = line[-1] + carry
+                    line = line[:-1]
+                lines.append(line)
+                cur = carry + ("" if tok == " " else tok)
+        lines.append(cur.rstrip(" "))
     return lines
 
 
