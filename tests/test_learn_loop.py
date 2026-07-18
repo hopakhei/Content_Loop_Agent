@@ -1,6 +1,7 @@
 """Loop 2 metric refresh: platform routing + refresh window, with fake services."""
 from datetime import datetime, timedelta, timezone
 
+from config import settings
 from config.schema import Performance
 from loops import learn_loop
 
@@ -204,9 +205,12 @@ def test_min_cell_n_blocks_a_thin_platform_winner():
 
 
 def test_follower_snapshot_records_and_reports_delta():
-    seven_days = (datetime.now(timezone.utc)).date().toordinal() - 7
+    # learn_loop stamps snapshots with the HKT calendar day, so the test must
+    # use the same clock or it fails in the 16:00–24:00 UTC window.
     from datetime import date
-    baseline_day = date.fromordinal(seven_days).isoformat()
+    from core.timeutil import now as hkt_now
+    hkt_today = hkt_now(settings.TZ_NAME).date()
+    baseline_day = date.fromordinal(hkt_today.toordinal() - 7).isoformat()
     notion = FakeNotion([_aged_row("x1", "X", 3)])
     notion.followers["X"] = {baseline_day: 950}
     twitter = FakeTwitter({}, followers=1000)
@@ -214,8 +218,7 @@ def test_follower_snapshot_records_and_reports_delta():
     summary = learn_loop.run(dry_run=False, notion=notion, twitter=twitter, threads=FakeThreads({}))
 
     assert summary["follower_deltas"]["X"] == 50
-    today = datetime.now(timezone.utc).date().isoformat()
-    assert notion.followers["X"][today] == 1000
+    assert notion.followers["X"][hkt_today.isoformat()] == 1000
 
 
 def test_growth_signals_merged_into_tags_on_refresh():
@@ -232,7 +235,8 @@ def test_growth_signals_merged_into_tags_on_refresh():
 
 def test_follower_delta_helper():
     from datetime import date
-    ord_today = date.today().toordinal()
+    from core.timeutil import now as hkt_now
+    ord_today = hkt_now(settings.TZ_NAME).date().toordinal()
     hist = {date.fromordinal(ord_today - 10).isoformat(): 900,
             date.fromordinal(ord_today - 6).isoformat(): 980}
     # 7d baseline = the ≤7-days-ago entry (the -10 one); current 1000 → +100.
@@ -290,7 +294,8 @@ def test_instagram_follower_snapshot_recorded():
     summary = learn_loop.run(dry_run=False, notion=notion, twitter=FakeTwitter({}),
                              threads=FakeThreads({}), instagram=instagram)
 
-    today = datetime.now(timezone.utc).date().isoformat()
+    from core.timeutil import now as hkt_now
+    today = hkt_now(settings.TZ_NAME).date().isoformat()
     assert notion.followers["Instagram"][today] == 500
     assert "Instagram" in summary["follower_deltas"]
 
