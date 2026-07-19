@@ -44,6 +44,20 @@ description: >
 
 2–10 張；標準 10 張（cover + 8 內容 + CTA）。
 
+## 策略框架系列（framework carousels）額外規矩
+
+- **大名背書（authority hook）**：系列整體定位為「拆解顧問界（McKinsey、BCG、Bain）
+  幾十年在用的思考框架」——放在 caption 開頭與封面副題，借大名建立權威。
+- **準確第一**：每個 framework 標「真實」出處。當出處真係 McKinsey / BCG / Bain
+  或知名學者（Porter、Christensen、Kim & Mauborgne…）時，把這個名字升做 hook
+  （封面副題／起源 slide／caption）。**絕不把學者框架屈落顧問公司**——目標觀眾
+  一眼睇穿，反而摧毀 credibility。學者框架照樣可借「成為所有頂級顧問公司的通用語言」
+  這類「被誰採用」的真實陳述來沾大名的光。
+- **投資角度**：每個 framework 都拉回投資決定（判斷護城河、拆解估值、看清風險），
+  與「畫樹／MECE」一脈相承——這是 90s.pm.investing 的存在理由，不是純顧問教材。
+- kicker 用「顧問框架 NN」標明系列身份。
+- 版權：概念公開可教，但一律用品牌語氣重寫成故事，**不抄 Umbrex 原書句子**。
+
 ## 編輯規矩（用戶逐輯 review 定下，全部必守）
 
 - **標題鏈原則**：每張 slide 的大題必須獨立講出該段的中心思想；
