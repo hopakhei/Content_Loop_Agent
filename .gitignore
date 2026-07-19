@@ -21,3 +21,6 @@ logs/*
 # Bundled CJK font (large; CI apt-installs fonts-noto-cjk instead)
 assets/fonts/*.otf
 assets/fonts/*.ttc
+
+# Raw extracted book prose (copyrighted intermediate) — never publish
+frameworks/raw/
