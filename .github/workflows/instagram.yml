@@ -1,11 +1,10 @@
 name: Instagram — post a card
 
-# Daily. Renders the next Quote Card, commits the PNG (so
-# raw.githubusercontent serves it as a public image_url), then publishes it to
-# Instagram. Skips cleanly until NOTION_TOKEN + IG_ACCESS_TOKEN secrets exist.
+# Manual publish of a single card/carousel. The daily 12:30 HKT slot is now
+# owned by carousel-drip.yml (one queued carousel per day); this workflow keeps
+# only workflow_dispatch for one-off publishes. Renders the PNG, commits it (so
+# raw.githubusercontent serves it as a public image_url), then publishes.
 on:
-  schedule:
-    - cron: "30 4 * * *"        # 12:30 HKT
   workflow_dispatch:
     inputs:
       dry_run:

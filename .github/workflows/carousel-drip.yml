@@ -1,0 +1,106 @@
+name: Carousel drip — one per day
+
+# Publishes the next queued carousel (queue/carousel_queue.txt) once a day, then
+# dequeues it. Keeps the feed fresh without ever dumping the whole backlog. An
+# empty queue is a clean no-op. Replaces the daily single Quote Card as the
+# owner of the 12:30 HKT slot.
+on:
+  schedule:
+    - cron: "30 4 * * *"        # 12:30 HKT
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Render + preview only (no publish, no dequeue)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: loop-instagram        # share instagram's lane; never overlap a publish
+  cancel-in-progress: false
+
+jobs:
+  drip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      IG_CARD_URL_BASE: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+      - run: pip install -r requirements.txt
+      - name: Pick next from queue
+        id: pick
+        run: |
+          QUEUE=queue/carousel_queue.txt
+          NEXT=""
+          if [ -f "$QUEUE" ]; then
+            NEXT=$(grep -vE '^\s*#' "$QUEUE" | grep -vE '^\s*$' | head -1 | tr -d '[:space:]')
+          fi
+          if [ -z "$NEXT" ]; then
+            echo "::notice::Carousel queue is empty — nothing to drip today."
+          fi
+          echo "next=$NEXT" >> "$GITHUB_OUTPUT"
+      - name: Render + preview
+        if: ${{ steps.pick.outputs.next != '' }}
+        run: |
+          set -f
+          python main.py --instagram --carousel "${{ steps.pick.outputs.next }}" --dry-run
+      - name: Commit rendered card
+        if: ${{ steps.pick.outputs.next != '' && github.event.inputs.dry_run != 'true' }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG not configured — not committing/publishing."
+            exit 0
+          fi
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add cards/ 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No new card to commit."
+          else
+            git commit -m "chore(ig): drip card ${{ steps.pick.outputs.next }} $(date -u +%F)"
+            for i in 1 2 3 4; do git push && break || sleep $((2 ** i)); done
+          fi
+      - name: Publish to Instagram
+        if: ${{ steps.pick.outputs.next != '' && github.event.inputs.dry_run != 'true' }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG_ACCESS_TOKEN not set — skipping publish."
+            exit 0
+          fi
+          set -f
+          python main.py --instagram --carousel "${{ steps.pick.outputs.next }}"
+      - name: Dequeue published carousel
+        if: ${{ steps.pick.outputs.next != '' && github.event.inputs.dry_run != 'true' }}
+        run: |
+          QUEUE=queue/carousel_queue.txt
+          # Drop the first non-comment, non-empty line (the one just published).
+          awk 'done==0 && $0 !~ /^[[:space:]]*#/ && $0 !~ /^[[:space:]]*$/ {done=1; next} {print}' \
+            "$QUEUE" > "$QUEUE.tmp" && mv "$QUEUE.tmp" "$QUEUE"
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add "$QUEUE"
+          if git diff --cached --quiet; then
+            echo "Queue unchanged."
+          else
+            git commit -m "chore(ig): dequeue ${{ steps.pick.outputs.next }}"
+            for i in 1 2 3 4; do git push && break || sleep $((2 ** i)); done
+          fi
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drip-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14
