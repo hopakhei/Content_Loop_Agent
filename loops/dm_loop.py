@@ -47,7 +47,16 @@ def run(
         ig = InstagramService(dry_run=False, logger=log)
     now = now or datetime.now(timezone.utc)
 
-    me = ig.verify()
+    try:
+        me = ig.verify()
+    except Exception as exc:
+        status = getattr(getattr(exc, "response", None), "status_code", None)
+        if status is not None and status >= 500:
+            # Meta-side outage: nothing actionable, next cron tick retries.
+            # 4xx (token/permission problems) still propagates and fails the run.
+            log.warning("IG /me returned %s — Graph outage, skipping this cycle.", status)
+            return {"sent": 0, "skipped": f"graph-{status}"}
+        raise
     state = _load_state(state_file)
     handled = state["handled"]
     links = _media_links(notion or NotionService(log), log)
