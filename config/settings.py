@@ -48,11 +48,11 @@ X_ACCESS_TOKEN = os.getenv("X_ACCESS_TOKEN", "").strip()
 X_ACCESS_SECRET = os.getenv("X_ACCESS_SECRET", "").strip()
 X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 
-# Include the CTA link on X? On by default now — the CTA is just a bare link
-# (no sell copy). Set false to post X link-free (max reach, no link
-# suppression) when growing followers matters more than the funnel; Threads
-# keeps the link regardless.
-X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", True)
+# Include the CTA link on X? Off by default — X posts go link-free: links cost
+# 30-50% reach (zero median engagement for free accounts) and a CTA tweet in a
+# chain burns an extra write from the 17-posts/24h free-tier quota. Threads
+# keeps the link regardless. Set true to restore links on X.
+X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", False)
 # Each tweet in a chain costs one write from the monthly credit budget, so a
 # 6-tweet thread = 6 posts' worth. Cap X at the root tweet by default — the
 # full chain still goes out on Threads (whose API is free).

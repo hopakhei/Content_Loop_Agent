@@ -9,9 +9,27 @@ from services.errors import PartialThreadError
 
 @pytest.fixture(autouse=True)
 def _deterministic_x_link(monkeypatch):
-    """Disable the randomized X link A/B by default so link-presence assertions
-    are deterministic; the A/B itself is exercised explicitly below."""
+    """Pin the legacy link-carrying X path so link-presence assertions stay
+    deterministic (the shipped default is now link-free; that default is
+    asserted explicitly in test_loop1_x_default_is_link_free below)."""
     monkeypatch.setattr(_settings, "X_LINK_AB", False)
+    monkeypatch.setattr(_settings, "X_INCLUDE_CTA", True)
+
+
+def test_loop1_x_default_is_link_free(monkeypatch):
+    """With shipped defaults (X_INCLUDE_CTA=False) the X post carries no URL;
+    Threads keeps the article CTA."""
+    monkeypatch.setattr(_settings, "X_INCLUDE_CTA", False)
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                  notion=notion, twitter=twitter, threads=threads)
+
+    assert len(twitter.threads) == 1
+    assert all("http" not in p for p in twitter.threads[0])
+    assert len(threads.threads) == 1
+    assert any("http" in p for p in threads.threads[0])
 
 
 class FakeNotion:
