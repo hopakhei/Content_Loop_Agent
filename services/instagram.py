@@ -65,13 +65,19 @@ class InstagramService:
 
     # ── auth / identity ──────────────────────────────────────────────────────
     def _me(self) -> dict:
-        r = self.session.get(
-            f"{API_BASE}/me",
-            params={"fields": "user_id,username", "access_token": self.token},
-            timeout=30,
-        )
-        r.raise_for_status()
-        return r.json()
+        # Graph occasionally throws a transient 500 on /me; one retry keeps the
+        # 30-minute DM cron from going red over a single blip.
+        for attempt in (1, 2):
+            r = self.session.get(
+                f"{API_BASE}/me",
+                params={"fields": "user_id,username", "access_token": self.token},
+                timeout=30,
+            )
+            if r.status_code >= 500 and attempt == 1:
+                time.sleep(5)
+                continue
+            r.raise_for_status()
+            return r.json()
 
     def _resolve_user_id(self) -> str:
         if not self.user_id:

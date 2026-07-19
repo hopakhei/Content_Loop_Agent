@@ -51,6 +51,26 @@ def test_verify_returns_handle():
     assert _svc().verify() == "ninetypm_ig"
 
 
+def test_me_retries_once_on_transient_500(monkeypatch):
+    import services.instagram as ig_mod
+
+    class FlakySession(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.calls = 0
+
+        def get(self, url, params=None, timeout=None):
+            self.calls += 1
+            if self.calls == 1:
+                return _Resp({"error": "server"}, status_code=500)
+            return super().get(url, params=params, timeout=timeout)
+
+    monkeypatch.setattr(ig_mod.time, "sleep", lambda s: None)
+    svc = _svc(session=FlakySession())
+    assert svc.verify() == "ninetypm_ig"
+    assert svc.session.calls == 2
+
+
 def test_publish_image_two_step():
     svc = _svc()
     mid = svc.publish_image("https://host/card.png", "一句金句\n\nlink in bio")
