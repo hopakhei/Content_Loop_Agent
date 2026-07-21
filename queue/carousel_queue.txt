@@ -1,5 +1,4 @@
 # Carousel drip queue — one carousels/<id>.json per line, published top-first,
 # one per day by carousel-drip.yml. Lines starting with # are comments.
 # Only put reviewed/approved specs here; an empty queue publishes nothing.
-bcg-matrix
 five-forces
