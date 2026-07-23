@@ -55,6 +55,7 @@ def run(
     twitter: Optional[TwitterService] = None,
     threads: Optional[ThreadsService] = None,
     instagram: Optional[InstagramService] = None,
+    digest_path: Optional[str] = None,
 ) -> dict:
     log = logger or logging.getLogger("loop.learn")
     notion = notion or NotionService(log)
@@ -135,9 +136,10 @@ def run(
 
     # Close the feedback loop for the MCP-less auto-producer: write a committed
     # digest it can read over git (it has no Notion access) and bias the next
-    # content batch toward what actually earns saves/reach.
-    if not dry_run:
-        _write_digest("state/performance_digest.md", summary, notes, log)
+    # content batch toward what actually earns saves/reach. Opt-in via
+    # digest_path so tests never write into the working tree.
+    if digest_path and not dry_run:
+        _write_digest(digest_path, summary, notes, log)
 
     if len(points) < MIN_DATA_POINTS:
         log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)

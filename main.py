@@ -220,7 +220,8 @@ def main(argv=None) -> int:
                 return 2
         elif args.loop == 2:
             from loops import learn_loop
-            learn_loop.run(dry_run=dry_run, logger=logger)
+            learn_loop.run(dry_run=dry_run, logger=logger,
+                           digest_path="state/performance_digest.md")
         else:
             from loops import generate_loop
             if args.all:
