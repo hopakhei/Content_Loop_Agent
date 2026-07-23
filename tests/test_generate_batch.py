@@ -67,3 +67,13 @@ def test_discover_articles_filters_and_sorts(tmp_path):
 
 def test_discover_articles_empty(tmp_path):
     assert discover_articles(str(tmp_path)) == []
+
+
+def test_units_file_accepts_non_numeric_slug_issue():
+    # Framework units use a slug issue ("porter"); the Article match must not
+    # crash on int('porter'). No article, cta_url supplied.
+    notion = FakeNotion()
+    summary = generate_loop.run(issue_number="porter", units_text=UNITS,
+                                notion=notion, cta_url="https://x.example")
+    assert summary["created"] == 2
+    assert notion.created[0]["title"] == "#porter-01 Thread"

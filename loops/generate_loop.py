@@ -46,12 +46,14 @@ def run(
     notion = notion or NotionService(log)
 
     # Resolve the Article (for relation + CTA inheritance) by id or Issue #.
+    # Framework units use a non-numeric slug issue (e.g. "porter") that matches
+    # no Article — the numeric match is skipped and cta_url is supplied instead.
     article = None
     if article_id:
         article = notion.get_article(article_id)
-    else:
+    elif str(issue_number).isdigit():
         for a in notion.list_articles():
-            if a.issue is not None and int(a.issue) == int(issue_number):
+            if a.issue is not None and str(a.issue).isdigit() and int(a.issue) == int(issue_number):
                 article = a
                 break
     if article:
