@@ -131,11 +131,17 @@ def run(
         "rules_updated": False,
     }
 
+    notes = _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas)
+
+    # Close the feedback loop for the MCP-less auto-producer: write a committed
+    # digest it can read over git (it has no Notion access) and bias the next
+    # content batch toward what actually earns saves/reach.
+    if not dry_run:
+        _write_digest("state/performance_digest.md", summary, notes, log)
+
     if len(points) < MIN_DATA_POINTS:
         log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)
         return summary
-
-    notes = _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas)
     confidence = min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS))
     evidence_ids = [
         r["post_id"] for r in rows
@@ -368,6 +374,44 @@ def _ordinal(iso_date: str):
 
 def _signed(v) -> str:
     return "n/a" if v is None else f"{v:+d}"
+
+
+def _write_digest(path: str, summary: dict, notes: str, log) -> None:
+    """Write a small, human-readable performance digest into the repo so the
+    auto-producer (which has no Notion access) can read the latest signals over
+    git and steer the next content batch. Best-effort — never fails the run."""
+    from pathlib import Path
+    try:
+        hooks = summary.get("best_hook_by_platform", {})
+        lines = [
+            "# Performance digest",
+            "",
+            "_Auto-written by the learn loop each night. The framework auto-producer "
+            "reads this before writing the next batch. Newest data wins._",
+            "",
+            f"- date: {hkt_now(settings.TZ_NAME).date().isoformat()}",
+            f"- data points: {summary.get('data_points', 0)} | confidence: {summary.get('confidence', 0)}%",
+            "",
+            "## Signals",
+            "",
+            "```",
+            notes,
+            "```",
+            "",
+            "## What to make more of next",
+            "",
+        ]
+        if hooks:
+            for plat, hk in hooks.items():
+                lines.append(f"- **{plat}** — open with the winning hook style: **{hk}**.")
+        else:
+            lines.append("- Not enough data yet — keep the three hook styles "
+                         "(反共識 / 數據衝擊 / 懸念缺口) balanced and vary framework topics.")
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+        log.info("Wrote performance digest → %s", path)
+    except Exception as exc:  # never let telemetry writing break the run
+        log.warning("Could not write performance digest: %s", exc)
 
 
 def _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas) -> str:

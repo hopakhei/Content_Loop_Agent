@@ -19,7 +19,7 @@ jobs:
   learn:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write            # commit the performance digest for the producer
       issues: write
     env:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
@@ -54,6 +54,18 @@ jobs:
           EXTRA=""
           if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="--dry-run"; fi
           python main.py --loop 2 $EXTRA
+      - name: Commit performance digest
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add state/performance_digest.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No digest change to commit."
+          else
+            git commit -m "chore(learn): performance digest $(date -u +%F)"
+            for i in 1 2 3 4; do git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }; done
+          fi
       - name: Upload run log
         if: always()
         uses: actions/upload-artifact@v4
