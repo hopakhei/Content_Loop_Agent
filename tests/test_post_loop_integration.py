@@ -313,16 +313,19 @@ def _thread_draft():
     )
 
 
-def test_loop1_caps_x_thread_at_root_but_threads_gets_full_chain():
+def test_loop1_x_posts_full_thread(monkeypatch):
+    # Production posts X link-free: the full thread's content segments, no CTA.
+    monkeypatch.setattr(_settings, "X_INCLUDE_CTA", False)
     notion = FakeNotion([_thread_draft()])
     twitter, threads = FakeTwitter(), FakeThreads()
     post_loop.run(
         dry_run=False, slot="12:30", assume_yes=True,
         notion=notion, twitter=twitter, threads=threads,
     )
-    # X: root tweet only (each chained tweet costs a monthly write credit).
-    assert len(twitter.threads[0]) == 1
+    # X: the whole thread (3 content segments), link-free — no root-only truncation.
+    assert len(twitter.threads[0]) == 3
     assert twitter.threads[0][0].startswith("鈎子推文")
+    assert all("http" not in p for p in twitter.threads[0])
     # Threads: full chain + its CTA tweet (a bare link; Threads API is free).
     assert len(threads.threads[0]) == 4
     assert threads.threads[0][-1] == "https://90spm.substack.com/p/102?r=x"

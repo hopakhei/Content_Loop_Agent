@@ -53,10 +53,10 @@ X_BEARER_TOKEN = os.getenv("X_BEARER_TOKEN", "").strip()
 # chain burns an extra write from the 17-posts/24h free-tier quota. Threads
 # keeps the link regardless. Set true to restore links on X.
 X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", False)
-# Each tweet in a chain costs one write from the monthly credit budget, so a
-# 6-tweet thread = 6 posts' worth. Cap X at the root tweet by default — the
-# full chain still goes out on Threads (whose API is free).
-X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 1)
+# Max tweets per X thread. Each chained tweet costs one write from the free-tier
+# quota (17/24h, 500/month), but a root-only thread reads as half a thought, so
+# post the full chain. Lower this if the write quota starts 402/429-ing.
+X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 10)
 # Randomized per-post X link A/B: when on (and X_INCLUDE_CTA is on), each X
 # post flips a fair coin between carrying its link and going link-free, tagged
 # on the Performance row so Loop 2 measures the reach cost cleanly instead of
