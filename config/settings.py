@@ -64,6 +64,10 @@ X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 1)
 X_LINK_AB = _flag("X_LINK_AB", True)
 # Free-tier monthly write allowance, for the LEARN budget telemetry.
 X_MONTHLY_WRITE_BUDGET = _int("X_MONTHLY_WRITE_BUDGET", 500)
+# Strategy pivot: promote the consulting-framework series on X/Threads and pause
+# the numbered personal essays (101–201, 127…). Post loop then only posts drafts
+# whose issue is a non-numeric slug (framework units). Set false to resume essays.
+POST_FRAMEWORKS_ONLY = _flag("POST_FRAMEWORKS_ONLY", True)
 
 
 def _json_map(name: str, default: dict) -> dict:

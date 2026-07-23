@@ -79,6 +79,17 @@ def run(
                     log.warning("Could not deprecate the X park rule: %s", exc)
 
     eligible = make_eligibility(set(publishers))
+    if settings.POST_FRAMEWORKS_ONLY:
+        # Strategy pivot: X/Threads promote the consulting-framework series, not
+        # the numbered personal essays (101–201, 127…). Essay drafts have a
+        # numeric issue in their title ("#127-01 …"); framework drafts use a
+        # slug ("#porter-01 …"). Skip the numeric ones. Flip the flag to resume.
+        _essay_title = re.compile(r"^#?\d+-")
+        _base_eligible = eligible
+
+        def eligible(d, _base=_base_eligible):  # noqa: F811 — intentional wrap
+            return _base(d) and not _essay_title.match(d.title or "")
+        log.info("POST_FRAMEWORKS_ONLY on — numbered essay drafts are paused on X/Threads.")
     slot = slot or nearest_slot(ref, settings.POST_SLOTS_HKT)
 
     rules = notion.get_rules()

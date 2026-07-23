@@ -14,6 +14,26 @@ def _deterministic_x_link(monkeypatch):
     asserted explicitly in test_loop1_x_default_is_link_free below)."""
     monkeypatch.setattr(_settings, "X_LINK_AB", False)
     monkeypatch.setattr(_settings, "X_INCLUDE_CTA", True)
+    # Most tests exercise the numbered essay drafts; keep them postable here.
+    # The frameworks-only pivot is asserted explicitly below.
+    monkeypatch.setattr(_settings, "POST_FRAMEWORKS_ONLY", False)
+
+
+def test_loop1_frameworks_only_skips_numbered_essays(monkeypatch):
+    monkeypatch.setattr(_settings, "POST_FRAMEWORKS_ONLY", True)
+    essay = _draft()                       # title "#102-01 …" (numeric issue)
+    framework = _draft()
+    framework.id = "fw1"
+    framework.title = "#porter-01 Thread"  # slug issue = framework
+    notion = FakeNotion([essay, framework])
+    twitter = FakeTwitter()
+
+    summary = post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                            notion=notion, twitter=twitter)
+
+    # Only the framework draft is posted; the essay is paused.
+    assert notion.marked == ["fw1"]
+    assert all(r["draft"] != "d1" for r in summary["posted"] if "draft" in r)
 
 
 def test_loop1_x_default_is_link_free(monkeypatch):
