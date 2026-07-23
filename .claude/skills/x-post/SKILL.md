@@ -14,8 +14,9 @@ description: >
   自 2025-03 起中位數 engagement 歸零（Buffer 18.8M post 分析）。
 - **也不用「link in first reply」**：每個 reply 都消耗一次 API call，
   free tier 有 17 posts/24h 上限，補 reply 會爆額。
-- CTA 一律導去 Instagram：`全文在 IG @90s.pm.investing`，或者索性不落 CTA。
-  寫得夠好，讀者自己會去搵。
+- **不 cross-promo 去 IG**：X/Threads 帖各自獨立、自成一篇完整內容，結尾落喺
+  insight 度，唔好叫人「去 IG 睇」（跨平台導流好突兀）。X 索性不落 CTA；
+  Threads 可保留 {CTA_URL}（Substack）做 newsletter 連結，但唔提 IG。
 
 ## 語氣
 
