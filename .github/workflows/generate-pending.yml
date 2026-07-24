@@ -1,0 +1,85 @@
+name: Generate pending framework units
+
+# Inserts any framework units file (units/<slug>.md with a non-numeric slug)
+# that has not yet been inserted into Notion. This is what lets the MCP-less
+# auto-producer Routine stay hands-off: it only writes+commits units files, and
+# this cron turns them into Notion drafts for the post loop. A committed ledger
+# (state/inserted_units.txt) makes it idempotent — no draft is inserted twice.
+on:
+  schedule:
+    - cron: "0 3,15 * * *"       # twice daily
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Parse only, do not write to Notion or the ledger"
+        type: boolean
+        default: false
+
+concurrency:
+  group: loop-generate            # never overlap a Loop 3 run
+  cancel-in-progress: false
+
+jobs:
+  insert:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      CTA_URL: "https://90spminvesting.substack.com/?r=25kdss"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Insert un-inserted framework units
+        run: |
+          set -f
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping."
+            exit 0
+          fi
+          LEDGER=state/inserted_units.txt
+          mkdir -p state; touch "$LEDGER"
+          DID=0
+          for f in units/*.md; do
+            [ -e "$f" ] || continue
+            slug=$(basename "$f" .md)
+            # Only framework units (non-numeric slug). Essays (101-201, 127) use
+            # their own pipeline and are excluded from the frameworks-only feed.
+            case "$slug" in [0-9]*) continue;; esac
+            if grep -qxF "$slug" "$LEDGER"; then continue; fi
+            echo "::notice::Inserting units/$slug.md"
+            if [ "${{ inputs.dry_run }}" = "true" ]; then
+              python main.py --loop 3 --issue "$slug" --units-file "$f" --cta-url "$CTA_URL" --dry-run
+            else
+              python main.py --loop 3 --issue "$slug" --units-file "$f" --cta-url "$CTA_URL"
+              echo "$slug" >> "$LEDGER"
+              DID=1
+            fi
+          done
+          echo "did_insert=$DID" >> "$GITHUB_ENV"
+      - name: Commit ledger
+        if: ${{ github.event.inputs.dry_run != 'true' && env.did_insert == '1' }}
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add state/inserted_units.txt
+          if git diff --cached --quiet; then
+            echo "Ledger unchanged."
+          else
+            git commit -m "chore(units): mark framework units inserted $(date -u +%F)"
+            for i in 1 2 3 4; do git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }; done
+          fi
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: genpending-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14

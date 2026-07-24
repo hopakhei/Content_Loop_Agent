@@ -1,0 +1,67 @@
+name: Instagram — comment-to-DM
+
+# Every 30 min: private-reply the article link to keyword comments on recent
+# IG posts (links are tappable in DMs). One reply per comment, enforced via a
+# committed state file. Skips cleanly until IG_ACCESS_TOKEN exists with the
+# manage_comments + manage_messages scopes.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Read real comments, send nothing, write no state"
+        type: boolean
+        default: false
+
+concurrency:
+  group: loop-ig-dm
+  cancel-in-progress: false
+
+jobs:
+  dm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write            # commit the handled-comments state file
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Poll comments and DM
+        run: |
+          if [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG_ACCESS_TOKEN not set — skipping comment-to-DM."
+            exit 0
+          fi
+          EXTRA=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="--dry-run"; fi
+          python main.py --instagram-dm $EXTRA
+      - name: Commit state
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add state/ 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No state change."
+          else
+            git commit -m "chore(ig): dm state"
+            for i in 1 2 3 4; do git pull --rebase && git push && break || sleep $((2 ** i)); done
+          fi
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: igdm-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 7

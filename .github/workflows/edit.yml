@@ -1,0 +1,24 @@
+name: Apply draft edits
+
+# Applies edits/pending.json (batched text-property rewrites authored in a
+# Claude Code session) to the Notion pages. Read the file, write the pages —
+# nothing else. Dispatch manually after committing new edits.
+on:
+  workflow_dispatch:
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python scripts/apply_edits.py edits/pending.json

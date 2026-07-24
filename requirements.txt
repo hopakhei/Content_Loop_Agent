@@ -1,0 +1,8 @@
+# LOOP — runtime dependencies
+# 2.7+ exposes the data_sources API (databases.query was removed); <3 pins the line we target.
+notion-client>=2.7,<3
+tweepy>=4.14.0
+requests>=2.31.0
+anthropic>=0.40.0
+python-dotenv>=1.0.0
+pillow>=10.0.0

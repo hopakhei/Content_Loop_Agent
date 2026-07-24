@@ -1,0 +1,3 @@
+# LOOP — development / test dependencies
+-r requirements.txt
+pytest>=8.0.0

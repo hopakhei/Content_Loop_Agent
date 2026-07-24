@@ -1,0 +1,87 @@
+name: Instagram — post a card
+
+# Manual publish of a single card/carousel. The daily 12:30 HKT slot is now
+# owned by carousel-drip.yml (one queued carousel per day); this workflow keeps
+# only workflow_dispatch for one-off publishes. Renders the PNG, commits it (so
+# raw.githubusercontent serves it as a public image_url), then publishes.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Render + preview only (no commit, no publish)"
+        type: boolean
+        default: false
+      carousel_issue:
+        description: "Publish carousels/<issue>.json as a multi-slide carousel (blank = daily Quote Card)"
+        type: string
+        default: ""
+
+concurrency:
+  group: loop-instagram
+  cancel-in-progress: false
+
+jobs:
+  instagram:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write            # commit the rendered card so its raw URL is live
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      IG_CARD_URL_BASE: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: sudo apt-get update && sudo apt-get install -y fonts-noto-cjk
+      - run: pip install -r requirements.txt
+      - name: Render + preview
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping Instagram."
+            exit 0
+          fi
+          set -f
+          CAROUSEL=""
+          if [ -n "${{ inputs.carousel_issue }}" ]; then CAROUSEL="--carousel ${{ inputs.carousel_issue }}"; fi
+          python main.py --instagram $CAROUSEL --dry-run
+      - name: Commit rendered card
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG not configured — not committing/publishing."
+            exit 0
+          fi
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add cards/ 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No new card to commit."
+          else
+            git commit -m "chore(ig): card $(date -u +%F)"
+            for i in 1 2 3 4; do git push && break || sleep $((2 ** i)); done
+          fi
+      - name: Publish to Instagram
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ] || [ -z "$IG_ACCESS_TOKEN" ]; then
+            echo "::notice::IG_ACCESS_TOKEN not set — skipping publish."
+            exit 0
+          fi
+          set -f
+          CAROUSEL=""
+          if [ -n "${{ inputs.carousel_issue }}" ]; then CAROUSEL="--carousel ${{ inputs.carousel_issue }}"; fi
+          python main.py --instagram $CAROUSEL
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: instagram-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14

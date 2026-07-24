@@ -1,0 +1,97 @@
+name: Loop 2 — LEARN
+
+# 02:00 HKT == 18:00 UTC.
+on:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Analyse without writing Agent Rules"
+        type: boolean
+        default: false
+
+concurrency:
+  group: loop-learn
+  cancel-in-progress: false
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write            # commit the performance digest for the producer
+      issues: write
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      X_API_KEY: ${{ secrets.X_API_KEY }}
+      X_API_SECRET: ${{ secrets.X_API_SECRET }}
+      X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+      X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+      X_BEARER_TOKEN: ${{ secrets.X_BEARER_TOKEN }}
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      # Without these the learn loop builds no InstagramService, so every
+      # Instagram row is skipped and its metrics stay null. This is why the
+      # carousel series had zero captured performance.
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run Loop 2
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping scheduled LEARN. Add repo secrets to enable."
+            exit 0
+          fi
+          EXTRA=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="--dry-run"; fi
+          python main.py --loop 2 $EXTRA
+      - name: Commit performance digest
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add state/performance_digest.md 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No digest change to commit."
+          else
+            git commit -m "chore(learn): performance digest $(date -u +%F)"
+            for i in 1 2 3 4; do git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }; done
+          fi
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learn-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14
+      - name: File failure notice
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = 'loop-alert';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const stamp = new Date().toISOString().replace('T', ' ').slice(0, 16) + ' UTC';
+            const body = `**Loop 2 (LEARN) failed** at ${stamp}.\n\n- Run: ${runUrl}\n` +
+              `- See the learn-log-${context.runId} artifact for detail.`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              ...context.repo, state: 'open', labels: label, per_page: 1,
+            });
+            if (issues.length) {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: issues[0].number, body });
+            } else {
+              await github.rest.issues.create({
+                ...context.repo, labels: [label],
+                title: '🚨 LOOP posting failures — rolling incident log',
+                body: 'Automated alerts from the POST/LEARN workflows. Close after fixing; a new one is opened on the next failure.\n\n' + body,
+              });
+            }

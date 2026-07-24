@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Run logs (keep the directory, ignore the contents)
+logs/*
+!logs/.gitkeep
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Bundled CJK font (large; CI apt-installs fonts-noto-cjk instead)
+assets/fonts/*.otf
+assets/fonts/*.ttc
+
+# Raw extracted book prose (copyrighted intermediate) — never publish
+frameworks/raw/

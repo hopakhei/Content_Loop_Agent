@@ -1,0 +1,82 @@
+name: Loop 3 — GENERATE
+
+# Fission article texts in articles/ into Notion Content Drafts.
+# Dispatch manually. Requires NOTION_TOKEN + ANTHROPIC_API_KEY secrets.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Preview without writing to Notion"
+        type: boolean
+        default: true
+      fresh:
+        description: "Park each article's existing unposted drafts first"
+        type: boolean
+        default: false
+      issue:
+        description: "Single Issue # (blank = all articles/<issue>.md)"
+        type: string
+        default: ""
+      cta_url:
+        description: "CTA URL override (needed when no Article page exists for the issue)"
+        type: string
+        default: ""
+
+concurrency:
+  group: loop-generate
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run Loop 3
+        run: |
+          set -f   # no globbing — CTA URLs carry ? and & which are glob/shell metachars
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping. Add repo secrets to enable."
+            exit 0
+          fi
+          EXTRA=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="$EXTRA --dry-run"; fi
+          if [ "${{ inputs.fresh }}" = "true" ]; then EXTRA="$EXTRA --fresh"; fi
+          if [ -n "${{ inputs.cta_url }}" ]; then EXTRA="$EXTRA --cta-url ${{ inputs.cta_url }}"; fi
+          ISSUE="${{ inputs.issue }}"
+          # Pre-generated units (written by Claude Code on the subscription)
+          # take priority — that path needs NO Anthropic API key.
+          if [ -n "$ISSUE" ] && [ -f "units/$ISSUE.md" ]; then
+            echo "::notice::Using pre-generated units/$ISSUE.md — no Anthropic API call."
+            python main.py --loop 3 --issue "$ISSUE" --units-file "units/$ISSUE.md" $EXTRA
+          elif [ -n "$ISSUE" ]; then
+            if [ -z "$ANTHROPIC_API_KEY" ]; then
+              echo "::error::No units/$ISSUE.md and ANTHROPIC_API_KEY not set — nothing to generate with."
+              exit 1
+            fi
+            python main.py --loop 3 --issue "$ISSUE" --article-file "articles/$ISSUE.md" $EXTRA
+          else
+            if [ -z "$ANTHROPIC_API_KEY" ]; then
+              echo "::error::--all needs ANTHROPIC_API_KEY (per-issue units files can't drive a batch)."
+              exit 1
+            fi
+            python main.py --loop 3 --all $EXTRA
+          fi
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: generate-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14
