@@ -33,6 +33,18 @@ description: >
   post 長好多，因為要撐起「大名 + 三個例子 + 判斷」成套故事。唔好為咗短而砍走
   論證或者大名。
 
+## 鐵律二點五：一個框架 = 一篇旗艦 Thread
+
+- **唔好一個框架切成 5 個 unit 連續出。** 舊做法一個框架出 Thread + 反共識 + 數據衝擊
+  + Quote Card + 下集鈎子，五個 unit 講緊同一件事（同一個護城河、同一批 Costco/
+  Apple/Ferrari 例子），一個時段一個咁連續出 18 個鐘 → Threads timeline 好似洗版，
+  讀者以為你不斷出同一個 post。
+- 數據亦都證實 rehash unit 跑輸：Thread 2.81% engagement，反共識 0.56%、
+  Quote Card 0.55%、數據衝擊 0.33%。留返最強嗰篇就夠。
+- 所以 units/<slug>.md **每個框架只寫一個【Thread】unit**，把整套故事（大名 + 三個
+  例子 + 判斷）放晒入去。要帶下一個框架，就喺旗艦嘅最後一段輕輕帶一句 teaser，
+  唔使開多一個 unit。
+
 ## 鐵律三：借大名做權威（顧問框架系列）
 
 - 每篇要讓人「感覺又大名」：帶出 **McKinsey / BCG / Bain** 其中至少一個，
