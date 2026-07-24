@@ -196,13 +196,24 @@ def _publish_one(
             # to the no-link arm.
             if (not settings.X_INCLUDE_CTA) or x_link_arm == "no_link":
                 base = strip_cta(base, plat_cta)
-            cap = max(1, settings.X_MAX_THREAD_POSTS)
-            if len(base) > cap:
-                log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(base))
-                base = base[:cap]
+            if settings.X_LONGPOST:
+                # Fold the whole argument into ONE X post (Premium ≤25k chars):
+                # one write from the quota, the full framework in one read.
+                joined = "\n\n".join(p for p in base if p and p.strip())
+                base = [joined] if joined.strip() else []
+            else:
+                cap = max(1, settings.X_MAX_THREAD_POSTS)
+                if len(base) > cap:
+                    log.info("X variant: chain capped at %d of %d posts (write quota).", cap, len(base))
+                    base = base[:cap]
         posts_for[platform] = base
         cta_for[platform] = plat_cta
-        limit = 500 if platform == "Threads" else 280
+        limit = (
+            settings.X_LONGPOST_LIMIT
+            if platform == "X" and settings.X_LONGPOST
+            else 500 if platform == "Threads"
+            else 280
+        )
         for warning in length_warnings(base, limit=limit):
             log.warning("Length (%s): %s", platform, warning)
     if "X" in targets and settings.X_INCLUDE_CTA and settings.X_LINK_AB:

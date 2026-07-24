@@ -57,6 +57,15 @@ X_INCLUDE_CTA = _flag("X_INCLUDE_CTA", False)
 # quota (17/24h, 500/month), but a root-only thread reads as half a thought, so
 # post the full chain. Lower this if the write quota starts 402/429-ing.
 X_MAX_THREAD_POSTS = _int("X_MAX_THREAD_POSTS", 10)
+# Post the whole framework as ONE X post instead of a reply chain. X Premium
+# allows up to 25,000 chars, so a single long post carries the full argument
+# while spending only one write from the quota (a chain burns one per segment).
+# The composed segments are joined with blank lines into that single post.
+# Threads still ships the full multi-part chain. Set false to chain on X too.
+X_LONGPOST = _flag("X_LONGPOST", True)
+# Char ceiling for a single X long post (Premium is 25,000). Used only as the
+# length-warning limit when X_LONGPOST is on.
+X_LONGPOST_LIMIT = _int("X_LONGPOST_LIMIT", 25000)
 # Randomized per-post X link A/B: when on (and X_INCLUDE_CTA is on), each X
 # post flips a fair coin between carrying its link and going link-free, tagged
 # on the Performance row so Loop 2 measures the reach cost cleanly instead of

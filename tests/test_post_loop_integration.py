@@ -314,21 +314,40 @@ def _thread_draft():
 
 
 def test_loop1_x_posts_full_thread(monkeypatch):
-    # Production posts X link-free: the full thread's content segments, no CTA.
+    # Production posts X as ONE long post carrying the whole framework, link-free
+    # (X_LONGPOST): every segment folded in, one write from the quota.
     monkeypatch.setattr(_settings, "X_INCLUDE_CTA", False)
+    monkeypatch.setattr(_settings, "X_LONGPOST", True)
     notion = FakeNotion([_thread_draft()])
     twitter, threads = FakeTwitter(), FakeThreads()
     post_loop.run(
         dry_run=False, slot="12:30", assume_yes=True,
         notion=notion, twitter=twitter, threads=threads,
     )
-    # X: the whole thread (3 content segments), link-free — no root-only truncation.
-    assert len(twitter.threads[0]) == 3
-    assert twitter.threads[0][0].startswith("鈎子推文")
-    assert all("http" not in p for p in twitter.threads[0])
+    # X: a single post, but it holds the full argument (all 3 segments), link-free.
+    assert len(twitter.threads[0]) == 1
+    x_post = twitter.threads[0][0]
+    assert x_post.startswith("鈎子推文")
+    assert "第二條" in x_post and "第三條" in x_post
+    assert "http" not in x_post
     # Threads: full chain + its CTA tweet (a bare link; Threads API is free).
     assert len(threads.threads[0]) == 4
     assert threads.threads[0][-1] == "https://90spm.substack.com/p/102?r=x"
+
+
+def test_loop1_x_longpost_off_chains_full_thread(monkeypatch):
+    # With X_LONGPOST off, X falls back to the capped reply chain (legacy path).
+    monkeypatch.setattr(_settings, "X_INCLUDE_CTA", False)
+    monkeypatch.setattr(_settings, "X_LONGPOST", False)
+    notion = FakeNotion([_thread_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(
+        dry_run=False, slot="12:30", assume_yes=True,
+        notion=notion, twitter=twitter, threads=threads,
+    )
+    assert len(twitter.threads[0]) == 3
+    assert twitter.threads[0][0].startswith("鈎子推文")
+    assert all("http" not in p for p in twitter.threads[0])
 
 
 class QuotaExhaustedTwitter:
