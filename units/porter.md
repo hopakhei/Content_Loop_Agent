@@ -1,4 +1,4 @@
-論點地圖（供人工過目；解析器只讀下方單位）— Porter 三種基本策略｜顧問框架 × 投資
+論點地圖（供人工過目；解析器只讀下方單位）— Porter 三種基本策略｜90s.pm.investing × McKinsey BCG Bain 策略框架
 - 一個框架 = 一篇旗艦 Thread。唔好一個框架切成 5 個講同一件事嘅 unit 連續出（Threads 會好似洗版，數據上啲 rehash unit 又跑輸）。
 - 買股票只講「護城河深」等於沒講；Michael Porter 1980 年在 Harvard 定義：一間公司要有防守力，只有三條路——成本最低、與眾不同、專攻一角。
 - McKinsey、BCG、Bain 四十年來用同一套框架替客戶做選擇，投資者可以借來當選股篩子。

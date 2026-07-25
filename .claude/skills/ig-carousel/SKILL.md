@@ -55,7 +55,7 @@ description: >
   這類「被誰採用」的真實陳述來沾大名的光。
 - **投資角度**：每個 framework 都拉回投資決定（判斷護城河、拆解估值、看清風險），
   與「畫樹／MECE」一脈相承——這是 90s.pm.investing 的存在理由，不是純顧問教材。
-- kicker 用「顧問框架 NN」標明系列身份。
+- kicker 用「90s.pm.investing × McKinsey BCG Bain 策略框架 NN」標明系列身份（「顧問框架」四個字唔再用）。
 - 版權：概念公開可教，但一律用品牌語氣重寫成故事，**不抄 Umbrex 原書句子**。
 
 ## 編輯規矩（用戶逐輯 review 定下，全部必守）
