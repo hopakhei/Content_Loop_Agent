@@ -110,6 +110,36 @@ MOTIF = (28, 36, 46)
 MOTIF_KEY = (34, 52, 51)      # accent-tinted, for the one line worth noticing
 
 
+def _photo_bg(img, path, dim: float = 0.80, blur: int = 6):
+    """Composite a real photograph behind the slide.
+
+    Cover-fits the image to the canvas, blurs it, then lays a dark scrim over
+    it at `dim` opacity. Both steps are the point: dense Traditional Chinese
+    body copy over an unmodified photo is unreadable, so the picture has to
+    read as atmosphere rather than subject. dim=0 shows the raw photo (only
+    sane on a cover with almost no text); 0.80 is the safe default for a
+    content slide.
+
+    Photos are committed under backgrounds/ and composited at render time —
+    nothing is fetched during a run, so carousel-drip stays offline.
+    """
+    from PIL import ImageFilter
+    src = Image.open(path).convert("RGB")
+    # cover-fit: scale so both axes are covered, then centre-crop.
+    scale = max(W / src.width, H / src.height)
+    src = src.resize((max(1, int(src.width * scale)), max(1, int(src.height * scale))),
+                     Image.LANCZOS)
+    left, top = (src.width - W) // 2, (src.height - H) // 2
+    src = src.crop((left, top, left + W, top + H))
+    if blur:
+        src = src.filter(ImageFilter.GaussianBlur(blur))
+    img.paste(src, (0, 0))
+    if dim > 0:
+        scrim = Image.new("RGB", (W, H), BG)
+        img.paste(Image.blend(src, scrim, min(1.0, dim)), (0, 0))
+    return img
+
+
 def _motif_box(d, cx, cy, r, colour=MOTIF, w=4):
     d.rectangle([cx - r, cy - r, cx + r, cy + r], outline=colour, width=w)
 
@@ -226,9 +256,22 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
         d = ImageDraw.Draw(img)
         kind = s.get("kind", "content")
 
-        # Framework motif first, so every later stroke sits on top of it.
+        # Background layers first, so every later stroke sits on top of them.
+        # A photo wins over the line-art motif when a slide carries both.
+        photo = s.get("image", spec.get("image"))
+        if photo:
+            p = Path(photo)
+            if not p.is_absolute():
+                p = Path(__file__).resolve().parent.parent / p
+            if p.exists():
+                img = _photo_bg(img, p,
+                                dim=float(s.get("image_dim", spec.get("image_dim", 0.80))),
+                                blur=int(s.get("image_blur", spec.get("image_blur", 6))))
+                d = ImageDraw.Draw(img)
+            else:
+                photo = None      # fall through to the motif
         motif = s.get("motif", spec.get("motif"))
-        if motif:
+        if motif and not photo:
             _draw_motif(d, motif)
 
         if kind == "cover":
