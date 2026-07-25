@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 03",
       "head": "再好的公司，\n贏不過爛行業",
-      "sub": "Porter 的五力，看穿一個行業\n到底准你留住多少利潤。"
+      "sub": "Porter 的五力，看穿一個行業\n到底准你留住多少利潤。",
+      "image": "backgrounds/five-forces-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 核心",

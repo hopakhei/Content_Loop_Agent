@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 01",
       "head": "「護城河深」，\n是最懶的答案",
-      "sub": "麥肯錫、BCG 都在用的框架。\nPorter 用三條路，講穿一間公司的防守力。"
+      "sub": "麥肯錫、BCG 都在用的框架。\nPorter 用三條路，講穿一間公司的防守力。",
+      "image": "backgrounds/porter-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 三種贏法",

@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 05",
       "head": "打敗龍頭的，\n總是一個玩具",
-      "sub": "破壞式創新：哈佛 Christensen\n教你認出下一個顛覆者，和快被顛覆的龍頭。"
+      "sub": "破壞式創新：哈佛 Christensen\n教你認出下一個顛覆者，和快被顛覆的龍頭。",
+      "image": "backgrounds/disruptive-innovation-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 一個怪現象",

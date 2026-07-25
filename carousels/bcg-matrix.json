@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 02",
       "head": "賺錢的公司，\n也可能正在死",
-      "sub": "BCG 1970 年的矩陣，\n一眼看穿利潤的來源和未來。"
+      "sub": "BCG 1970 年的矩陣，\n一眼看穿利潤的來源和未來。",
+      "image": "backgrounds/bcg-matrix-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 一張 2×2",

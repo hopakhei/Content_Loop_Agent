@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 08",
       "head": "越做得多，\n成本越低",
-      "sub": "BCG 最出名的發明，\n解釋了龍頭為何越拉越遠。"
+      "sub": "BCG 最出名的發明，\n解釋了龍頭為何越拉越遠。",
+      "image": "backgrounds/experience-curve-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 起源",

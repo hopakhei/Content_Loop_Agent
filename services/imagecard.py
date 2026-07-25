@@ -274,11 +274,16 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
         if motif and not photo:
             _draw_motif(d, motif)
 
+        # Muted grey reads fine on flat near-black, but over a photo — even a
+        # dimmed one — the bright patches swallow it. Lift the secondary tones
+        # when a picture is behind them.
+        sub_fill = (208, 216, 224) if photo else SUB
+
         if kind == "cover":
             d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
-            d.text((MARGIN, 128), s.get("kicker", ""), font=F(34), fill=SUB)
+            d.text((MARGIN, 128), s.get("kicker", ""), font=F(34), fill=sub_fill)
             y = _text_block(d, s.get("head", ""), F(116), MARGIN, 380, W - 2 * MARGIN, FG, 1.35)
-            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, SUB, 1.55)
+            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, sub_fill, 1.55)
             cue, f = "往右滑", F(40)
             cw = d.textlength(cue, font=f)
             d.text((W - MARGIN - cw - 70, H - 232), cue, font=f, fill=SUB)

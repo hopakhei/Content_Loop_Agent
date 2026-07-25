@@ -7,7 +7,10 @@
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 06",
       "head": "增長，有四種\n危險程度",
-      "sub": "Ansoff 矩陣：一眼看穿一間公司\n想怎麼長大，以及有多冒險。"
+      "sub": "Ansoff 矩陣：一眼看穿一間公司\n想怎麼長大，以及有多冒險。",
+      "image": "backgrounds/ansoff-matrix-cover.jpg",
+      "image_dim": 0.58,
+      "image_blur": 2
     },
     {
       "kicker": "01 · 兩條軸",
