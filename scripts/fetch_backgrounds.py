@@ -20,6 +20,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import json
 import sys
 from io import BytesIO
@@ -38,8 +39,48 @@ UA = "90spm-investing-carousel/1.0 (+https://github.com/hopakhei/Content_Loop_Ag
 W, H = 1080, 1350          # 4:5, matching the renderer canvas
 MIN_W, MIN_H = 1080, 1080  # reject anything too small to crop cleanly
 
+# Openverse hands back watermarked *preview* files for these providers even
+# when the underlying work is CC0 — a rawpixel result arrived tiled with the
+# word "rawpixel" across the frame. Unusable as a background, so skip them.
+WATERMARKED_SOURCES = {"rawpixel"}
 
-def search(query: str, want: int = 8) -> list[dict]:
+# Optional higher-quality providers. Both licences allow commercial use with
+# no mandatory attribution, and their libraries dwarf the CC0-only pool, which
+# in practice returns nothing for most of these framework subjects. Set either
+# key as a repo secret to switch over; without one the script stays on
+# Openverse/CC0.
+PEXELS_KEY = os.getenv("PEXELS_API_KEY", "").strip()
+UNSPLASH_KEY = os.getenv("UNSPLASH_ACCESS_KEY", "").strip()
+
+
+def _search_pexels(query: str, want: int) -> list[dict]:
+    r = requests.get(
+        "https://api.pexels.com/v1/search",
+        params={"query": query, "per_page": want, "orientation": "portrait"},
+        headers={"Authorization": PEXELS_KEY, "User-Agent": UA}, timeout=45,
+    )
+    r.raise_for_status()
+    return [{"url": p["src"]["original"], "title": p.get("alt"),
+             "creator": p.get("photographer"), "license": "pexels",
+             "source": "pexels", "foreign_landing_url": p.get("url")}
+            for p in r.json().get("photos", [])]
+
+
+def _search_unsplash(query: str, want: int) -> list[dict]:
+    r = requests.get(
+        "https://api.unsplash.com/search/photos",
+        params={"query": query, "per_page": want, "orientation": "portrait"},
+        headers={"Authorization": f"Client-ID {UNSPLASH_KEY}", "User-Agent": UA},
+        timeout=45,
+    )
+    r.raise_for_status()
+    return [{"url": p["urls"]["raw"] + "&w=1600&fm=jpg", "title": p.get("alt_description"),
+             "creator": (p.get("user") or {}).get("name"), "license": "unsplash",
+             "source": "unsplash", "foreign_landing_url": (p.get("links") or {}).get("html")}
+            for p in r.json().get("results", [])]
+
+
+def _search_openverse(query: str, want: int) -> list[dict]:
     r = requests.get(
         API,
         params={"q": query, "license": "cc0,pdm", "size": "large",
@@ -47,7 +88,17 @@ def search(query: str, want: int = 8) -> list[dict]:
         headers={"User-Agent": UA}, timeout=45,
     )
     r.raise_for_status()
-    return r.json().get("results", [])
+    return [c for c in r.json().get("results", [])
+            if (c.get("source") or "").lower() not in WATERMARKED_SOURCES]
+
+
+def search(query: str, want: int = 8) -> list[dict]:
+    """Prefer a keyed provider when one is configured; fall back to CC0."""
+    if PEXELS_KEY:
+        return _search_pexels(query, want)
+    if UNSPLASH_KEY:
+        return _search_unsplash(query, want)
+    return _search_openverse(query, want)
 
 
 def cover_crop(im: Image.Image) -> Image.Image:
