@@ -1,0 +1,13 @@
+{
+  "_comment": "slug → search terms for the cover photo. Each query should picture the framework's real-world subject, not an abstract 'business' cliché: the photo is the hook on the cover slide, so it has to look like something. Edit a query and re-run fetch-backgrounds.yml to swap the image.",
+  "porter": "costco warehouse shelves bulk",
+  "bcg-matrix": "cash register coins counting",
+  "five-forces": "airport runway airplanes queue",
+  "blue-ocean": "open ocean horizon calm water",
+  "disruptive-innovation": "old film cameras obsolete technology",
+  "ansoff-matrix": "city construction cranes skyline growth",
+  "value-chain": "conveyor belt factory assembly",
+  "experience-curve": "semiconductor wafer fabrication clean room",
+  "strategic-group-mapping": "airport terminal gates aircraft parked",
+  "bowmans-strategy-clock": "supermarket price tags shelf labels"
+}

@@ -1,0 +1,56 @@
+name: Fetch carousel background photos
+
+# Pulls CC0 stock photos for carousel covers and commits them to backgrounds/.
+# This runs here rather than in the agent sandbox because the sandbox network
+# policy blocks every image host; a runner has open internet. Rendering never
+# fetches anything — it reads the committed files.
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: "Space-separated slugs to fetch (blank = all missing)"
+        type: string
+        default: ""
+      force:
+        description: "Refetch slugs that already have an image"
+        type: boolean
+        default: false
+
+concurrency:
+  group: loop-backgrounds
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Fetch photos
+        run: |
+          python scripts/fetch_backgrounds.py ${{ inputs.force && '--force' || '' }} ${{ inputs.slugs }}
+      - name: Commit images
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add backgrounds/
+          if git diff --cached --quiet; then
+            echo "No new background images."
+          else
+            git commit -m "chore(bg): fetch carousel background photos $(date -u +%F)"
+            for i in 1 2 3 4; do
+              git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }
+            done
+          fi
+      - name: Upload previews
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backgrounds-${{ github.run_id }}
+          path: backgrounds/
+          retention-days: 14
