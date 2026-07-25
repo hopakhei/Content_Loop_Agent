@@ -25,6 +25,13 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      # With a key set the script searches Pexels (or Unsplash) instead of the
+      # CC0-only Openverse pool, which returned usable images for 1 of 10
+      # framework subjects. Both licences allow commercial use with no
+      # mandatory attribution. Unset either one and it falls back to CC0.
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
