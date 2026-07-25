@@ -111,22 +111,29 @@ def cover_crop(im: Image.Image) -> Image.Image:
     return im.crop((left, top, left + W, top + H))
 
 
-def fetch_one(slug: str, query: str) -> dict | None:
-    """Try candidates in rank order; the first one that downloads and is big
-    enough wins. Openverse results occasionally 404 or point at a dead host,
-    so a single candidate is not enough to be reliable."""
+def fetch_one(out_name: str, query: str, seen: set[str] | None = None) -> dict | None:
+    """Download the first candidate that is big enough and not already used,
+    writing it to backgrounds/<out_name>.jpg.
+
+    Results are walked in rank order rather than taking the top hit: search
+    results regularly 404 or come back too small to crop. `seen` carries the
+    URLs already used by this carousel — neighbouring slides ask for related
+    subjects, so the same photograph often ranks highly for several of them,
+    and repeating it across a carousel defeats the point of per-slide imagery.
+    """
+    seen = seen if seen is not None else set()
     try:
         candidates = search(query)
     except Exception as exc:
-        print(f"  ! search failed for {slug}: {exc}")
+        print(f"  ! search failed for {out_name}: {exc}")
         return None
     if not candidates:
-        print(f"  ! no CC0 results for {slug} (query: {query!r})")
+        print(f"  ! no results for {out_name} (query: {query!r})")
         return None
 
     for c in candidates:
         url = c.get("url")
-        if not url:
+        if not url or url in seen:
             continue
         try:
             resp = requests.get(url, headers={"User-Agent": UA}, timeout=60)
@@ -135,16 +142,17 @@ def fetch_one(slug: str, query: str) -> dict | None:
             if im.width < MIN_W or im.height < MIN_H:
                 print(f"    skip {im.width}×{im.height} (too small)")
                 continue
-            out = OUT_DIR / f"{slug}-cover.jpg"
+            out = OUT_DIR / f"{out_name}.jpg"
             cover_crop(im).save(out, "JPEG", quality=88, optimize=True)
-            print(f"  ✓ {slug}: {im.width}×{im.height} → {out.name}")
-            return {"slug": slug, "query": query, "file": out.name,
+            seen.add(url)
+            print(f"  ✓ {out_name}: {im.width}×{im.height} → {out.name}")
+            return {"query": query, "file": out.name,
                     "title": c.get("title"), "creator": c.get("creator"),
                     "license": c.get("license"), "source": c.get("source"),
                     "landing_page": c.get("foreign_landing_url"), "url": url}
         except Exception as exc:
             print(f"    skip candidate: {exc}")
-    print(f"  ! every candidate failed for {slug}")
+    print(f"  ! every candidate failed for {out_name}")
     return None
 
 
@@ -167,15 +175,24 @@ def main() -> int:
     records = json.loads(SOURCES.read_text("utf-8")) if SOURCES.exists() else {}
 
     got = 0
-    for slug, query in queries.items():
-        if not args.force and (OUT_DIR / f"{slug}-cover.jpg").exists():
-            print(f"  · {slug}: already present, skipping")
-            continue
-        print(f"→ {slug}: {query!r}")
-        rec = fetch_one(slug, query)
-        if rec:
-            records[slug] = rec
-            got += 1
+    for slug, spec in queries.items():
+        # A slug maps to either one query (cover only, -> <slug>-cover.jpg) or
+        # a list of per-slide queries (-> <slug>-01.jpg … in slide order).
+        jobs = ([(f"{slug}-{i + 1:02d}", q) for i, q in enumerate(spec)]
+                if isinstance(spec, list) else [(f"{slug}-cover", spec)])
+        seen: set[str] = set()
+        print(f"→ {slug} ({len(jobs)} image(s))")
+        for out_name, query in jobs:
+            if not args.force and (OUT_DIR / f"{out_name}.jpg").exists():
+                print(f"  · {out_name}: already present, skipping")
+                prev = records.get(out_name, {}).get("url")
+                if prev:
+                    seen.add(prev)
+                continue
+            rec = fetch_one(out_name, query, seen)
+            if rec:
+                records[out_name] = rec
+                got += 1
 
     SOURCES.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", "utf-8")
     print(f"\n{got} image(s) fetched; {len(records)} recorded in {SOURCES.name}")

@@ -1,5 +1,5 @@
 {
-  "_comment": "slug → search terms for the cover photo. Each query should picture the framework's real-world subject, not an abstract 'business' cliché: the photo is the hook on the cover slide, so it has to look like something. Edit a query and re-run fetch-backgrounds.yml to swap the image.",
+  "_comment": "slug → cover query (string) OR a list of per-slide queries in slide order (cover first). A list produces <slug>-01.jpg … matching each slide's own argument; a string produces <slug>-cover.jpg. Aim each query at the framework's real subject, not generic business stock — the picture has to look like the thing the slide is talking about.",
   "porter": "costco warehouse shelves bulk",
   "bcg-matrix": "cash register coins counting",
   "five-forces": "airport runway airplanes queue",
@@ -7,7 +7,18 @@
   "disruptive-innovation": "old film cameras obsolete technology",
   "ansoff-matrix": "city construction cranes skyline growth",
   "value-chain": "conveyor belt factory assembly",
-  "experience-curve": "semiconductor wafer fabrication clean room",
+  "experience-curve": [
+    "silicon wafer semiconductor macro blue",
+    "aircraft factory assembly workers riveting",
+    "identical products mass production line rows",
+    "huge empty warehouse interior wide scale",
+    "container port stacked shipping containers",
+    "supermarket discount price tag red sale",
+    "solar panel farm rows aerial",
+    "craftsman workshop handmade custom furniture",
+    "financial chart screen data analysis dark",
+    "notebook pen dark desk minimal"
+  ],
   "strategic-group-mapping": "airport terminal gates aircraft parked",
   "bowmans-strategy-clock": "supermarket price tags shelf labels"
 }
