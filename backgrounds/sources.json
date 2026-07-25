@@ -3,11 +3,110 @@
     "slug": "blue-ocean",
     "query": "open ocean horizon calm water",
     "file": "blue-ocean-cover.jpg",
-    "title": "A peaceful beach scene with soft waves rolling toward the shore. The sky is bright blue with scattered fluffy clouds, creating a relaxing and open atmosphere. The horizon is clear, and the gentle motion of the ocean gives a sense of calm and tranquility.",
-    "creator": "Rachel Cortés Torres",
-    "license": "cc0",
-    "source": "wordpress",
-    "landing_page": "https://wordpress.org/photos/photo/64169e50fa/",
-    "url": "https://pd.w.org/2026/04/64169e50fa939dcd0.12300538-2048x1542.jpeg"
+    "title": "A serene view of the deep blue ocean with sunlit ripples and gentle waves.",
+    "creator": "neslihan ୨ৎ",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/tranquil-ocean-surface-with-sunlit-waves-38265357/",
+    "url": "https://images.pexels.com/photos/38265357/pexels-photo-38265357.jpeg"
+  },
+  "porter": {
+    "slug": "porter",
+    "query": "costco warehouse shelves bulk",
+    "file": "porter-cover.jpg",
+    "title": "Bulk products displayed on shelves in a wholesale warehouse setting.",
+    "creator": "Natalia S",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/wholesale-warehouse-aisle-with-various-products-28846853/",
+    "url": "https://images.pexels.com/photos/28846853/pexels-photo-28846853.jpeg"
+  },
+  "bcg-matrix": {
+    "slug": "bcg-matrix",
+    "query": "cash register coins counting",
+    "file": "bcg-matrix-cover.jpg",
+    "title": "Man counting cash at a table with money counter in a dimly lit setting indicative of casino activity.",
+    "creator": "cottonbro studio",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/gambler-counnting-money-5920860/",
+    "url": "https://images.pexels.com/photos/5920860/pexels-photo-5920860.jpeg"
+  },
+  "five-forces": {
+    "slug": "five-forces",
+    "query": "airport runway airplanes queue",
+    "file": "five-forces-cover.jpg",
+    "title": "Passengers boarding a plane on a sunny day at Kaliningrad Airport.",
+    "creator": "Polina Istomina",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/airplane-boarding-at-kaliningrad-airport-35813807/",
+    "url": "https://images.pexels.com/photos/35813807/pexels-photo-35813807.jpeg"
+  },
+  "disruptive-innovation": {
+    "slug": "disruptive-innovation",
+    "query": "old film cameras obsolete technology",
+    "file": "disruptive-innovation-cover.jpg",
+    "title": "A diverse collection of vintage cameras displayed at a flea market, showcasing timeless design.",
+    "creator": "Esra Korkmaz",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/collection-of-antique-cameras-20138802/",
+    "url": "https://images.pexels.com/photos/20138802/pexels-photo-20138802.jpeg"
+  },
+  "ansoff-matrix": {
+    "slug": "ansoff-matrix",
+    "query": "city construction cranes skyline growth",
+    "file": "ansoff-matrix-cover.jpg",
+    "title": "Silhouette of city skyline with construction cranes against a clear morning sky.",
+    "creator": "Adam B.",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/silhouette-of-buildings-5808387/",
+    "url": "https://images.pexels.com/photos/5808387/pexels-photo-5808387.jpeg"
+  },
+  "value-chain": {
+    "slug": "value-chain",
+    "query": "conveyor belt factory assembly",
+    "file": "value-chain-cover.jpg",
+    "title": "Close-up of a beer canning line showcasing modern machinery and equipment.",
+    "creator": "Donovan Kelly",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/a-row-of-cans-on-a-conveyor-belt-27623555/",
+    "url": "https://images.pexels.com/photos/27623555/pexels-photo-27623555.jpeg"
+  },
+  "experience-curve": {
+    "slug": "experience-curve",
+    "query": "semiconductor wafer fabrication clean room",
+    "file": "experience-curve-cover.jpg",
+    "title": "Macro shot of a computer motherboard focused on chips and circuits, designed in Taipei.",
+    "creator": "Jonathan Borba",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/close-up-of-computer-motherboard-components-37368175/",
+    "url": "https://images.pexels.com/photos/37368175/pexels-photo-37368175.jpeg"
+  },
+  "strategic-group-mapping": {
+    "slug": "strategic-group-mapping",
+    "query": "airport terminal gates aircraft parked",
+    "file": "strategic-group-mapping-cover.jpg",
+    "title": "Cathay Pacific airplane docked at a busy airport terminal with clear skies.",
+    "creator": "Magda Ehlers",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/cathay-pacific-airplane-at-airport-gate-35026924/",
+    "url": "https://images.pexels.com/photos/35026924/pexels-photo-35026924.jpeg"
+  },
+  "bowmans-strategy-clock": {
+    "slug": "bowmans-strategy-clock",
+    "query": "supermarket price tags shelf labels",
+    "file": "bowmans-strategy-clock-cover.jpg",
+    "title": "Vibrant selection of canned fish in a French supermarket aisle.",
+    "creator": "Ben Prater",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/colorful-supermarket-canned-goods-display-in-france-33594363/",
+    "url": "https://images.pexels.com/photos/33594363/pexels-photo-33594363.jpeg"
   }
 }
