@@ -315,8 +315,10 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
         if kind != "cover":
             f = F(30)
             hw = d.textlength(handle, font=f)
-            d.text((W - MARGIN - hw, 128), handle, font=f,
-                   fill=TRACK if kind == "content" else SUB)
+            # The near-invisible TRACK tone is deliberate on flat near-black,
+            # but over a photo it reads as a smudge rather than a watermark.
+            handle_fill = SUB if (photo or kind != "content") else TRACK
+            d.text((W - MARGIN - hw, 128), handle, font=f, fill=handle_fill)
 
         # Progress bar + page number; arrow on every slide but the last.
         y_bar = H - 120
