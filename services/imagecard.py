@@ -98,6 +98,88 @@ def _wrap_cjk(text: str, font, draw, max_w: float) -> list[str]:
 TRACK = (38, 44, 52)
 BODY_FG = (200, 206, 214)
 
+# ── slide motifs ─────────────────────────────────────────────────────────────
+# A faint line drawing of the framework itself, painted behind the text so each
+# slide carries a visual echo of what it explains (a 2×2 for a matrix, a decay
+# curve for the experience curve, five inward arrows for the five forces…).
+# Drawn with Pillow primitives — no image assets, no network, deterministic in
+# CI. MOTIF sits ~15 levels above BG: legible as texture, never competing with
+# body copy. Opt in per slide with "motif", or per carousel with a top-level
+# "motif" default.
+MOTIF = (28, 36, 46)
+MOTIF_KEY = (34, 52, 51)      # accent-tinted, for the one line worth noticing
+
+
+def _motif_box(d, cx, cy, r, colour=MOTIF, w=4):
+    d.rectangle([cx - r, cy - r, cx + r, cy + r], outline=colour, width=w)
+
+
+def _draw_motif(d, name: str) -> None:
+    """Paint `name` as a large, faint diagram low and right of centre — the
+    region body copy rarely reaches, so the texture reads without sitting in
+    the middle of a sentence."""
+    cx, cy, R = int(W * 0.66), int(H * 0.74), 262
+
+    if name == "grid2x2":                      # BCG matrix, Ansoff
+        _motif_box(d, cx, cy, R)
+        d.line([cx - R, cy, cx + R, cy], fill=MOTIF, width=4)
+        d.line([cx, cy - R, cx, cy + R], fill=MOTIF, width=4)
+        d.ellipse([cx + R // 3, cy - R + R // 3, cx + R - R // 6, cy - R // 6],
+                  outline=MOTIF_KEY, width=5)
+    elif name == "curve-down":                 # experience curve
+        d.line([cx - R, cy - R, cx - R, cy + R], fill=MOTIF, width=4)
+        d.line([cx - R, cy + R, cx + R, cy + R], fill=MOTIF, width=4)
+        pts = [(cx - R + i * (2 * R) / 60,
+                cy + R - (2 * R) * (0.92 ** (i * 0.9)) * 0.92)
+               for i in range(61)]
+        d.line(pts, fill=MOTIF_KEY, width=6, joint="curve")
+    elif name == "five-arrows":                # five forces
+        _motif_box(d, cx, cy, R // 3, colour=MOTIF_KEY, w=5)
+        import math
+        for k in range(5):
+            a = -math.pi / 2 + k * 2 * math.pi / 5
+            x0, y0 = cx + R * math.cos(a), cy + R * math.sin(a)
+            x1, y1 = cx + (R // 2.1) * math.cos(a), cy + (R // 2.1) * math.sin(a)
+            d.line([x0, y0, x1, y1], fill=MOTIF, width=5)
+            d.ellipse([x1 - 9, y1 - 9, x1 + 9, y1 + 9], fill=MOTIF)
+    elif name == "scatter-groups":             # strategic group mapping
+        d.line([cx - R, cy - R, cx - R, cy + R], fill=MOTIF, width=4)
+        d.line([cx - R, cy + R, cx + R, cy + R], fill=MOTIF, width=4)
+        clusters = [((-0.45, -0.35), 78, MOTIF_KEY), ((0.30, 0.10), 96, MOTIF),
+                    ((0.05, 0.62), 58, MOTIF)]
+        for (fx, fy), rr, col in clusters:
+            bx, by = cx + fx * R, cy + fy * R
+            d.ellipse([bx - rr, by - rr, bx + rr, by + rr], outline=col, width=5)
+    elif name == "three-paths":                # Porter generic strategies
+        for dy, col in ((-R, MOTIF), (0, MOTIF_KEY), (R, MOTIF)):
+            d.line([cx - R, cy, cx + R, cy + dy], fill=col, width=5)
+        d.ellipse([cx - R - 12, cy - 12, cx - R + 12, cy + 12], fill=MOTIF_KEY)
+    elif name == "chain":                      # value chain
+        step = (2 * R) // 5
+        for k in range(5):
+            x = cx - R + k * step
+            col = MOTIF_KEY if k == 3 else MOTIF
+            d.line([x, cy - 90, x + step - 18, cy, x, cy + 90], fill=col, width=5)
+    elif name == "wave":                       # blue ocean value curve
+        for off, col in ((-70, MOTIF), (70, MOTIF_KEY)):
+            pts = [(cx - R + k * (2 * R) / 4,
+                    cy + off + (90 if k % 2 else -90)) for k in range(5)]
+            d.line(pts, fill=col, width=5)
+    elif name == "s-curve":                    # disruptive innovation
+        import math
+        for off, col in ((-120, MOTIF), (140, MOTIF_KEY)):
+            pts = [(cx - R + i * (2 * R) / 60,
+                    cy + off + R * 0.8 * (1 / (1 + math.exp(-(i - 30) / 7)) - 0.5) * -2)
+                   for i in range(61)]
+            d.line(pts, fill=col, width=5, joint="curve")
+    elif name == "clock":                      # Bowman's strategy clock
+        import math
+        d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=MOTIF, width=4)
+        for k in range(8):
+            a = -math.pi / 2 + k * math.pi / 4
+            col = MOTIF_KEY if k == 1 else MOTIF
+            d.line([cx, cy, cx + R * math.cos(a), cy + R * math.sin(a)], fill=col, width=4)
+
 
 def load_carousel_spec(path) -> dict:
     """Read a carousels/<issue>.json slide script. Raises with a clear message
@@ -143,6 +225,11 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
         img = Image.new("RGB", (W, H), BG)
         d = ImageDraw.Draw(img)
         kind = s.get("kind", "content")
+
+        # Framework motif first, so every later stroke sits on top of it.
+        motif = s.get("motif", spec.get("motif"))
+        if motif:
+            _draw_motif(d, motif)
 
         if kind == "cover":
             d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)

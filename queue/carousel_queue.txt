@@ -4,3 +4,4 @@
 value-chain
 experience-curve
 strategic-group-mapping
+bowmans-strategy-clock
