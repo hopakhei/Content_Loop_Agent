@@ -108,5 +108,105 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/colorful-supermarket-canned-goods-display-in-france-33594363/",
     "url": "https://images.pexels.com/photos/33594363/pexels-photo-33594363.jpeg"
+  },
+  "experience-curve-01": {
+    "query": "silicon wafer semiconductor macro blue",
+    "file": "experience-curve-01.jpg",
+    "title": "Close-up black and white image of a detailed circuit board, showcasing technological intricacies.",
+    "creator": "Sergei Starostin",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/close-up-of-processor-6477201/",
+    "url": "https://images.pexels.com/photos/6477201/pexels-photo-6477201.jpeg"
+  },
+  "experience-curve-02": {
+    "query": "aircraft factory assembly workers riveting",
+    "file": "experience-curve-02.jpg",
+    "title": "A welder wearing a protective mask works in a dimly lit industrial setting, Argentina.",
+    "creator": "Marcelo Gonzalez",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/industrial-welder-at-work-in-argentina-34039387/",
+    "url": "https://images.pexels.com/photos/34039387/pexels-photo-34039387.jpeg"
+  },
+  "experience-curve-03": {
+    "query": "identical products mass production line rows",
+    "file": "experience-curve-03.jpg",
+    "title": "Close-up view of multiple empty glass bottles lined up in rows, creating a textured pattern.",
+    "creator": "Harper Sunday",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/rows-of-glass-bottles-17889070/",
+    "url": "https://images.pexels.com/photos/17889070/pexels-photo-17889070.jpeg"
+  },
+  "experience-curve-04": {
+    "query": "huge empty warehouse interior wide scale",
+    "file": "experience-curve-04.jpg",
+    "title": "Explore the vast and empty interior of an industrial warehouse with bright overhead lights.",
+    "creator": "Ricky Esquivel",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/black-and-white-photo-of-empty-warehouse-6028170/",
+    "url": "https://images.pexels.com/photos/6028170/pexels-photo-6028170.jpeg"
+  },
+  "experience-curve-05": {
+    "query": "container port stacked shipping containers",
+    "file": "experience-curve-05.jpg",
+    "title": "Vertical shot of colorful, stacked shipping containers at a bustling cargo port.",
+    "creator": "Matt Richmond",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/a-metal-shipping-containers-13600203/",
+    "url": "https://images.pexels.com/photos/13600203/pexels-photo-13600203.jpeg"
+  },
+  "experience-curve-06": {
+    "query": "supermarket discount price tag red sale",
+    "file": "experience-curve-06.jpg",
+    "title": "Red sale tags scattered on a dark background, perfect for retail or promotional themes.",
+    "creator": "Tamanna Rumee",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/composition-of-sale-tags-7986975/",
+    "url": "https://images.pexels.com/photos/7986975/pexels-photo-7986975.jpeg"
+  },
+  "experience-curve-07": {
+    "query": "solar panel farm rows aerial",
+    "file": "experience-curve-07.jpg",
+    "title": "Expansive solar farm set against the stunning Altai Mountains in Russian landscape.",
+    "creator": "Mikhail Nilov",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/aerial-view-of-a-solar-farm-7441557/",
+    "url": "https://images.pexels.com/photos/7441557/pexels-photo-7441557.jpeg"
+  },
+  "experience-curve-08": {
+    "query": "craftsman workshop handmade custom furniture",
+    "file": "experience-curve-08.jpg",
+    "title": "Unrecognizable tattooed male artisan with angle grinder polishing wooden board while standing at table in professional joinery with special equipment",
+    "creator": "Anna Shvets",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/crop-woodworker-grinding-wooden-plank-5711815/",
+    "url": "https://images.pexels.com/photos/5711815/pexels-photo-5711815.jpeg"
+  },
+  "experience-curve-09": {
+    "query": "financial chart screen data analysis dark",
+    "file": "experience-curve-09.jpg",
+    "title": "Close-up of a fluctuating cryptocurrency market chart showing stock prices on a digital screen.",
+    "creator": "Vito Goričan",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/close-up-photo-of-data-in-a-monitor-10628030/",
+    "url": "https://images.pexels.com/photos/10628030/pexels-photo-10628030.png"
+  },
+  "experience-curve-10": {
+    "query": "notebook pen dark desk minimal",
+    "file": "experience-curve-10.jpg",
+    "title": "A cozy office setting featuring a tablet, notebook, and mug on a textured surface.",
+    "creator": "Efnan Yılmaz",
+    "license": "pexels",
+    "source": "pexels",
+    "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
+    "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
   }
 }
