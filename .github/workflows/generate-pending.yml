@@ -39,7 +39,10 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Insert un-inserted framework units
         run: |
-          set -f
+          # NOTE: no `set -f` here. It disables globbing, which silently turned
+          # `units/*.md` below into a literal string that matches nothing — the
+          # loop then inserted zero units on every run while still reporting
+          # success, starving the post loop of framework drafts.
           if [ -z "$NOTION_TOKEN" ]; then
             echo "::notice::NOTION_TOKEN not set — skipping."
             exit 0
@@ -47,6 +50,7 @@ jobs:
           LEDGER=state/inserted_units.txt
           mkdir -p state; touch "$LEDGER"
           DID=0
+          FAILED=0
           for f in units/*.md; do
             [ -e "$f" ] || continue
             slug=$(basename "$f" .md)
@@ -57,13 +61,18 @@ jobs:
             echo "::notice::Inserting units/$slug.md"
             if [ "${{ inputs.dry_run }}" = "true" ]; then
               python main.py --loop 3 --issue "$slug" --units-file "$f" --cta-url "$CTA_URL" --dry-run
-            else
-              python main.py --loop 3 --issue "$slug" --units-file "$f" --cta-url "$CTA_URL"
+            elif python main.py --loop 3 --issue "$slug" --units-file "$f" --cta-url "$CTA_URL"; then
+              # Record only on success — a failed insert must stay un-inserted so
+              # the next run retries it instead of skipping it forever.
               echo "$slug" >> "$LEDGER"
               DID=1
+            else
+              echo "::error::Insert failed for $slug — left un-inserted for the next run."
+              FAILED=1
             fi
           done
           echo "did_insert=$DID" >> "$GITHUB_ENV"
+          exit $FAILED
       - name: Commit ledger
         if: ${{ github.event.inputs.dry_run != 'true' && env.did_insert == '1' }}
         run: |
