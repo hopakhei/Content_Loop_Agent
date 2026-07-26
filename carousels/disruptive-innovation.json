@@ -8,49 +8,73 @@
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 05",
       "head": "打敗龍頭的，\n總是一個玩具",
       "sub": "破壞式創新：哈佛 Christensen\n教你認出下一個顛覆者，和快被顛覆的龍頭。",
-      "image": "backgrounds/disruptive-innovation-cover.jpg",
+      "image": "backgrounds/disruptive-innovation-01.jpg",
       "image_dim": 0.45,
       "image_blur": 2
     },
     {
       "kicker": "01 · 一個怪現象",
       "head": "做對每件事，還是輸",
-      "body": "龍頭被掀翻，多數不是因為懶惰或愚蠢。它們聽最好的客戶、投最賺錢的產品、把利潤越做越高——每一步都是教科書答案。然後，一個看起來很差的小對手，把它們整個掀翻。Christensen 想解釋的，就是這個矛盾。"
+      "body": "龍頭被掀翻，多數不是因為懶惰或愚蠢。它們聽最好的客戶、投最賺錢的產品、把利潤越做越高——每一步都是教科書答案。然後，一個看起來很差的小對手，把它們整個掀翻。Christensen 想解釋的，就是這個矛盾。",
+      "image": "backgrounds/disruptive-innovation-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "02 · 起源",
       "head": "創新者的窘境",
-      "body": "1997 年，哈佛的 Clayton Christensen 出版《The Innovator's Dilemma》，提出「破壞式創新」。這個概念後來被麥肯錫、貝恩等顧問公司奉為判斷行業變局的標準工具。它的洞見冷酷：讓龍頭死的，正是它做得最對的事。"
+      "body": "1997 年，哈佛的 Clayton Christensen 出版《The Innovator's Dilemma》，提出「破壞式創新」。這個概念後來被麥肯錫、貝恩等顧問公司奉為判斷行業變局的標準工具。它的洞見冷酷：讓龍頭死的，正是它做得最對的事。",
+      "image": "backgrounds/disruptive-innovation-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "03 · 從低端進場",
       "head": "顛覆者一開始都很差",
-      "body": "破壞者不會正面硬碰。它從最低端、最不賺錢的角落切入：更便宜、更簡單、性能更弱，只服務龍頭看不上的客戶。在龍頭眼中，它就是個玩具——不值得回應。這正是它能活下來的原因。"
+      "body": "破壞者不會正面硬碰。它從最低端、最不賺錢的角落切入：更便宜、更簡單、性能更弱，只服務龍頭看不上的客戶。在龍頭眼中，它就是個玩具——不值得回應。這正是它能活下來的原因。",
+      "image": "backgrounds/disruptive-innovation-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "04 · 龍頭的理性撤退",
       "head": "看不起，因為太理性",
-      "body": "面對低端小對手，龍頭的最佳選擇，居然是放棄那塊市場：那裡毛利低、客戶不重要，退守高端反而更賺錢。每一次退讓都合理——但一步步退，等於把地盤讓出去。理性，正是它的陷阱。"
+      "body": "面對低端小對手，龍頭的最佳選擇，居然是放棄那塊市場：那裡毛利低、客戶不重要，退守高端反而更賺錢。每一次退讓都合理——但一步步退，等於把地盤讓出去。理性，正是它的陷阱。",
+      "image": "backgrounds/disruptive-innovation-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "05 · 一個例子",
       "head": "Netflix 寄 DVD 起家",
-      "body": "Netflix 早年用郵寄 DVD，慢、選擇少，Blockbuster 當它是笑話，繼續守著門店和逾期罰款這塊高毛利。等 Netflix 爬上串流、內容自製，Blockbuster 才驚覺退無可退。2010 年，它破產。"
+      "body": "Netflix 早年用郵寄 DVD，慢、選擇少，Blockbuster 當它是笑話，繼續守著門店和逾期罰款這塊高毛利。等 Netflix 爬上串流、內容自製，Blockbuster 才驚覺退無可退。2010 年，它破產。",
+      "image": "backgrounds/disruptive-innovation-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "06 · 往上爬",
       "head": "玩具會長大追上來",
-      "body": "破壞者站穩低端後，會用賺到的錢改善產品，一級一級往上爬，侵入龍頭的核心市場。等龍頭終於認真對待，對方的成本結構、技術和客戶群都已經追上——反應過來時，往往太遲。"
+      "body": "破壞者站穩低端後，會用賺到的錢改善產品，一級一級往上爬，侵入龍頭的核心市場。等龍頭終於認真對待，對方的成本結構、技術和客戶群都已經追上——反應過來時，往往太遲。",
+      "image": "backgrounds/disruptive-innovation-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "07 · 一個提醒",
       "head": "不是平就叫破壞",
-      "body": "小心誤判：不是每個便宜的新產品都是破壞者。真正的破壞，是從低端起步、且有一條清晰的「往上爬」路徑。只平、卻永遠上不了主流市場的，只是廉價品，不是威脅。分清楚，才不會亂喊狼來了。"
+      "body": "小心誤判：不是每個便宜的新產品都是破壞者。真正的破壞，是從低端起步、且有一條清晰的「往上爬」路徑。只平、卻永遠上不了主流市場的，只是廉價品，不是威脅。分清楚，才不會亂喊狼來了。",
+      "image": "backgrounds/disruptive-innovation-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kicker": "08 · 買入前",
       "head": "它是玩具還是龍頭",
-      "body": "用這把尺看兩種公司：一個被市場當玩具、卻有往上爬路徑的新仔——可能是不對稱機會；一個高毛利、正忙著往上退守、無視低端平仔的龍頭——它的護城河，可能已經是個陷阱。"
+      "body": "用這把尺看兩種公司：一個被市場當玩具、卻有往上爬路徑的新仔——可能是不對稱機會；一個高毛利、正忙著往上退守、無視低端平仔的龍頭——它的護城河，可能已經是個陷阱。",
+      "image": "backgrounds/disruptive-innovation-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     },
     {
       "kind": "cta",
@@ -58,7 +82,10 @@
       "head": "認出顛覆者，\n也認出陷阱",
       "body": "策略框架 × 投資 · 第五篇。\n把破壞式創新，變成你看行業變局的雷達。",
       "follow": "留言「框架」，我 DM 給你",
-      "link": "@90s.pm.investing · 策略框架 05"
+      "link": "@90s.pm.investing · 策略框架 05",
+      "image": "backgrounds/disruptive-innovation-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
     }
   ],
   "motif": "s-curve"
