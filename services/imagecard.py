@@ -97,6 +97,9 @@ def _wrap_cjk(text: str, font, draw, max_w: float) -> list[str]:
 
 TRACK = (38, 44, 52)
 BODY_FG = (200, 206, 214)
+# Halo painted under type that sits on a photo. Near-black rather than
+# pure black so it reads as depth instead of an outline.
+SHADOW = (6, 9, 13)
 
 # ── slide motifs ─────────────────────────────────────────────────────────────
 # A faint line drawing of the framework itself, painted behind the text so each
@@ -110,15 +113,16 @@ MOTIF = (28, 36, 46)
 MOTIF_KEY = (34, 52, 51)      # accent-tinted, for the one line worth noticing
 
 
-def _photo_bg(img, path, dim: float = 0.80, blur: int = 6):
+def _photo_bg(img, path, dim: float = 0.62, blur: int = 5):
     """Composite a real photograph behind the slide.
 
     Cover-fits the image to the canvas, blurs it, then lays a dark scrim over
     it at `dim` opacity. Both steps are the point: dense Traditional Chinese
     body copy over an unmodified photo is unreadable, so the picture has to
-    read as atmosphere rather than subject. dim=0 shows the raw photo (only
-    sane on a cover with almost no text); 0.80 is the safe default for a
-    content slide.
+    read as atmosphere rather than subject. The type is drawn with a shadow
+    halo over a photo, which is what carries legibility — that is why the
+    default scrim can sit at 0.62 and leave the picture clearly visible
+    instead of the 0.80 needed when the glyphs are unprotected.
 
     Photos are committed under backgrounds/ and composited at render time —
     nothing is fetched during a run, so carousel-drip stays offline.
@@ -224,12 +228,22 @@ def load_carousel_spec(path) -> dict:
     return spec
 
 
-def _text_block(d, text, font, x, y, max_w, fill, line_h_mult=1.5):
+def _text_block(d, text, font, x, y, max_w, fill, line_h_mult=1.5, shadow=False):
+    """Lay out wrapped text. `shadow` paints a soft dark copy underneath first
+    — over a photograph that is what keeps type crisp, and it is what lets the
+    scrim be light enough for the picture to still be worth having. Without it
+    the only way to protect legibility is to dim the photo into mush."""
     lines: list[str] = []
     for para in (text or "").split("\n"):
         lines += _wrap_cjk(para, font, d, max_w)
     line_h = font.size * line_h_mult
+    # Offsets ring the glyph so the halo reads from every side, not just below.
+    off = max(2, round(font.size * 0.035))
     for ln in lines:
+        if shadow:
+            for dx, dy in ((-off, 0), (off, 0), (0, -off), (0, off),
+                           (off, off), (-off, -off)):
+                d.text((x + dx, y + dy), ln, font=font, fill=SHADOW)
         d.text((x, y), ln, font=font, fill=fill)
         y += line_h
     return y
@@ -265,8 +279,8 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
                 p = Path(__file__).resolve().parent.parent / p
             if p.exists():
                 img = _photo_bg(img, p,
-                                dim=float(s.get("image_dim", spec.get("image_dim", 0.80))),
-                                blur=int(s.get("image_blur", spec.get("image_blur", 6))))
+                                dim=float(s.get("image_dim", spec.get("image_dim", 0.62))),
+                                blur=int(s.get("image_blur", spec.get("image_blur", 5))))
                 d = ImageDraw.Draw(img)
             else:
                 photo = None      # fall through to the motif
@@ -281,9 +295,9 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
 
         if kind == "cover":
             d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
-            d.text((MARGIN, 128), s.get("kicker", ""), font=F(34), fill=sub_fill)
-            y = _text_block(d, s.get("head", ""), F(116), MARGIN, 380, W - 2 * MARGIN, FG, 1.35)
-            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, sub_fill, 1.55)
+            _text_block(d, s.get("kicker", ""), F(34), MARGIN, 128, W - 2*MARGIN, sub_fill, 1.5, shadow=bool(photo))
+            y = _text_block(d, s.get("head", ""), F(116), MARGIN, 380, W - 2 * MARGIN, FG, 1.35, shadow=bool(photo))
+            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, sub_fill, 1.55, shadow=bool(photo))
             cue, f = "往右滑", F(40)
             cw = d.textlength(cue, font=f)
             d.text((W - MARGIN - cw - 70, H - 232), cue, font=f, fill=SUB)
@@ -297,8 +311,8 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
                            (bx + bw / 2, by + bh - 26), (bx, by + bh)], fill=ACCENT)
             else:
                 d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
-            y = _text_block(d, s.get("head", ""), F(104), MARGIN, 340, W - 2 * MARGIN, FG, 1.35)
-            y = _text_block(d, s.get("body", ""), F(46), MARGIN, y + 36, W - 2 * MARGIN, SUB, 1.55)
+            y = _text_block(d, s.get("head", ""), F(104), MARGIN, 340, W - 2 * MARGIN, FG, 1.35, shadow=bool(photo))
+            y = _text_block(d, s.get("body", ""), F(46), MARGIN, y + 36, W - 2 * MARGIN, BODY_FG if photo else SUB, 1.55, shadow=bool(photo))
             d.text((MARGIN, y + 70), s.get("follow", ""), font=F(52), fill=ACCENT)
             d.text((MARGIN, y + 170), s.get("link", ""), font=F(44), fill=SUB)
         else:
@@ -309,8 +323,8 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
             if label:
                 d.text((MARGIN + d.textlength(num, font=f_k) + 28, 120),
                        "· " + label, font=f_k, fill=SUB)
-            y = _text_block(d, s.get("head", ""), F(88), MARGIN, 330, W - 2 * MARGIN, FG, 1.4)
-            _text_block(d, s.get("body", ""), F(48), MARGIN, y + 44, W - 2 * MARGIN, BODY_FG, 1.62)
+            y = _text_block(d, s.get("head", ""), F(88), MARGIN, 330, W - 2 * MARGIN, FG, 1.4, shadow=bool(photo))
+            _text_block(d, s.get("body", ""), F(48), MARGIN, y + 44, W - 2 * MARGIN, BODY_FG, 1.62, shadow=bool(photo))
 
         if kind != "cover":
             f = F(30)
