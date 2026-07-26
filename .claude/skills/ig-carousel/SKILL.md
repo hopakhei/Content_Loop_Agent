@@ -10,6 +10,24 @@ description: >
 
 # IG Carousel — LOOP 出貨手冊
 
+## 做一個新框架 = 三份嘢，唔可以淨做一份
+
+一個框架要喺三個平台都出到，要交齊：
+
+| 檔案 | 餵邊個平台 |
+|---|---|
+| `carousels/<slug>.json` | Instagram（carousel-drip） |
+| `units/<slug>.md` | X + Threads（generate-pending → post loop） |
+| `assets/background_queries.json` 加一條 10 句 | 背景相（fetch-backgrounds） |
+
+**呢三份之間冇任何 code 連住**，做漏一份唔會報錯，只會嗰條線靜靜地乾塘。
+真係發生過：一次過起咗十個 carousel，`units/` 仍然得兩個框架，Notion 嘅
+framework draft 出清之後，X 同 Threads 成日冇嘢出，post loop 每個時段跑兩秒
+就收工，冇任何 error。
+
+`tests/test_framework_parity.py` 而家會卡住呢件事 —— 三份唔齊、或者 query 數
+同 slide 數對唔上，CI 就紅。**唔好靠記性，靠個測試。**
+
 ## 出貨流程（每一步都不可跳過）
 
 1. Slide script 寫在 `carousels/<issue>.json`

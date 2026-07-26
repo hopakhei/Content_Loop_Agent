@@ -9,6 +9,17 @@ description: >
 
 # X Post — LOOP 文案規則
 
+## 鐵律零：一個框架要交齊三份，唔可以淨寫 unit
+
+寫 `units/<slug>.md` 只係餵到 X 同 Threads。同一個框架仲要有
+`carousels/<slug>.json`（Instagram）同埋 `assets/background_queries.json`
+入面一條 10 句 query（背景相）。三者之間冇 code 連住，做漏一份唔會報錯，
+只會嗰條線靜靜地乾塘 —— 試過一次過起咗十個 carousel 但冇補 unit，X 同
+Threads 就成日冇嘢出，post loop 每個時段跑兩秒收工，冇任何 error。
+
+`tests/test_framework_parity.py` 會卡住呢件事，三份唔齊就 CI 紅。
+詳情見 ig-carousel skill。
+
 ## 鐵律一：X 永遠不落 link
 
 - **不落 body**：X 演算法對外部 link 減 30–50% reach；free account 的 link post
