@@ -129,16 +129,6 @@
     "landing_page": "https://www.pexels.com/photo/two-airplanes-in-a-hangar-with-natural-light-32760421/",
     "url": "https://images.pexels.com/photos/32760421/pexels-photo-32760421.jpeg"
   },
-  "experience-curve-03": {
-    "query": "identical products mass production line rows",
-    "file": "experience-curve-03.jpg",
-    "title": "Close-up view of multiple empty glass bottles lined up in rows, creating a textured pattern.",
-    "creator": "Harper Sunday",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/rows-of-glass-bottles-17889070/",
-    "url": "https://images.pexels.com/photos/17889070/pexels-photo-17889070.jpeg"
-  },
   "experience-curve-04": {
     "query": "huge empty warehouse interior wide scale",
     "file": "experience-curve-04.jpg",
@@ -168,16 +158,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/composition-of-sale-tags-7986975/",
     "url": "https://images.pexels.com/photos/7986975/pexels-photo-7986975.jpeg"
-  },
-  "experience-curve-07": {
-    "query": "solar panel farm rows aerial",
-    "file": "experience-curve-07.jpg",
-    "title": "Expansive solar farm set against the stunning Altai Mountains in Russian landscape.",
-    "creator": "Mikhail Nilov",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/aerial-view-of-a-solar-farm-7441557/",
-    "url": "https://images.pexels.com/photos/7441557/pexels-photo-7441557.jpeg"
   },
   "experience-curve-08": {
     "query": "craftsman workshop handmade custom furniture",
@@ -219,56 +199,6 @@
     "landing_page": "https://www.pexels.com/photo/wholesale-warehouse-aisle-with-various-products-28846853/",
     "url": "https://images.pexels.com/photos/28846853/pexels-photo-28846853.jpeg"
   },
-  "porter-02": {
-    "query": "three diverging paths forest fork",
-    "file": "porter-02.jpg",
-    "title": "Mysterious misty forest with a forked path creating an intriguing journey.",
-    "creator": "Kris Møklebust",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/unpaved-pathway-near-foggy-woods-10124559/",
-    "url": "https://images.pexels.com/photos/10124559/pexels-photo-10124559.jpeg"
-  },
-  "porter-03": {
-    "query": "harvard university campus brick building",
-    "file": "porter-03.jpg",
-    "title": "Stunning Gothic architecture of Memorial Hall at Harvard University, Cambridge, MA.",
-    "creator": "Sasha P",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/photo-of-memorial-hall-at-harvard-university-3636984/",
-    "url": "https://images.pexels.com/photos/3636984/pexels-photo-3636984.jpeg"
-  },
-  "porter-04": {
-    "query": "warehouse pallets forklift bulk goods",
-    "file": "porter-04.jpg",
-    "title": "Spacious warehouse aisles lined with shelves stacked with boxes and packaging.",
-    "creator": "Maor Attias",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/boxes-on-shelves-inside-a-warehouse-5156696/",
-    "url": "https://images.pexels.com/photos/5156696/pexels-photo-5156696.jpeg"
-  },
-  "porter-05": {
-    "query": "luxury boutique storefront window display",
-    "file": "porter-05.jpg",
-    "title": "Reflection of elegant bridal gowns in a chic fashion boutique showcasing luxury and style.",
-    "creator": "Mak_ jp",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/mannequins-inside-fashion-studio-seen-through-window-16688527/",
-    "url": "https://images.pexels.com/photos/16688527/pexels-photo-16688527.jpeg"
-  },
-  "porter-06": {
-    "query": "red luxury sports car showroom",
-    "file": "porter-06.jpg",
-    "title": "A striking red sports car on display in a contemporary indoor showroom, showcasing luxury and design.",
-    "creator": "Kaj Noordbruis",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/sleek-red-sports-car-in-modern-showroom-34593441/",
-    "url": "https://images.pexels.com/photos/34593441/pexels-photo-34593441.jpeg"
-  },
   "porter-07": {
     "query": "empty deserted shopping mall corridor",
     "file": "porter-07.jpg",
@@ -288,16 +218,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/row-of-shopping-carts-with-orange-handles-31266794/",
     "url": "https://images.pexels.com/photos/31266794/pexels-photo-31266794.jpeg"
-  },
-  "porter-09": {
-    "query": "signpost arrows directions crossroads",
-    "file": "porter-09.jpg",
-    "title": "A blue road sign with arrows indicating multiple directions, set against bare trees in winter.",
-    "creator": "Vladimir Sputnik",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/directional-road-sign-against-bare-trees-in-winter-30170193/",
-    "url": "https://images.pexels.com/photos/30170193/pexels-photo-30170193.jpeg"
   },
   "porter-10": {
     "query": "notebook pen dark desk minimal",
@@ -319,26 +239,6 @@
     "landing_page": "https://www.pexels.com/photo/a-person-holding-a-sum-of-cash-6266447/",
     "url": "https://images.pexels.com/photos/6266447/pexels-photo-6266447.jpeg"
   },
-  "bcg-matrix-02": {
-    "query": "window four panes grid light shadow",
-    "file": "bcg-matrix-02.jpg",
-    "title": "A minimalist composition featuring a grid window on a textured wall with the number four in Berlin, Germany.",
-    "creator": "Simon Schlee",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/minimalist-window-on-textured-wall-in-berlin-33685595/",
-    "url": "https://images.pexels.com/photos/33685595/pexels-photo-33685595.jpeg"
-  },
-  "bcg-matrix-03": {
-    "query": "vintage typewriter documents office desk",
-    "file": "bcg-matrix-03.jpg",
-    "title": "A retro typewriter and a cup of coffee on a white table, evoking vintage vibes.",
-    "creator": "www.kaboompics.com",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/vintage-typewriter-and-coffee-on-a-table-5993641/",
-    "url": "https://images.pexels.com/photos/5993641/pexels-photo-5993641.jpeg"
-  },
   "bcg-matrix-04": {
     "query": "classic cola bottles vending soda",
     "file": "bcg-matrix-04.jpg",
@@ -359,16 +259,6 @@
     "landing_page": "https://www.pexels.com/photo/people-on-the-beach-looking-at-a-rocket-launch-11392957/",
     "url": "https://images.pexels.com/photos/11392957/pexels-photo-11392957.jpeg"
   },
-  "bcg-matrix-06": {
-    "query": "poker chips casino table stack",
-    "file": "bcg-matrix-06.jpg",
-    "title": "A close-up of casino chips and playing cards on a green blackjack table, capturing the excitement of gambling.",
-    "creator": "Stephen Leonardi",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/colorful-casino-chips-and-cards-on-blackjack-table-36776646/",
-    "url": "https://images.pexels.com/photos/36776646/pexels-photo-36776646.jpeg"
-  },
   "bcg-matrix-07": {
     "query": "abandoned rusty factory machinery decay",
     "file": "bcg-matrix-07.jpg",
@@ -379,26 +269,6 @@
     "landing_page": "https://www.pexels.com/photo/abandoned-and-broken-industrial-machinery-6367680/",
     "url": "https://images.pexels.com/photos/6367680/pexels-photo-6367680.jpeg"
   },
-  "bcg-matrix-08": {
-    "query": "industrial pipes valves water flow",
-    "file": "bcg-matrix-08.jpg",
-    "title": "A close-up view of an industrial setup with gauges, valves, and pipes.",
-    "creator": "Nothing Ahead",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/close-up-of-water-meter-4494653/",
-    "url": "https://images.pexels.com/photos/4494653/pexels-photo-4494653.jpeg"
-  },
-  "bcg-matrix-09": {
-    "query": "financial report spreadsheet numbers desk",
-    "file": "bcg-matrix-09.jpg",
-    "title": "Financial documents and charts with a magnifying glass, symbolizing analysis and data review.",
-    "creator": "Nataliya Vaitkevich",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/magnifying-glass-on-white-paper-6120168/",
-    "url": "https://images.pexels.com/photos/6120168/pexels-photo-6120168.jpeg"
-  },
   "bcg-matrix-10": {
     "query": "notebook pen dark desk minimal",
     "file": "bcg-matrix-10.jpg",
@@ -408,16 +278,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
     "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
-  },
-  "five-forces-01": {
-    "query": "airport runway airplanes queue",
-    "file": "five-forces-01.jpg",
-    "title": "Passengers boarding a plane on a sunny day at Kaliningrad Airport.",
-    "creator": "Polina Istomina",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/airplane-boarding-at-kaliningrad-airport-35813807/",
-    "url": "https://images.pexels.com/photos/35813807/pexels-photo-35813807.jpeg"
   },
   "five-forces-02": {
     "query": "airplane cabin passengers full seats",
@@ -458,46 +318,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/photograph-of-a-chain-link-fence-with-a-doorknob-11543858/",
     "url": "https://images.pexels.com/photos/11543858/pexels-photo-11543858.jpeg"
-  },
-  "five-forces-06": {
-    "query": "stack of old dvd discs obsolete",
-    "file": "five-forces-06.jpg",
-    "title": "Vibrant close-up of compact discs showing colorful light refractions, ideal for themes of technology and entertainment.",
-    "creator": "Matias Mango",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/multi-color-compact-discs-4734716/",
-    "url": "https://images.pexels.com/photos/4734716/pexels-photo-4734716.jpeg"
-  },
-  "five-forces-07": {
-    "query": "supermarket checkout customer paying",
-    "file": "five-forces-07.jpg",
-    "title": "A woman pays for groceries with a smartphone at a checkout counter.",
-    "creator": "Jack Sparrow",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/woman-buying-a-pineapple-4199586/",
-    "url": "https://images.pexels.com/photos/4199586/pexels-photo-4199586.jpeg"
-  },
-  "five-forces-08": {
-    "query": "oil refinery pipes industrial night",
-    "file": "five-forces-08.jpg",
-    "title": "Vertical shot of an oil refinery tower against a blue sky in Trzebinia, Poland.",
-    "creator": "Jakub Pabis",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/tower-of-the-petroleum-refinery-in-trzebinia-poland-15970027/",
-    "url": "https://images.pexels.com/photos/15970027/pexels-photo-15970027.jpeg"
-  },
-  "five-forces-09": {
-    "query": "clipboard checklist pen inspection",
-    "file": "five-forces-09.jpg",
-    "title": "Person holding a filled contract on a clipboard with a pen against a white background.",
-    "creator": "Thirdman",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-contract-on-a-clipboard-8470801/",
-    "url": "https://images.pexels.com/photos/8470801/pexels-photo-8470801.jpeg"
   },
   "five-forces-10": {
     "query": "notebook pen dark desk minimal",
@@ -559,26 +379,6 @@
     "landing_page": "https://www.pexels.com/photo/aerial-acrobat-performing-at-a-circus-in-barcelona-37070994/",
     "url": "https://images.pexels.com/photos/37070994/pexels-photo-37070994.jpeg"
   },
-  "blue-ocean-06": {
-    "query": "scissors cutting paper minimal white",
-    "file": "blue-ocean-06.jpg",
-    "title": "Close-up of scissors cutting the word taxes on a marble background, symbolizing tax reduction.",
-    "creator": "Nataliya Vaitkevich",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/green-handle-scissors-on-white-surface-6863324/",
-    "url": "https://images.pexels.com/photos/6863324/pexels-photo-6863324.jpeg"
-  },
-  "blue-ocean-07": {
-    "query": "family playing video game living room",
-    "file": "blue-ocean-07.jpg",
-    "title": "Mother and two daughters having fun playing video games on a cozy couch at home.",
-    "creator": "Tiger Lily",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/smiling-women-and-girl-sitting-on-couch-and-playing-game-8259593/",
-    "url": "https://images.pexels.com/photos/8259593/pexels-photo-8259593.jpeg"
-  },
   "blue-ocean-08": {
     "query": "ocean sunset darkening storm clouds",
     "file": "blue-ocean-08.jpg",
@@ -639,36 +439,6 @@
     "landing_page": "https://www.pexels.com/photo/cozy-library-bookshelf-with-diverse-collection-37165246/",
     "url": "https://images.pexels.com/photos/37165246/pexels-photo-37165246.jpeg"
   },
-  "disruptive-innovation-04": {
-    "query": "simple cheap plastic toy gadget",
-    "file": "disruptive-innovation-04.jpg",
-    "title": "Pair of white toy keychain devices on a simple gray background.",
-    "creator": "Nathan J Hilton",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/laser-tags-on-gray-background-10997658/",
-    "url": "https://images.pexels.com/photos/10997658/pexels-photo-10997658.jpeg"
-  },
-  "disruptive-innovation-05": {
-    "query": "empty boardroom meeting table chairs",
-    "file": "disruptive-innovation-05.jpg",
-    "title": "Empty modern conference room with sleek black chairs and wooden desks, perfect for business meetings.",
-    "creator": "Mikhail Nilov",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/office-chairs-and-wooden-desks-inside-an-auditorium-9300767/",
-    "url": "https://images.pexels.com/photos/9300767/pexels-photo-9300767.jpeg"
-  },
-  "disruptive-innovation-06": {
-    "query": "red envelope postal mail delivery",
-    "file": "disruptive-innovation-06.jpg",
-    "title": "Smiling delivery man handing out a package from a van window, showcasing friendly service.",
-    "creator": "Kindel Media",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-man-sitting-in-the-van-6868172/",
-    "url": "https://images.pexels.com/photos/6868172/pexels-photo-6868172.jpeg"
-  },
   "disruptive-innovation-07": {
     "query": "seedling plant growth stages soil",
     "file": "disruptive-innovation-07.jpg",
@@ -678,16 +448,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/green-plant-on-brown-plastic-pot-2847908/",
     "url": "https://images.pexels.com/photos/2847908/pexels-photo-2847908.jpeg"
-  },
-  "disruptive-innovation-08": {
-    "query": "discount bin cheap products pile",
-    "file": "disruptive-innovation-08.jpg",
-    "title": "An outdoor yard sale featuring colorful clothing bins, household items, and parked vehicles.",
-    "creator": "Caleb Oquendo",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/outdoor-yard-sale-with-colorful-clothing-bins-34623843/",
-    "url": "https://images.pexels.com/photos/34623843/pexels-photo-34623843.jpeg"
   },
   "disruptive-innovation-09": {
     "query": "magnifying glass examining detail close",
@@ -709,26 +469,6 @@
     "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
     "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
   },
-  "ansoff-matrix-01": {
-    "query": "city construction cranes skyline growth",
-    "file": "ansoff-matrix-01.jpg",
-    "title": "Silhouette of city skyline with construction cranes against a clear morning sky.",
-    "creator": "Adam B.",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/silhouette-of-buildings-5808387/",
-    "url": "https://images.pexels.com/photos/5808387/pexels-photo-5808387.jpeg"
-  },
-  "ansoff-matrix-02": {
-    "query": "architecture window four panes grid",
-    "file": "ansoff-matrix-02.jpg",
-    "title": "A minimalist composition featuring a grid window on a textured wall with the number four in Berlin, Germany.",
-    "creator": "Simon Schlee",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/minimalist-window-on-textured-wall-in-berlin-33685595/",
-    "url": "https://images.pexels.com/photos/33685595/pexels-photo-33685595.jpeg"
-  },
   "ansoff-matrix-03": {
     "query": "vintage 1950s office desk documents",
     "file": "ansoff-matrix-03.jpg",
@@ -749,36 +489,6 @@
     "landing_page": "https://www.pexels.com/photo/people-in-a-grocery-store-5380919/",
     "url": "https://images.pexels.com/photos/5380919/pexels-photo-5380919.jpeg"
   },
-  "ansoff-matrix-05": {
-    "query": "product design studio prototype workbench",
-    "file": "ansoff-matrix-05.jpg",
-    "title": "Close-up of colorful 3D printed gears on a workbench, showcasing modern technology.",
-    "creator": "Mikhail Nilov",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/close-up-photo-of-gear-miniature-9242916/",
-    "url": "https://images.pexels.com/photos/9242916/pexels-photo-9242916.jpeg"
-  },
-  "ansoff-matrix-06": {
-    "query": "world map pins travel expansion",
-    "file": "ansoff-matrix-06.jpg",
-    "title": "A hand places pins on a colorful map highlighting locations in Asia.",
-    "creator": "cottonbro studio",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/woman-hand-over-map-of-asia-5137965/",
-    "url": "https://images.pexels.com/photos/5137965/pexels-photo-5137965.jpeg"
-  },
-  "ansoff-matrix-07": {
-    "query": "tightrope walker high wire balance",
-    "file": "ansoff-matrix-07.jpg",
-    "title": "Sculpture of a wire walker balancing between buildings in Lublin, Poland.",
-    "creator": "Ch  Jawad",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/wire-walker-sculpture-in-lublin-poland-skyline-36933234/",
-    "url": "https://images.pexels.com/photos/36933234/pexels-photo-36933234.jpeg"
-  },
   "ansoff-matrix-08": {
     "query": "tangled messy cables wires knot",
     "file": "ansoff-matrix-08.jpg",
@@ -789,16 +499,6 @@
     "landing_page": "https://www.pexels.com/photo/electricity-wires-on-city-street-11837451/",
     "url": "https://images.pexels.com/photos/11837451/pexels-photo-11837451.jpeg"
   },
-  "ansoff-matrix-09": {
-    "query": "annual report growth chart graph",
-    "file": "ansoff-matrix-09.jpg",
-    "title": "Financial report with charts and graphs analyzed with a magnifying glass.",
-    "creator": "RDNE Stock project",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/black-magnifying-glass-on-the-table-7947657/",
-    "url": "https://images.pexels.com/photos/7947657/pexels-photo-7947657.jpeg"
-  },
   "ansoff-matrix-10": {
     "query": "notebook pen dark desk minimal",
     "file": "ansoff-matrix-10.jpg",
@@ -808,16 +508,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
     "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
-  },
-  "value-chain-01": {
-    "query": "factory conveyor belt assembly line",
-    "file": "value-chain-01.jpg",
-    "title": "Close-up of a beer canning line showcasing modern machinery and equipment.",
-    "creator": "Donovan Kelly",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-row-of-cans-on-a-conveyor-belt-27623555/",
-    "url": "https://images.pexels.com/photos/27623555/pexels-photo-27623555.jpeg"
   },
   "value-chain-02": {
     "query": "production line workers overhead view",
@@ -849,16 +539,6 @@
     "landing_page": "https://www.pexels.com/photo/cardboard-box-pile-in-warehouse-setting-36504458/",
     "url": "https://images.pexels.com/photos/36504458/pexels-photo-36504458.jpeg"
   },
-  "value-chain-05": {
-    "query": "steel columns structure architecture",
-    "file": "value-chain-05.jpg",
-    "title": "Symmetrical view of a modern architecture corridor with red columns and glass ceiling.",
-    "creator": "Lory.captures / Lorenzo Messina",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/geometric-outdoor-building-construction-7958609/",
-    "url": "https://images.pexels.com/photos/7958609/pexels-photo-7958609.jpeg"
-  },
   "value-chain-06": {
     "query": "gold nugget among grey rocks",
     "file": "value-chain-06.jpg",
@@ -878,16 +558,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/man-repairing-equipment-on-a-desk-10817000/",
     "url": "https://images.pexels.com/photos/10817000/pexels-photo-10817000.jpeg"
-  },
-  "value-chain-08": {
-    "query": "plain cardboard boxes packing dull",
-    "file": "value-chain-08.jpg",
-    "title": "Opened carton containers placed on dark floor against white wall during renovation in daytime",
-    "creator": "www.kaboompics.com",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/cardboard-boxes-against-white-plain-wall-4498128/",
-    "url": "https://images.pexels.com/photos/4498128/pexels-photo-4498128.jpeg"
   },
   "value-chain-09": {
     "query": "metal gears mechanism close up",
@@ -909,76 +579,6 @@
     "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
     "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
   },
-  "strategic-group-mapping-01": {
-    "query": "airport terminal gates aircraft parked",
-    "file": "strategic-group-mapping-01.jpg",
-    "title": "Cathay Pacific airplane docked at a busy airport terminal with clear skies.",
-    "creator": "Magda Ehlers",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/cathay-pacific-airplane-at-airport-gate-35026924/",
-    "url": "https://images.pexels.com/photos/35026924/pexels-photo-35026924.jpeg"
-  },
-  "strategic-group-mapping-02": {
-    "query": "old typewriter thesis papers desk",
-    "file": "strategic-group-mapping-02.jpg",
-    "title": "Classic typewriter on a wooden table with papers, evoking nostalgia.",
-    "creator": "Ron Lach",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-black-and-white-typewriter-over-a-wooden-table-7968071/",
-    "url": "https://images.pexels.com/photos/7968071/pexels-photo-7968071.jpeg"
-  },
-  "strategic-group-mapping-03": {
-    "query": "scatter plot chart data points",
-    "file": "strategic-group-mapping-03.jpg",
-    "title": "Professional hands pointing at and annotating charts during a business presentation.",
-    "creator": "Pavel Danilyuk",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-person-writing-on-white-paper-using-a-blue-marker-7869103/",
-    "url": "https://images.pexels.com/photos/7869103/pexels-photo-7869103.jpeg"
-  },
-  "strategic-group-mapping-04": {
-    "query": "compass map navigation planning",
-    "file": "strategic-group-mapping-04.jpg",
-    "title": "Flat lay of travel items including a map, compass, and flowers, inspiring adventure.",
-    "creator": "Nataliya Vaitkevich",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/overhead-shot-of-a-compass-near-flowers-7235813/",
-    "url": "https://images.pexels.com/photos/7235813/pexels-photo-7235813.jpeg"
-  },
-  "strategic-group-mapping-05": {
-    "query": "boxing gloves ring face off",
-    "file": "strategic-group-mapping-05.jpg",
-    "title": "Two shirtless boxers face each other in a brightly lit boxing gym, ready to spar.",
-    "creator": "RDNE Stock project",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/two-shirtless-men-standing-face-to-face-in-a-boxing-ring-8611955/",
-    "url": "https://images.pexels.com/photos/8611955/pexels-photo-8611955.jpeg"
-  },
-  "strategic-group-mapping-06": {
-    "query": "high wall barbed wire barrier",
-    "file": "strategic-group-mapping-06.jpg",
-    "title": "Concrete wall with colorful graffiti and barbed wire, showcasing urban security theme.",
-    "creator": "𝗛&𝗖𝗢 　",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/barbed-wires-behind-concrete-wall-1233646/",
-    "url": "https://images.pexels.com/photos/1233646/pexels-photo-1233646.jpeg"
-  },
-  "strategic-group-mapping-07": {
-    "query": "budget airline aircraft on tarmac",
-    "file": "strategic-group-mapping-07.jpg",
-    "title": "Green commercial airplane parked at snowy airport in Russia, emphasizing aviation travel.",
-    "creator": "Natalie Dmay",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/airplanes-at-the-airport-10826539/",
-    "url": "https://images.pexels.com/photos/10826539/pexels-photo-10826539.jpeg"
-  },
   "strategic-group-mapping-08": {
     "query": "apples and oranges comparison fruit",
     "file": "strategic-group-mapping-08.jpg",
@@ -988,16 +588,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/bunch-of-fruits-3978830/",
     "url": "https://images.pexels.com/photos/3978830/pexels-photo-3978830.jpeg"
-  },
-  "strategic-group-mapping-09": {
-    "query": "whiteboard diagram business planning",
-    "file": "strategic-group-mapping-09.jpg",
-    "title": "Hand writing business strategy on a whiteboard with graphs and diagrams.",
-    "creator": "Artem Podrez",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/a-person-holding-black-marker-writing-on-white-board-8519084/",
-    "url": "https://images.pexels.com/photos/8519084/pexels-photo-8519084.jpeg"
   },
   "strategic-group-mapping-10": {
     "query": "notebook pen dark desk minimal",
@@ -1009,26 +599,6 @@
     "landing_page": "https://www.pexels.com/photo/dark-photograph-of-a-desk-with-a-mug-notebook-and-a-tablet-19653838/",
     "url": "https://images.pexels.com/photos/19653838/pexels-photo-19653838.jpeg"
   },
-  "bowmans-strategy-clock-01": {
-    "query": "supermarket price tags shelf labels",
-    "file": "bowmans-strategy-clock-01.jpg",
-    "title": "Vibrant selection of canned fish in a French supermarket aisle.",
-    "creator": "Ben Prater",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/colorful-supermarket-canned-goods-display-in-france-33594363/",
-    "url": "https://images.pexels.com/photos/33594363/pexels-photo-33594363.jpeg"
-  },
-  "bowmans-strategy-clock-02": {
-    "query": "british university campus stone building",
-    "file": "bowmans-strategy-clock-02.jpg",
-    "title": "Elegant historic buildings and courtyard at Cambridge University, England.",
-    "creator": "Gamze Yalçınkaya",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/historic-architecture-at-cambridge-university-34115522/",
-    "url": "https://images.pexels.com/photos/34115522/pexels-photo-34115522.jpeg"
-  },
   "bowmans-strategy-clock-03": {
     "query": "balance scale weighing comparison",
     "file": "bowmans-strategy-clock-03.jpg",
@@ -1039,26 +609,6 @@
     "landing_page": "https://www.pexels.com/photo/vintage-large-balance-scale-8431786/",
     "url": "https://images.pexels.com/photos/8431786/pexels-photo-8431786.jpeg"
   },
-  "bowmans-strategy-clock-04": {
-    "query": "solid stone foundation architecture",
-    "file": "bowmans-strategy-clock-04.jpg",
-    "title": "Detailed view of a rustic stone wall with varied textures and colors.",
-    "creator": "Tahir Xəlfəquliyev",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/close-up-of-rustic-stone-wall-texture-34309998/",
-    "url": "https://images.pexels.com/photos/34309998/pexels-photo-34309998.jpeg"
-  },
-  "bowmans-strategy-clock-05": {
-    "query": "cracked crumbling concrete wall",
-    "file": "bowmans-strategy-clock-05.jpg",
-    "title": "A high-resolution close-up of a cracked concrete wall showcasing texture and wear.",
-    "creator": "zhmkhv",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/close-up-of-cracks-in-concrete-5045807/",
-    "url": "https://images.pexels.com/photos/5045807/pexels-photo-5045807.jpeg"
-  },
   "bowmans-strategy-clock-06": {
     "query": "padlock chain locked metal rust",
     "file": "bowmans-strategy-clock-06.jpg",
@@ -1068,16 +618,6 @@
     "source": "pexels",
     "landing_page": "https://www.pexels.com/photo/a-rusty-padlock-and-chains-5795580/",
     "url": "https://images.pexels.com/photos/5795580/pexels-photo-5795580.jpeg"
-  },
-  "bowmans-strategy-clock-07": {
-    "query": "plain generic products on shelf",
-    "file": "bowmans-strategy-clock-07.jpg",
-    "title": "Colorful assortment of packaged grocery items displayed on shelves in a Kazakhstan store.",
-    "creator": "Aibek Skakov",
-    "license": "pexels",
-    "source": "pexels",
-    "landing_page": "https://www.pexels.com/photo/grocery-store-shelves-loaded-with-diverse-products-36749154/",
-    "url": "https://images.pexels.com/photos/36749154/pexels-photo-36749154.jpeg"
   },
   "bowmans-strategy-clock-08": {
     "query": "two roads diverging fork path",

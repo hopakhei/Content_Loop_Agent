@@ -111,6 +111,22 @@ def cover_crop(im: Image.Image) -> Image.Image:
     return im.crop((left, top, left + W, top + H))
 
 
+# Nobody reviews these before they publish, so the quality gate has to be in
+# code. Brightness is the failure mode that actually matters: the brand is
+# near-black with white type, and a bright photo behind a 0.62 scrim comes out
+# washed grey with the headline fighting it. Candidates brighter than this mean
+# luminance are passed over — the darker, moodier frame is both safer to read
+# and closer to the look of the rest of the feed.
+MAX_MEAN_LUMA = 118      # 0-255; a bright daylight photo lands around 150-190
+BUSY_STDEV = 78          # high contrast detail competes with glyphs
+
+
+def _luma_stats(im: Image.Image) -> tuple[float, float]:
+    from PIL import ImageStat
+    st = ImageStat.Stat(im.convert("L"))
+    return st.mean[0], st.stddev[0]
+
+
 def fetch_one(out_name: str, query: str, seen: set[str] | None = None) -> dict | None:
     """Download the first candidate that is big enough and not already used,
     writing it to backgrounds/<out_name>.jpg.
@@ -131,6 +147,7 @@ def fetch_one(out_name: str, query: str, seen: set[str] | None = None) -> dict |
         print(f"  ! no results for {out_name} (query: {query!r})")
         return None
 
+    fallback = None      # darkest candidate that failed only the brightness gate
     for c in candidates:
         url = c.get("url")
         if not url or url in seen:
@@ -142,18 +159,37 @@ def fetch_one(out_name: str, query: str, seen: set[str] | None = None) -> dict |
             if im.width < MIN_W or im.height < MIN_H:
                 print(f"    skip {im.width}×{im.height} (too small)")
                 continue
-            out = OUT_DIR / f"{out_name}.jpg"
-            cover_crop(im).save(out, "JPEG", quality=88, optimize=True)
-            seen.add(url)
-            print(f"  ✓ {out_name}: {im.width}×{im.height} → {out.name}")
-            return {"query": query, "file": out.name,
-                    "title": c.get("title"), "creator": c.get("creator"),
-                    "license": c.get("license"), "source": c.get("source"),
-                    "landing_page": c.get("foreign_landing_url"), "url": url}
+            cropped = cover_crop(im)
+            mean, sd = _luma_stats(cropped)
+            if mean > MAX_MEAN_LUMA or sd > BUSY_STDEV:
+                print(f"    pass over (luma {mean:.0f}, sd {sd:.0f})")
+                if fallback is None or mean < fallback[1]:
+                    fallback = (cropped, mean, c, url)
+                continue
+            return _save(out_name, cropped, c, url, query, seen, mean)
         except Exception as exc:
             print(f"    skip candidate: {exc}")
+
+    if fallback:
+        # Every candidate was bright or busy. Take the darkest rather than
+        # leaving the slide bare — the renderer would fall back to the motif,
+        # which is fine, but a usable photo beats no photo.
+        cropped, mean, c, url = fallback
+        print(f"    no dark candidate; taking the darkest (luma {mean:.0f})")
+        return _save(out_name, cropped, c, url, query, seen, mean)
     print(f"  ! every candidate failed for {out_name}")
     return None
+
+
+def _save(out_name, cropped, c, url, query, seen, mean) -> dict:
+    out = OUT_DIR / f"{out_name}.jpg"
+    cropped.save(out, "JPEG", quality=88, optimize=True)
+    seen.add(url)
+    print(f"  ✓ {out_name}: luma {mean:.0f} → {out.name}")
+    return {"query": query, "file": out.name, "luma": round(mean, 1),
+            "title": c.get("title"), "creator": c.get("creator"),
+            "license": c.get("license"), "source": c.get("source"),
+            "landing_page": c.get("foreign_landing_url"), "url": url}
 
 
 def main() -> int:
