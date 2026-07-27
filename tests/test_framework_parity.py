@@ -70,3 +70,29 @@ def test_background_queries_cover_every_slide():
         assert len(spec) == slides, (
             f"{slug}: {len(spec)} queries for {slides} slides"
         )
+
+
+def test_caption_keywords_are_wired_to_the_dm_bot():
+    """A caption asking for a word the bot does not answer is a dead CTA.
+
+    This shipped: twenty framework captions asked readers to comment 「框架」
+    while IG_DM_KEYWORD was still the single value 「全文」, so every one of
+    those comments went unanswered and nobody could tell from the outside.
+    """
+    import re
+    from config import settings
+
+    known = {k.casefold() for k in settings.IG_DM_KEYWORDS}
+    asked: set[str] = set()
+    for path in (BASE / "carousels").glob("*.json"):
+        spec = json.loads(path.read_text("utf-8"))
+        blob = spec.get("caption", "") + " ".join(
+            s.get("follow", "") for s in spec["slides"]
+        )
+        asked |= set(re.findall(r"留言「([^」]+)」", blob))
+
+    unanswered = {w for w in asked if w.casefold() not in known}
+    assert not unanswered, (
+        f"caption(s) ask for {sorted(unanswered)} but IG_DM_KEYWORD only answers "
+        f"{sorted(known)} — those comments get no DM."
+    )

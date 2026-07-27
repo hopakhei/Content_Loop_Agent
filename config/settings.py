@@ -118,11 +118,22 @@ IG_HASHTAGS = os.getenv("IG_HASHTAGS", "#投資 #價值投資 #財經 #stockmark
 # A comment containing IG_DM_KEYWORD triggers ONE private reply carrying the
 # post's article link — the only automated path to a TAPPABLE IG link. Needs
 # instagram_business_manage_comments + instagram_business_manage_messages.
-IG_DM_KEYWORD = os.getenv("IG_DM_KEYWORD", "全文").strip()
+# Comma-separated; a comment containing ANY of them triggers the reply. It has
+# to be a list: captions have asked for 「全文」 on the essay carousels and
+# 「框架」 on the framework series, and a single-keyword setting silently
+# ignored every comment on the newer half.
+IG_DM_KEYWORDS = [
+    k.strip() for k in os.getenv("IG_DM_KEYWORD", "全文,框架,案例").split(",") if k.strip()
+]
+# Kept for logs and older call sites.
+IG_DM_KEYWORD = ", ".join(IG_DM_KEYWORDS)
 # DM every comment instead of keyword-matches only (aggressive; default off).
 IG_DM_ALL = _flag("IG_DM_ALL", False)
 # {url} is replaced with the post's article link.
-IG_DM_TEXT = os.getenv("IG_DM_TEXT", "謝謝留言 🙏 全文在這裡：{url}").strip()
+IG_DM_TEXT = os.getenv(
+    "IG_DM_TEXT",
+    "謝謝留言 🙏 這裡是用這些策略框架拆真實公司的案例，整個系列都在裡面：{url}",
+).strip()
 # When a post carries no per-article link tag, DM this instead.
 IG_DM_FALLBACK_URL = os.getenv(
     "IG_DM_FALLBACK_URL", "https://90spminvesting.substack.com/?r=25kdss"
