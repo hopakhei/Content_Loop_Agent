@@ -46,6 +46,14 @@ def _growth(p: DataPoint) -> Optional[float]:
 # would leak quota every night for every post that never gets impressions.
 REFRESH_MIN_AGE_HOURS = 24
 REFRESH_MAX_AGE_HOURS = 48
+# …but only X actually needs that restraint. Meta bills nothing for Threads and
+# Instagram insights, so giving those platforms one attempt and never retrying
+# turns any bad night into permanent data loss: while the Threads token was
+# 500-ing in mid-July every post whose one window fell in that stretch kept a
+# null forever, and seven of fourteen Threads rows still read zero. Those two
+# platforms now get re-read whenever a row is still empty, up to this age.
+BACKFILL_MAX_AGE_HOURS = 24 * 30
+FREE_READ_PLATFORMS = {"Threads", "Instagram"}
 
 
 def run(
@@ -216,9 +224,18 @@ def _refresh_metrics(rows, notion, twitter, threads, instagram, log, *, dry_run:
             continue
         posted = parse_notion_datetime(r["posted_at"], settings.TZ_NAME).astimezone(timezone.utc)
         age_hours = (now - posted).total_seconds() / 3600
-        if not (REFRESH_MIN_AGE_HOURS <= age_hours < REFRESH_MAX_AGE_HOURS):
-            continue  # one read per post, on its second night — never again
         platform = r.get("platform") or "X"
+        in_window = REFRESH_MIN_AGE_HOURS <= age_hours < REFRESH_MAX_AGE_HOURS
+        # Free-read platforms also get a second chance for as long as the row is
+        # still blank, so one failed night heals itself on the next run instead
+        # of leaving a hole in the data forever.
+        backfill = (
+            platform in FREE_READ_PLATFORMS
+            and not r.get("impressions")
+            and REFRESH_MIN_AGE_HOURS <= age_hours < BACKFILL_MAX_AGE_HOURS
+        )
+        if not (in_window or backfill):
+            continue  # X: one read per post, on its second night — never again
         if platform == "Threads":
             threads_rows[pid] = r
         elif platform == "Instagram":
