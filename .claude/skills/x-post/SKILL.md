@@ -2,12 +2,23 @@
 name: x-post
 description: >
   撰寫或修改 X（Twitter）post 文案時必須載入 —— 90s.pm.investing 的
-  X 語氣、格式限制、「永不落 link」鐵律，以及顧問框架系列的「單一長 post」規則。
+  X 語氣、格式限制、「永不落 link」鐵律，以及策略框架系列的「單一長 post」規則。
   觸發詞：X post、tweet、thread、post loop 文案、Notion drafts 的 X 平台內容、
-  顧問框架（McKinsey / BCG / Bain）系列。
+  策略框架（McKinsey / BCG / Bain）系列。
 ---
 
 # X Post — LOOP 文案規則
+
+## 鐵律零：一個框架要交齊三份，唔可以淨寫 unit
+
+寫 `units/<slug>.md` 只係餵到 X 同 Threads。同一個框架仲要有
+`carousels/<slug>.json`（Instagram）同埋 `assets/background_queries.json`
+入面一條 10 句 query（背景相）。三者之間冇 code 連住，做漏一份唔會報錯，
+只會嗰條線靜靜地乾塘 —— 試過一次過起咗十個 carousel 但冇補 unit，X 同
+Threads 就成日冇嘢出，post loop 每個時段跑兩秒收工，冇任何 error。
+
+`tests/test_framework_parity.py` 會卡住呢件事，三份唔齊就 CI 紅。
+詳情見 ig-carousel skill。
 
 ## 鐵律一：X 永遠不落 link
 
@@ -19,7 +30,7 @@ description: >
   唔好叫人「去 IG 睇」。X 索性不落 CTA；Threads 可保留 {CTA_URL}（Substack）
   做 newsletter 連結，但唔提 IG。
 
-## 鐵律二：顧問框架系列 = 單一長 post（X_LONGPOST）
+## 鐵律二：策略框架系列 = 單一長 post（X_LONGPOST）
 
 - 一個 framework 一日一篇，**全篇一次過出喺同一個 X post 度**，唔開 reply chain。
   X Premium 上限 25,000 字元，一個長 post 足以載成套論證，只食一次 write quota；
@@ -45,7 +56,7 @@ description: >
   例子 + 判斷）放晒入去。要帶下一個框架，就喺旗艦嘅最後一段輕輕帶一句 teaser，
   唔使開多一個 unit。
 
-## 鐵律三：借大名做權威（顧問框架系列）
+## 鐵律三：借大名做權威（策略框架系列）
 
 - **歸屬要準：框架係原作者提出，唔係 McKinsey/BCG/Bain 提出。** 唔好寫成
   「McKinsey、BCG、Bain 判斷公司用的是這套框架」——會令人以為框架係佢哋整。

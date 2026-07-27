@@ -97,6 +97,122 @@ def _wrap_cjk(text: str, font, draw, max_w: float) -> list[str]:
 
 TRACK = (38, 44, 52)
 BODY_FG = (200, 206, 214)
+# Halo painted under type that sits on a photo. Near-black rather than
+# pure black so it reads as depth instead of an outline.
+SHADOW = (6, 9, 13)
+
+# ── slide motifs ─────────────────────────────────────────────────────────────
+# A faint line drawing of the framework itself, painted behind the text so each
+# slide carries a visual echo of what it explains (a 2×2 for a matrix, a decay
+# curve for the experience curve, five inward arrows for the five forces…).
+# Drawn with Pillow primitives — no image assets, no network, deterministic in
+# CI. MOTIF sits ~15 levels above BG: legible as texture, never competing with
+# body copy. Opt in per slide with "motif", or per carousel with a top-level
+# "motif" default.
+MOTIF = (28, 36, 46)
+MOTIF_KEY = (34, 52, 51)      # accent-tinted, for the one line worth noticing
+
+
+def _photo_bg(img, path, dim: float = 0.62, blur: int = 5):
+    """Composite a real photograph behind the slide.
+
+    Cover-fits the image to the canvas, blurs it, then lays a dark scrim over
+    it at `dim` opacity. Both steps are the point: dense Traditional Chinese
+    body copy over an unmodified photo is unreadable, so the picture has to
+    read as atmosphere rather than subject. The type is drawn with a shadow
+    halo over a photo, which is what carries legibility — that is why the
+    default scrim can sit at 0.62 and leave the picture clearly visible
+    instead of the 0.80 needed when the glyphs are unprotected.
+
+    Photos are committed under backgrounds/ and composited at render time —
+    nothing is fetched during a run, so carousel-drip stays offline.
+    """
+    from PIL import ImageFilter
+    src = Image.open(path).convert("RGB")
+    # cover-fit: scale so both axes are covered, then centre-crop.
+    scale = max(W / src.width, H / src.height)
+    src = src.resize((max(1, int(src.width * scale)), max(1, int(src.height * scale))),
+                     Image.LANCZOS)
+    left, top = (src.width - W) // 2, (src.height - H) // 2
+    src = src.crop((left, top, left + W, top + H))
+    if blur:
+        src = src.filter(ImageFilter.GaussianBlur(blur))
+    img.paste(src, (0, 0))
+    if dim > 0:
+        scrim = Image.new("RGB", (W, H), BG)
+        img.paste(Image.blend(src, scrim, min(1.0, dim)), (0, 0))
+    return img
+
+
+def _motif_box(d, cx, cy, r, colour=MOTIF, w=4):
+    d.rectangle([cx - r, cy - r, cx + r, cy + r], outline=colour, width=w)
+
+
+def _draw_motif(d, name: str) -> None:
+    """Paint `name` as a large, faint diagram low and right of centre — the
+    region body copy rarely reaches, so the texture reads without sitting in
+    the middle of a sentence."""
+    cx, cy, R = int(W * 0.66), int(H * 0.74), 262
+
+    if name == "grid2x2":                      # BCG matrix, Ansoff
+        _motif_box(d, cx, cy, R)
+        d.line([cx - R, cy, cx + R, cy], fill=MOTIF, width=4)
+        d.line([cx, cy - R, cx, cy + R], fill=MOTIF, width=4)
+        d.ellipse([cx + R // 3, cy - R + R // 3, cx + R - R // 6, cy - R // 6],
+                  outline=MOTIF_KEY, width=5)
+    elif name == "curve-down":                 # experience curve
+        d.line([cx - R, cy - R, cx - R, cy + R], fill=MOTIF, width=4)
+        d.line([cx - R, cy + R, cx + R, cy + R], fill=MOTIF, width=4)
+        pts = [(cx - R + i * (2 * R) / 60,
+                cy + R - (2 * R) * (0.92 ** (i * 0.9)) * 0.92)
+               for i in range(61)]
+        d.line(pts, fill=MOTIF_KEY, width=6, joint="curve")
+    elif name == "five-arrows":                # five forces
+        _motif_box(d, cx, cy, R // 3, colour=MOTIF_KEY, w=5)
+        import math
+        for k in range(5):
+            a = -math.pi / 2 + k * 2 * math.pi / 5
+            x0, y0 = cx + R * math.cos(a), cy + R * math.sin(a)
+            x1, y1 = cx + (R // 2.1) * math.cos(a), cy + (R // 2.1) * math.sin(a)
+            d.line([x0, y0, x1, y1], fill=MOTIF, width=5)
+            d.ellipse([x1 - 9, y1 - 9, x1 + 9, y1 + 9], fill=MOTIF)
+    elif name == "scatter-groups":             # strategic group mapping
+        d.line([cx - R, cy - R, cx - R, cy + R], fill=MOTIF, width=4)
+        d.line([cx - R, cy + R, cx + R, cy + R], fill=MOTIF, width=4)
+        clusters = [((-0.45, -0.35), 78, MOTIF_KEY), ((0.30, 0.10), 96, MOTIF),
+                    ((0.05, 0.62), 58, MOTIF)]
+        for (fx, fy), rr, col in clusters:
+            bx, by = cx + fx * R, cy + fy * R
+            d.ellipse([bx - rr, by - rr, bx + rr, by + rr], outline=col, width=5)
+    elif name == "three-paths":                # Porter generic strategies
+        for dy, col in ((-R, MOTIF), (0, MOTIF_KEY), (R, MOTIF)):
+            d.line([cx - R, cy, cx + R, cy + dy], fill=col, width=5)
+        d.ellipse([cx - R - 12, cy - 12, cx - R + 12, cy + 12], fill=MOTIF_KEY)
+    elif name == "chain":                      # value chain
+        step = (2 * R) // 5
+        for k in range(5):
+            x = cx - R + k * step
+            col = MOTIF_KEY if k == 3 else MOTIF
+            d.line([x, cy - 90, x + step - 18, cy, x, cy + 90], fill=col, width=5)
+    elif name == "wave":                       # blue ocean value curve
+        for off, col in ((-70, MOTIF), (70, MOTIF_KEY)):
+            pts = [(cx - R + k * (2 * R) / 4,
+                    cy + off + (90 if k % 2 else -90)) for k in range(5)]
+            d.line(pts, fill=col, width=5)
+    elif name == "s-curve":                    # disruptive innovation
+        import math
+        for off, col in ((-120, MOTIF), (140, MOTIF_KEY)):
+            pts = [(cx - R + i * (2 * R) / 60,
+                    cy + off + R * 0.8 * (1 / (1 + math.exp(-(i - 30) / 7)) - 0.5) * -2)
+                   for i in range(61)]
+            d.line(pts, fill=col, width=5, joint="curve")
+    elif name == "clock":                      # Bowman's strategy clock
+        import math
+        d.ellipse([cx - R, cy - R, cx + R, cy + R], outline=MOTIF, width=4)
+        for k in range(8):
+            a = -math.pi / 2 + k * math.pi / 4
+            col = MOTIF_KEY if k == 1 else MOTIF
+            d.line([cx, cy, cx + R * math.cos(a), cy + R * math.sin(a)], fill=col, width=4)
 
 
 def load_carousel_spec(path) -> dict:
@@ -112,12 +228,22 @@ def load_carousel_spec(path) -> dict:
     return spec
 
 
-def _text_block(d, text, font, x, y, max_w, fill, line_h_mult=1.5):
+def _text_block(d, text, font, x, y, max_w, fill, line_h_mult=1.5, shadow=False):
+    """Lay out wrapped text. `shadow` paints a soft dark copy underneath first
+    — over a photograph that is what keeps type crisp, and it is what lets the
+    scrim be light enough for the picture to still be worth having. Without it
+    the only way to protect legibility is to dim the photo into mush."""
     lines: list[str] = []
     for para in (text or "").split("\n"):
         lines += _wrap_cjk(para, font, d, max_w)
     line_h = font.size * line_h_mult
+    # Offsets ring the glyph so the halo reads from every side, not just below.
+    off = max(2, round(font.size * 0.035))
     for ln in lines:
+        if shadow:
+            for dx, dy in ((-off, 0), (off, 0), (0, -off), (0, off),
+                           (off, off), (-off, -off)):
+                d.text((x + dx, y + dy), ln, font=font, fill=SHADOW)
         d.text((x, y), ln, font=font, fill=fill)
         y += line_h
     return y
@@ -144,11 +270,34 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
         d = ImageDraw.Draw(img)
         kind = s.get("kind", "content")
 
+        # Background layers first, so every later stroke sits on top of them.
+        # A photo wins over the line-art motif when a slide carries both.
+        photo = s.get("image", spec.get("image"))
+        if photo:
+            p = Path(photo)
+            if not p.is_absolute():
+                p = Path(__file__).resolve().parent.parent / p
+            if p.exists():
+                img = _photo_bg(img, p,
+                                dim=float(s.get("image_dim", spec.get("image_dim", 0.62))),
+                                blur=int(s.get("image_blur", spec.get("image_blur", 5))))
+                d = ImageDraw.Draw(img)
+            else:
+                photo = None      # fall through to the motif
+        motif = s.get("motif", spec.get("motif"))
+        if motif and not photo:
+            _draw_motif(d, motif)
+
+        # Muted grey reads fine on flat near-black, but over a photo — even a
+        # dimmed one — the bright patches swallow it. Lift the secondary tones
+        # when a picture is behind them.
+        sub_fill = (208, 216, 224) if photo else SUB
+
         if kind == "cover":
             d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
-            d.text((MARGIN, 128), s.get("kicker", ""), font=F(34), fill=SUB)
-            y = _text_block(d, s.get("head", ""), F(116), MARGIN, 380, W - 2 * MARGIN, FG, 1.35)
-            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, SUB, 1.55)
+            _text_block(d, s.get("kicker", ""), F(34), MARGIN, 128, W - 2*MARGIN, sub_fill, 1.5, shadow=bool(photo))
+            y = _text_block(d, s.get("head", ""), F(116), MARGIN, 380, W - 2 * MARGIN, FG, 1.35, shadow=bool(photo))
+            _text_block(d, s.get("sub", ""), F(46), MARGIN, y + 40, W - 2 * MARGIN, sub_fill, 1.55, shadow=bool(photo))
             cue, f = "往右滑", F(40)
             cw = d.textlength(cue, font=f)
             d.text((W - MARGIN - cw - 70, H - 232), cue, font=f, fill=SUB)
@@ -162,8 +311,8 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
                            (bx + bw / 2, by + bh - 26), (bx, by + bh)], fill=ACCENT)
             else:
                 d.rectangle([MARGIN, 96, MARGIN + 84, 104], fill=ACCENT)
-            y = _text_block(d, s.get("head", ""), F(104), MARGIN, 340, W - 2 * MARGIN, FG, 1.35)
-            y = _text_block(d, s.get("body", ""), F(46), MARGIN, y + 36, W - 2 * MARGIN, SUB, 1.55)
+            y = _text_block(d, s.get("head", ""), F(104), MARGIN, 340, W - 2 * MARGIN, FG, 1.35, shadow=bool(photo))
+            y = _text_block(d, s.get("body", ""), F(46), MARGIN, y + 36, W - 2 * MARGIN, BODY_FG if photo else SUB, 1.55, shadow=bool(photo))
             d.text((MARGIN, y + 70), s.get("follow", ""), font=F(52), fill=ACCENT)
             d.text((MARGIN, y + 170), s.get("link", ""), font=F(44), fill=SUB)
         else:
@@ -174,14 +323,16 @@ def render_carousel(spec: dict, out_dir: str, handle: str = HANDLE,
             if label:
                 d.text((MARGIN + d.textlength(num, font=f_k) + 28, 120),
                        "· " + label, font=f_k, fill=SUB)
-            y = _text_block(d, s.get("head", ""), F(88), MARGIN, 330, W - 2 * MARGIN, FG, 1.4)
-            _text_block(d, s.get("body", ""), F(48), MARGIN, y + 44, W - 2 * MARGIN, BODY_FG, 1.62)
+            y = _text_block(d, s.get("head", ""), F(88), MARGIN, 330, W - 2 * MARGIN, FG, 1.4, shadow=bool(photo))
+            _text_block(d, s.get("body", ""), F(48), MARGIN, y + 44, W - 2 * MARGIN, BODY_FG, 1.62, shadow=bool(photo))
 
         if kind != "cover":
             f = F(30)
             hw = d.textlength(handle, font=f)
-            d.text((W - MARGIN - hw, 128), handle, font=f,
-                   fill=TRACK if kind == "content" else SUB)
+            # The near-invisible TRACK tone is deliberate on flat near-black,
+            # but over a photo it reads as a smudge rather than a watermark.
+            handle_fill = SUB if (photo or kind != "content") else TRACK
+            d.text((W - MARGIN - hw, 128), handle, font=f, fill=handle_fill)
 
         # Progress bar + page number; arrow on every slide but the last.
         y_bar = H - 120

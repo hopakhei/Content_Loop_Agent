@@ -1,0 +1,123 @@
+{
+  "_comment": "slug → cover query (string) OR a list of per-slide queries in slide order (cover first). A list produces <slug>-01.jpg … matching each slide's own argument; a string produces <slug>-cover.jpg. Aim each query at the framework's real subject, not generic business stock — the picture has to look like the thing the slide is talking about.",
+  "porter": [
+    "costco wholesale warehouse shelves bulk",
+    "three diverging paths forest fork",
+    "harvard university campus brick building",
+    "warehouse pallets forklift bulk goods",
+    "luxury boutique storefront window display",
+    "red luxury sports car showroom",
+    "empty deserted shopping mall corridor",
+    "empty supermarket aisle shopping trolley",
+    "signpost arrows directions crossroads",
+    "notebook pen dark desk minimal"
+  ],
+  "bcg-matrix": [
+    "cash counting machine banknotes stack",
+    "window four panes grid light shadow",
+    "vintage typewriter documents office desk",
+    "classic cola bottles vending soda",
+    "rocket launch night long exposure",
+    "poker chips casino table stack",
+    "abandoned rusty factory machinery decay",
+    "industrial pipes valves water flow",
+    "financial report spreadsheet numbers desk",
+    "notebook pen dark desk minimal"
+  ],
+  "five-forces": [
+    "airport runway airplanes queue",
+    "airplane cabin passengers full seats",
+    "harvard business school campus building",
+    "sprint runners race track competition",
+    "industrial gate barrier fence entrance",
+    "stack of old dvd discs obsolete",
+    "supermarket checkout customer paying",
+    "oil refinery pipes industrial night",
+    "clipboard checklist pen inspection",
+    "notebook pen dark desk minimal"
+  ],
+  "blue-ocean": [
+    "open ocean horizon calm blue water",
+    "dense school of fish underwater crowded",
+    "empty university lecture hall seats",
+    "balance scale weighing value price",
+    "circus tent acrobat stage performance",
+    "scissors cutting paper minimal white",
+    "family playing video game living room",
+    "ocean sunset darkening storm clouds",
+    "lone swimmer open water aerial",
+    "notebook pen dark desk minimal"
+  ],
+  "disruptive-innovation": [
+    "vintage film cameras collection obsolete",
+    "chess board pieces strategy dark",
+    "business books library bookshelf",
+    "simple cheap plastic toy gadget",
+    "empty boardroom meeting table chairs",
+    "red envelope postal mail delivery",
+    "seedling plant growth stages soil",
+    "discount bin cheap products pile",
+    "magnifying glass examining detail close",
+    "notebook pen dark desk minimal"
+  ],
+  "ansoff-matrix": [
+    "city construction cranes skyline growth",
+    "architecture window four panes grid",
+    "vintage 1950s office desk documents",
+    "busy supermarket shoppers crowded aisle",
+    "product design studio prototype workbench",
+    "world map pins travel expansion",
+    "tightrope walker high wire balance",
+    "tangled messy cables wires knot",
+    "annual report growth chart graph",
+    "notebook pen dark desk minimal"
+  ],
+  "value-chain": [
+    "factory conveyor belt assembly line",
+    "production line workers overhead view",
+    "harvard campus brick building ivy",
+    "warehouse logistics boxes sorting",
+    "steel columns structure architecture",
+    "gold nugget among grey rocks",
+    "smartphone circuit board precision assembly",
+    "plain cardboard boxes packing dull",
+    "metal gears mechanism close up",
+    "notebook pen dark desk minimal"
+  ],
+  "experience-curve": [
+    "silicon wafer semiconductor macro blue",
+    "vintage aircraft factory airplane manufacturing",
+    "identical products mass production line rows",
+    "huge empty warehouse interior wide scale",
+    "container port stacked shipping containers",
+    "supermarket discount price tag red sale",
+    "solar panel farm rows aerial",
+    "craftsman workshop handmade custom furniture",
+    "financial chart screen data analysis dark",
+    "notebook pen dark desk minimal"
+  ],
+  "strategic-group-mapping": [
+    "airport terminal gates aircraft parked",
+    "old typewriter thesis papers desk",
+    "scatter plot chart data points",
+    "compass map navigation planning",
+    "boxing gloves ring face off",
+    "high wall barbed wire barrier",
+    "budget airline aircraft on tarmac",
+    "apples and oranges comparison fruit",
+    "whiteboard diagram business planning",
+    "notebook pen dark desk minimal"
+  ],
+  "bowmans-strategy-clock": [
+    "supermarket price tags shelf labels",
+    "british university campus stone building",
+    "balance scale weighing comparison",
+    "solid stone foundation architecture",
+    "cracked crumbling concrete wall",
+    "padlock chain locked metal rust",
+    "plain generic products on shelf",
+    "two roads diverging fork path",
+    "luxury price tag boutique premium",
+    "notebook pen dark desk minimal"
+  ]
+}

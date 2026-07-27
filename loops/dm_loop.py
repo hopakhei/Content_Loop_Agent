@@ -112,8 +112,8 @@ def run(
 def _matches(text: str) -> bool:
     if settings.IG_DM_ALL:
         return True
-    kw = settings.IG_DM_KEYWORD
-    return bool(kw) and kw.casefold() in (text or "").casefold()
+    body = (text or "").casefold()
+    return any(k.casefold() in body for k in settings.IG_DM_KEYWORDS)
 
 
 def _age_hours(iso_ts: Optional[str], now: datetime) -> float:

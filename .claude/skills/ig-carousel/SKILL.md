@@ -2,12 +2,31 @@
 name: ig-carousel
 description: >
   製作或修改 90s.pm.investing 的 Instagram carousel（輪播圖）時必須載入。
-  涵蓋 slide script 結構、經人手審批定下的編輯規矩（self-contained、一條主軸、
-  概念名做標題）、渲染字數限制，以及 render → preview → 批准 → dispatch 的出貨流程。
+  涵蓋 slide script 結構、編輯規矩（self-contained、一條主軸、概念名做標題）、
+  每張 slide 嘅背景相 query 同亮度閘、渲染字數限制，以及兩條出貨路徑：
+  策略框架系列入 queue 全自動出，單篇文章 carousel 要人手批准先 dispatch。
   觸發詞：carousel、輪播、拆文做 IG series、carousels/*.json、出圖 preview、「NNN 出」。
 ---
 
 # IG Carousel — LOOP 出貨手冊
+
+## 做一個新框架 = 三份嘢，唔可以淨做一份
+
+一個框架要喺三個平台都出到，要交齊：
+
+| 檔案 | 餵邊個平台 |
+|---|---|
+| `carousels/<slug>.json` | Instagram（carousel-drip） |
+| `units/<slug>.md` | X + Threads（generate-pending → post loop） |
+| `assets/background_queries.json` 加一條 10 句 | 背景相（fetch-backgrounds） |
+
+**呢三份之間冇任何 code 連住**，做漏一份唔會報錯，只會嗰條線靜靜地乾塘。
+真係發生過：一次過起咗十個 carousel，`units/` 仍然得兩個框架，Notion 嘅
+framework draft 出清之後，X 同 Threads 成日冇嘢出，post loop 每個時段跑兩秒
+就收工，冇任何 error。
+
+`tests/test_framework_parity.py` 而家會卡住呢件事 —— 三份唔齊、或者 query 數
+同 slide 數對唔上，CI 就紅。**唔好靠記性，靠個測試。**
 
 ## 出貨流程（每一步都不可跳過）
 
@@ -19,12 +38,25 @@ description: >
    spec = load_carousel_spec('carousels/<issue>.json')
    render_carousel(spec, '<scratchpad>/carousel-<issue>')"
    ```
-3. 用 SendUserFile 將全部 slides 交用戶過目 —— **未批准絕不出貨**
-4. 用戶回覆「NNN 出」／「ok」即為批准 → dispatch workflow `instagram.yml`，
-   input `carousel_issue=<issue>`，branch `claude/loop-product-spec-y45pgi`
-5. 等 runner 完成，從 job log 確認 `POSTED ✓ IG CAROUSEL ... media_id=...` 後回報
+3. 之後分兩條路：
+
+**策略框架系列（porter、five-forces… 呢啲 slug）＝ 全自動,唔使批准。**
+把 slug 加入 `queue/carousel_queue.txt`，`carousel-drip` 每日 12:30 HKT
+出一個、出完 dequeue。背景相由 `fetch-backgrounds` 自動補（見下）。
+用戶已明示唔想逐輯 review，所以唔好停低問「出唔出得」——寫好、入 queue、
+push 就算完成，喺回覆度講低入咗 queue、排第幾就夠。
+
+**單篇文章 carousel（101–201、127 呢啲數字 issue）＝ 要人手批准。**
+用 SendUserFile 交全部 slides 過目 → 用戶回「NNN 出」／「ok」→ dispatch
+`instagram.yml`，input `carousel_issue=<issue>`，branch
+`claude/loop-product-spec-y45pgi` → 從 job log 確認
+`POSTED ✓ IG CAROUSEL ... media_id=...` 後回報。
 
 修改後必須 commit + push（先 `git fetch` + `rebase`，bot 會定期推 card commit）。
+
+**冇人 review 唔等於冇閘。** 自動嗰條路嘅品質靠三樣頂住：標題鏈自檢、
+de-AI 掃描（renhua + content-anti-ai）、同埋背景相嘅亮度閘。寫完 spec
+一定要自己行一次呢三樣，因為之後冇人再睇。
 
 ## Spec 結構
 
@@ -55,8 +87,42 @@ description: >
   這類「被誰採用」的真實陳述來沾大名的光。
 - **投資角度**：每個 framework 都拉回投資決定（判斷護城河、拆解估值、看清風險），
   與「畫樹／MECE」一脈相承——這是 90s.pm.investing 的存在理由，不是純顧問教材。
-- kicker 用「顧問框架 NN」標明系列身份。
+- kicker 用「90s.pm.investing × McKinsey BCG Bain 策略框架 NN」標明系列身份（「顧問框架」四個字唔再用）。
 - 版權：概念公開可教，但一律用品牌語氣重寫成故事，**不抄 Umbrex 原書句子**。
+
+## 背景相（每張 slide 一張，全自動）
+
+寫一個新 framework carousel 時，**同時要喺 `assets/background_queries.json` 加一條
+`"<slug>": [ 10 句 ]`**，順序對應 slide（封面第一）。之後係全自動嘅：
+`fetch-backgrounds.yml` 每日 02:40 UTC 抓走缺失嘅圖 → commit 落 `backgrounds/` →
+`carousel-drip` 出街。**唔使人手 review，所以規矩要喺寫 query 嗰刻就守住。**
+
+- **一句 query 對一張 slide 講緊嘅嘢**，唔係對成個框架。例：BCG「明星要燒錢養」
+  → `rocket launch night long exposure`；「瘦狗該放手」→ `abandoned rusty
+  factory machinery decay`；Bowman「高價低值靠鎖客」→ `padlock chain locked
+  metal rust`。相要**承載論點**，唔係做裝飾。
+- **寫實物，唔好寫抽象商業詞**。`empty deserted shopping mall corridor` 得，
+  `business success growth` 唔得（會抓到握手、西裝、股票圖嗰啲 stock 陳腔）。
+- **偏暗、低對比**。品牌係近黑底白字，光相過唔到亮度閘（見下），就算過到都同
+  feed 其餘部分唔夾。加 `dark` / `night` / `moody` 通常有幫助。
+- **成輯唔好重複題材**。「哈佛校園」喺 Porter、五力、價值鏈都用過就會撞；
+  fetcher 只擋同一輯內嘅重複 URL，擋唔到你三個框架都寫同一句。
+- CTA（第 10 句）全系列統一用 `notebook pen dark desk minimal`，保持收尾一致。
+
+### 自動品質閘（`scripts/fetch_backgrounds.py`）
+冇人 review，所以擋喺 code：
+- **亮度**：平均 luma > 118 或 stdev > 78 嘅候選會跳過。呢個係實測出嚟嘅 ——
+  藍海「四個動作」原本抓到白枱剪刀（luma 228），出嚟成張變灰、背景「SALES」
+  字樣透穿正文。真係搵唔到暗嘅就取最暗嗰張，唔會留空。
+- **尺寸** ≥1080px；**浮水印來源**（rawpixel）直接封鎖。
+- 授權鎖死 Pexels / Unsplash / CC0 —— 全部商用免標註。出處記錄喺
+  `backgrounds/sources.json`。
+
+### 渲染參數（唔好亂改）
+封面 `image_dim: 0.45` / `blur: 2`；內容頁 `0.62` / `5`。文字有近黑光暈托住，
+所以個 scrim 先可以咁淺 —— 冇光暈就要壓到 0.80，張相基本上睇唔到。
+有相嘅 slide 會自動蓋過線稿 motif；**冇相嘅自動 fall back 用 motif**，
+所以抓唔到圖唔會爆，只係少咗張相。
 
 ## 編輯規矩（用戶逐輯 review 定下，全部必守）
 

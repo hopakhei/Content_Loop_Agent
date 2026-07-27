@@ -1,1 +1,10 @@
 porter
+five-forces
+ansoff-matrix
+bcg-matrix
+blue-ocean
+bowmans-strategy-clock
+disruptive-innovation
+experience-curve
+strategic-group-mapping
+value-chain
