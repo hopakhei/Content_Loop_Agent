@@ -96,3 +96,37 @@ def test_caption_keywords_are_wired_to_the_dm_bot():
         f"caption(s) ask for {sorted(unanswered)} but IG_DM_KEYWORD only answers "
         f"{sorted(known)} — those comments get no DM."
     )
+
+
+def test_every_framework_hook_carries_an_authority_signal():
+    """The opening line has to say whose framework this is.
+
+    Threads truncates the feed preview after a couple of lines, and the digest
+    picks hook A there — so hook A is what most readers ever see. All ten units
+    once opened with a bare contrarian claim and left the attribution 25-96
+    characters into the body, below the fold, on a series whose whole promise is
+    the provenance.
+
+    A signal is either the consulting trio or the framework's actual author or
+    institution. Both are allowed on purpose: naming McKinsey, BCG and Bain on a
+    framework they are not known to use would buy reach with a claim we cannot
+    stand behind, so the weaker-provenance frameworks cite their author instead.
+    """
+    from core.parsing import parse_units
+
+    trio = ("McKinsey", "麥肯錫", "BCG", "Bain")
+    authors = ("Porter", "Christensen", "Ansoff", "Bowman", "Henderson",
+               "INSEAD", "Harvard", "Cranfield", "顧問")
+    bare = []
+    for path in sorted((BASE / "units").glob("*.md")):
+        slug = path.stem
+        if slug.isdigit():
+            continue                      # per-article series, different rules
+        hook = parse_units(path.read_text("utf-8"))[0].hooks["A"]
+        if not any(m in hook for m in trio + authors):
+            bare.append(slug)
+
+    assert not bare, (
+        f"unit(s) whose hook A names neither the firms nor the framework's "
+        f"author: {sorted(bare)} — on Threads that opening is all most readers see."
+    )
