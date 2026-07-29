@@ -1,0 +1,1800 @@
+{
+ "fetched_at": "2026-07-29T11:20:00Z",
+ "source": "notion-mcp",
+ "note": "Hand-exported through the Notion MCP because the sandbox has no route to api.notion.com. Complete for Threads (55/55). X holds 100/107 rows — the Notion query quota ran out before the last page, which covers 2026-07-26 onward. Instagram (24 rows) is not included: no hypothesis reads it yet. Regenerate with `python scripts/retro_test.py --live --save <path>`.",
+ "rows": [
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-06T11:50:00Z",
+   "hook": "C",
+   "impressions": 643.0,
+   "likes": 3.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-06T14:39:00Z",
+   "hook": "A",
+   "impressions": 769.0,
+   "likes": 6.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-06T23:51:00Z",
+   "hook": "B",
+   "impressions": 602.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-07T03:15:00Z",
+   "hook": "A",
+   "impressions": 528.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-07T05:51:00Z",
+   "hook": "C",
+   "impressions": 731.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-07T11:27:00Z",
+   "hook": "B",
+   "impressions": 476.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-07T14:20:00Z",
+   "hook": "A",
+   "impressions": 693.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-07T23:49:00Z",
+   "hook": "A",
+   "impressions": 547.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-08T11:12:00Z",
+   "hook": "B",
+   "impressions": 537.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-08T14:19:00Z",
+   "hook": "A",
+   "impressions": 874.0,
+   "likes": 2.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-08T23:52:00Z",
+   "hook": "A",
+   "impressions": 565.0,
+   "likes": 4.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-09T03:15:00Z",
+   "hook": "A",
+   "impressions": 661.0,
+   "likes": 2.0,
+   "replies": 0.0,
+   "reposts": 1.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-09T05:49:00Z",
+   "hook": "A",
+   "impressions": 627.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-09T11:28:00Z",
+   "hook": "A",
+   "impressions": 1095.0,
+   "likes": 3.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-09T14:21:00Z",
+   "hook": "A",
+   "impressions": 724.0,
+   "likes": 2.0,
+   "replies": 0.0,
+   "reposts": 1.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-09T23:53:00Z",
+   "hook": "B",
+   "impressions": 469.0,
+   "likes": 4.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-10T03:14:00Z",
+   "hook": "A",
+   "impressions": 476.0,
+   "likes": 2.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-10T05:47:00Z",
+   "hook": "C",
+   "impressions": 547.0,
+   "likes": 3.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-10T11:28:00Z",
+   "hook": "B",
+   "impressions": 439.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-10T14:19:00Z",
+   "hook": "B",
+   "impressions": 524.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-10T23:49:00Z",
+   "hook": "A",
+   "impressions": 426.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-11T03:12:00Z",
+   "hook": "C",
+   "impressions": 472.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-11T05:27:00Z",
+   "hook": "B",
+   "impressions": 506.0,
+   "likes": 2.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-11T10:48:00Z",
+   "hook": "A",
+   "impressions": 576.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-11T14:02:00Z",
+   "hook": "A",
+   "impressions": 713.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-11T23:48:00Z",
+   "hook": "A",
+   "impressions": 677.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-12T03:13:00Z",
+   "hook": "A",
+   "impressions": 585.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-12T05:37:00Z",
+   "hook": "B",
+   "impressions": 695.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-12T10:57:00Z",
+   "hook": "A",
+   "impressions": 756.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-12T14:03:00Z",
+   "hook": "B",
+   "impressions": 915.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-12T23:48:00Z",
+   "hook": "C",
+   "impressions": 675.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-13T03:14:00Z",
+   "hook": "A",
+   "impressions": 1283.0,
+   "likes": 4.0,
+   "replies": 5.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-13T05:43:00Z",
+   "hook": "C",
+   "impressions": 641.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-13T11:33:00Z",
+   "hook": "A",
+   "impressions": 574.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-13T14:20:00Z",
+   "hook": "C",
+   "impressions": 607.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-13T23:48:00Z",
+   "hook": "C",
+   "impressions": 590.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-14T03:11:00Z",
+   "hook": "B",
+   "impressions": 585.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-14T05:17:00Z",
+   "hook": "B",
+   "impressions": 599.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-14T11:02:00Z",
+   "hook": "B",
+   "impressions": 616.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-14T14:12:00Z",
+   "hook": "B",
+   "impressions": 666.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-23T05:35:00Z",
+   "hook": "A",
+   "impressions": 592.0,
+   "likes": 3.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-23T11:14:00Z",
+   "hook": "B",
+   "impressions": 7658.0,
+   "likes": 22.0,
+   "replies": 7.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-23T14:19:00Z",
+   "hook": "C",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-23T23:49:00Z",
+   "hook": "B",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-24T03:11:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-24T05:32:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-25T13:13:00Z",
+   "hook": "A",
+   "impressions": 6401.0,
+   "likes": 22.0,
+   "replies": 8.0,
+   "reposts": 2.0,
+   "slug": "five-forces",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-26T15:34:00Z",
+   "hook": "A",
+   "impressions": 1738.0,
+   "likes": 6.0,
+   "replies": 6.0,
+   "reposts": 0.0,
+   "slug": "ansoff-matrix",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-26T23:49:00Z",
+   "hook": "A",
+   "impressions": 19115.0,
+   "likes": 55.0,
+   "replies": 6.0,
+   "reposts": 5.0,
+   "slug": "bcg-matrix",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-27T03:14:00Z",
+   "hook": "B",
+   "impressions": 985.0,
+   "likes": 2.0,
+   "replies": 6.0,
+   "reposts": 1.0,
+   "slug": "blue-ocean",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-27T05:45:00Z",
+   "hook": "A",
+   "impressions": 1540.0,
+   "likes": 7.0,
+   "replies": 6.0,
+   "reposts": 0.0,
+   "slug": "bowmans-strategy-clock",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-27T11:38:00Z",
+   "hook": "B",
+   "impressions": 4137.0,
+   "likes": 20.0,
+   "replies": 6.0,
+   "reposts": 3.0,
+   "slug": "disruptive-innovation",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-27T23:50:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "experience-curve",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-28T03:11:00Z",
+   "hook": "B",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "strategic-group-mapping",
+   "tags": {}
+  },
+  {
+   "platform": "Threads",
+   "posted_at": "2026-07-28T05:30:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "value-chain",
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-06-30T23:53:00Z",
+   "hook": "A",
+   "impressions": 19.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-01T01:01:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-01T03:01:00Z",
+   "hook": "C",
+   "impressions": 41.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-01T06:01:00Z",
+   "hook": "A",
+   "impressions": 55.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-01T11:35:00Z",
+   "hook": "B",
+   "impressions": 30.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-01T23:56:00Z",
+   "hook": "C",
+   "impressions": 22.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-02T03:00:00Z",
+   "hook": "B",
+   "impressions": 17.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-02T05:47:00Z",
+   "hook": "A",
+   "impressions": 28.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-02T11:22:00Z",
+   "hook": "B",
+   "impressions": 60.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-02T14:16:00Z",
+   "hook": "A",
+   "impressions": 46.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-02T23:51:00Z",
+   "hook": "C",
+   "impressions": 24.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-03T03:00:00Z",
+   "hook": "A",
+   "impressions": 16.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-03T05:47:00Z",
+   "hook": "C",
+   "impressions": 15.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-03T11:20:00Z",
+   "hook": "B",
+   "impressions": 39.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-03T14:16:00Z",
+   "hook": "B",
+   "impressions": 91.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-04T23:49:00Z",
+   "hook": "A",
+   "impressions": 26.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-05T03:16:00Z",
+   "hook": "C",
+   "impressions": 41.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-05T05:48:00Z",
+   "hook": "A",
+   "impressions": 30.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-05T11:11:00Z",
+   "hook": "B",
+   "impressions": 31.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-05T14:10:00Z",
+   "hook": "A",
+   "impressions": 31.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-05T23:50:00Z",
+   "hook": "A",
+   "impressions": 22.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-06T03:18:00Z",
+   "hook": "A",
+   "impressions": 34.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-06T11:50:00Z",
+   "hook": "C",
+   "impressions": 51.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-06T14:39:00Z",
+   "hook": "A",
+   "impressions": 19.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-06T23:51:00Z",
+   "hook": "B",
+   "impressions": 15.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-07T03:15:00Z",
+   "hook": "A",
+   "impressions": 25.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-07T05:51:00Z",
+   "hook": "C",
+   "impressions": 60.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-07T11:27:00Z",
+   "hook": "B",
+   "impressions": 487.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-07T14:20:00Z",
+   "hook": "A",
+   "impressions": 23.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-07T23:49:00Z",
+   "hook": "A",
+   "impressions": 74.0,
+   "likes": 0.0,
+   "replies": 2.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-08T03:12:00Z",
+   "hook": "A",
+   "impressions": 32.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-08T05:33:00Z",
+   "hook": "A",
+   "impressions": 28.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-08T11:12:00Z",
+   "hook": "B",
+   "impressions": 45.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-08T14:19:00Z",
+   "hook": "A",
+   "impressions": 36.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-08T23:52:00Z",
+   "hook": "A",
+   "impressions": 37.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-09T03:15:00Z",
+   "hook": "A",
+   "impressions": 11.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-09T05:49:00Z",
+   "hook": "A",
+   "impressions": 14.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-09T11:28:00Z",
+   "hook": "A",
+   "impressions": 82.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-09T14:21:00Z",
+   "hook": "A",
+   "impressions": 30.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-09T23:53:00Z",
+   "hook": "B",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-10T03:14:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-10T05:47:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-10T11:28:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-10T14:19:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-10T23:49:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-11T03:12:00Z",
+   "hook": "B",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-11T05:27:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-11T10:48:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-11T14:02:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-11T23:48:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-12T03:13:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-12T05:37:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-12T10:57:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-12T14:03:00Z",
+   "hook": "A",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-12T23:48:00Z",
+   "hook": "B",
+   "impressions": 0.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-13T03:14:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 1.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {}
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-13T05:43:00Z",
+   "hook": "B",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-13T11:33:00Z",
+   "hook": "C",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-13T14:20:00Z",
+   "hook": "B",
+   "impressions": 0.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-13T23:48:00Z",
+   "hook": "B",
+   "impressions": 117.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-14T03:11:00Z",
+   "hook": "A",
+   "impressions": 5.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-14T05:17:00Z",
+   "hook": "A",
+   "impressions": 7.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-14T11:02:00Z",
+   "hook": "A",
+   "impressions": 20.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-14T14:12:00Z",
+   "hook": "A",
+   "impressions": 9.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-14T23:48:00Z",
+   "hook": "A",
+   "impressions": 13.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-15T03:11:00Z",
+   "hook": "C",
+   "impressions": 49.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-15T05:18:00Z",
+   "hook": "A",
+   "impressions": 84.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-15T11:04:00Z",
+   "hook": "A",
+   "impressions": 49.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-15T23:49:00Z",
+   "hook": "A",
+   "impressions": 32.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-16T03:11:00Z",
+   "hook": "A",
+   "impressions": 13.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-16T05:26:00Z",
+   "hook": "C",
+   "impressions": 12.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-16T11:10:00Z",
+   "hook": "A",
+   "impressions": 7.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-16T14:15:00Z",
+   "hook": "A",
+   "impressions": 42.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-16T23:49:00Z",
+   "hook": "C",
+   "impressions": 9.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-17T03:11:00Z",
+   "hook": "B",
+   "impressions": 61.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-17T05:28:00Z",
+   "hook": "B",
+   "impressions": 32.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-17T23:48:00Z",
+   "hook": "B",
+   "impressions": 8.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-18T03:10:00Z",
+   "hook": "A",
+   "impressions": 12.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-18T05:16:00Z",
+   "hook": "C",
+   "impressions": 12.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-18T10:50:00Z",
+   "hook": "C",
+   "impressions": 19.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-18T14:01:00Z",
+   "hook": "C",
+   "impressions": 37.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-18T23:48:00Z",
+   "hook": "C",
+   "impressions": 25.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-19T03:12:00Z",
+   "hook": "A",
+   "impressions": 112.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-19T05:34:00Z",
+   "hook": "B",
+   "impressions": 7.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-19T23:49:00Z",
+   "hook": "C",
+   "impressions": 49.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-20T03:13:00Z",
+   "hook": "C",
+   "impressions": 64.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-20T05:44:00Z",
+   "hook": "C",
+   "impressions": 27.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-20T11:26:00Z",
+   "hook": "C",
+   "impressions": 50.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-20T23:49:00Z",
+   "hook": "C",
+   "impressions": 62.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-21T03:12:00Z",
+   "hook": "C",
+   "impressions": 6.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-21T05:32:00Z",
+   "hook": "A",
+   "impressions": 18.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-21T11:14:00Z",
+   "hook": "C",
+   "impressions": 18.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-21T23:49:00Z",
+   "hook": "C",
+   "impressions": 35.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": null,
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-23T11:14:00Z",
+   "hook": "C",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-23T14:19:00Z",
+   "hook": "A",
+   "impressions": null,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-23T23:49:00Z",
+   "hook": "A",
+   "impressions": 51.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-24T03:11:00Z",
+   "hook": "B",
+   "impressions": 69.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-24T05:32:00Z",
+   "hook": "C",
+   "impressions": 30.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "porter",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-25T13:13:00Z",
+   "hook": "C",
+   "impressions": 184.0,
+   "likes": 0.0,
+   "replies": 0.0,
+   "reposts": 0.0,
+   "slug": "five-forces",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  },
+  {
+   "platform": "X",
+   "posted_at": "2026-07-26T15:34:00Z",
+   "hook": "C",
+   "impressions": 166.0,
+   "likes": 0.0,
+   "replies": 1.0,
+   "reposts": 0.0,
+   "slug": "ansoff-matrix",
+   "tags": {
+    "x_link_arm": "no_link"
+   }
+  }
+ ]
+}
