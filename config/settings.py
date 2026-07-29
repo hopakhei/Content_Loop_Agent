@@ -153,8 +153,13 @@ PREVIEW_COUNTDOWN_SECONDS = _int("PREVIEW_COUNTDOWN_SECONDS", 5)
 DRY_RUN = _flag("DRY_RUN", False)
 TZ_NAME = os.getenv("TZ_NAME", "Asia/Hong_Kong").strip() or "Asia/Hong_Kong"
 
+# One slot, the one the data likes: 12:30 HKT measures 1.76% engagement against
+# 0.71/0.61/0.47/0.24% for the four that used to sit alongside it. Cutting to it
+# alone also stops five slots a day draining a content library that gains one
+# framework at a time — the ten frameworks lasted four days at the old rate.
+# post.yml's cron has to match; add slots back in both places together.
 POST_SLOTS_HKT = [
     s.strip()
-    for s in os.getenv("POST_SLOTS_HKT", "07:30,10:00,12:30,18:30,21:30").split(",")
+    for s in os.getenv("POST_SLOTS_HKT", "12:30").split(",")
     if s.strip()
 ]
