@@ -8,3 +8,5 @@ disruptive-innovation
 experience-curve
 strategic-group-mapping
 value-chain
+key-success-factors
+relative-cost-positioning
