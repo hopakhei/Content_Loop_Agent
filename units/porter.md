@@ -7,7 +7,7 @@
 ---
 【1】【Thread】【X + Threads】
 Hook A（反共識）：「護城河深」是最偷懶的買入理由。麥肯錫、BCG、Bain 判斷防守力，用的是 Porter 那三條路。
-Hook B（數據衝擊）：Michael Porter 這套判斷防守力的框架，McKinsey、BCG、Bain 用了四十年。
+Hook B（場景開場・H-002 實驗臂）：1980 年，Michael Porter 在書裡寫下三條路，然後說：三條都想要的，一條都守不住。
 Hook C（懸念缺口）：贏一個行業，方法只有三種——你手上這間，走的是哪一種？
 Post Body：很多人買股票，一句「護城河深」就當結論。Michael Porter 1980 年在 Harvard 寫下的那套框架講得清楚——一間公司要有防守力，方法只有三種。這套框架後來成了 McKinsey、BCG、Bain 的第一課。
 ---

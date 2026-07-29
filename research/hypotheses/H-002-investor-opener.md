@@ -1,6 +1,6 @@
 ---
 id: H-002
-status: open
+status: testing
 source: own-metrics
 created: 2026-07-29
 claim: >
@@ -10,7 +10,18 @@ claim: >
 variable:
   key: investor_opener
   scorer: investor_opener
-  arms: [yes, no]
+  arms: ["yes", "no"]
+assignment:
+  # A fair coin per draft, seeded by draft id so a retried slot cannot move a
+  # post between arms. The hook each arm uses, and the scorer value that proves
+  # the hook really is that arm — a unit that cannot produce BOTH arms sits the
+  # experiment out rather than contributing to one side.
+  hook_arms:
+    investor: A
+    scene: B
+  arm_values:
+    investor: "yes"
+    scene: "no"
 prediction:
   metric: impressions
   platform: Threads

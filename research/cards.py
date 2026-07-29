@@ -66,6 +66,10 @@ class Hypothesis:
     path: Path
     confounds: list[str] = field(default_factory=list)
     body: str = ""
+    # Live-experiment wiring, read by research.experiments. Absent on cards that
+    # are only ever retro-tested.
+    hook_arms: dict = field(default_factory=dict)      # arm -> hook letter
+    arm_values: dict = field(default_factory=dict)     # arm -> scorer output
 
     def score(self, row: dict) -> Optional[str]:
         return scorers.resolve(self.scorer)(row)
@@ -126,6 +130,8 @@ def parse_card(text: str, path: Path) -> Hypothesis:
         confounds=list(meta.get("confounds") or []),
         path=path,
         body=m.group(2).strip(),
+        hook_arms=dict((meta.get("assignment") or {}).get("hook_arms") or {}),
+        arm_values=dict((meta.get("assignment") or {}).get("arm_values") or {}),
     )
 
 

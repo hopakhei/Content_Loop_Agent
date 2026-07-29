@@ -1,8 +1,9 @@
 ---
 id: H-003
-status: open
+status: abandoned
 source: own-metrics
 created: 2026-07-29
+closed: 2026-07-29
 claim: >
   On X, a post carrying an outbound link reaches fewer people than the same post
   without one.
@@ -72,3 +73,32 @@ reply happened.
 Nothing here justifies keeping links off X, and nothing here justifies putting
 them back. The honest state is: unmeasured. Either restart the randomisation
 with a stopping rule, or close the card as abandoned and stop citing its numbers.
+
+## Closed — 2026-07-29 — abandoned, not refuted
+
+Abandoned means we stopped asking, not that we answered. The direction is still
+unknown; nothing below claims otherwise.
+
+**Why not just restart the randomisation.** One experiment runs at a time, and
+H-002 is worth more. This one affects whether a CTA appears; H-002 affects the
+opening line of every post on the platform that carries this account's reach.
+
+**Why the answer barely matters right now.** X averaged 178 impressions per post
+in the framework era against 5,939 on Threads. A 30% swing either way on X is
+about 50 impressions — under 1% of what one Threads post does. Substack traffic
+comes from Threads and the Instagram DM reply, not from X. Spending six weeks of
+the single experiment slot to resolve a rounding error is the wrong trade.
+
+**What happens now.** X stays link-free, which is already the state
+(`X_INCLUDE_CTA=False`) — kept as a default, not as a finding. `X_LINK_AB` stays
+switched on so that turning the CTA back on resumes randomising rather than
+silently producing a single-arm stream.
+
+**Reopen when** X sustains more than roughly 500 impressions per post, or the
+account starts driving subscriptions through X. Then the question is worth a slot.
+
+**Fixed so this cannot recur.** `loops/learn_loop.py` now refuses to print an arm
+comparison when one arm has not been assigned for `STALE_ARM_DAYS`; it prints
+`STALE, not reported` with the date instead. `scripts/retro_test.py` flags
+non-concurrent arms independently. The failure was never the experiment ending —
+experiments end. It was that nothing noticed, and the output kept being read.

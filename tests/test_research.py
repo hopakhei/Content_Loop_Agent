@@ -186,3 +186,110 @@ def test_snapshot_rows_carry_what_the_scorers_need():
     for r in rows:
         assert r["platform"] and r["posted_at"]
         assert r["impressions"] is None or isinstance(r["impressions"], (int, float))
+
+
+# ── live experiment assignment ───────────────────────────────────────────────
+
+class _Draft:
+    def __init__(self, ident, hooks):
+        self.id, self.hooks = ident, hooks
+
+    def available_hooks(self):
+        return {k: v for k, v in self.hooks.items() if v}
+
+
+BOTH = {"A": "這間公司的毛利在倒數。", "B": "馬戲團裡沒有動物，票價卻更高。"}
+
+
+def _h002():
+    from research import experiments
+    h = next(h for h in cards.load_all() if h.id == "H-002")
+    assert experiments.eligible(_Draft("x", BOTH), h)
+    return h
+
+
+def test_exactly_one_experiment_is_live():
+    from research import experiments
+    assert experiments.active() is not None          # H-002
+
+
+def test_two_live_experiments_are_rejected():
+    """Two concurrent tests quarter every cell; the registry refuses rather than
+    letting both run and settle neither."""
+    from research import experiments
+    live = [h for h in cards.load_all() if h.status == "testing"]
+    with pytest.raises(ValueError, match="more than one"):
+        experiments.active(live * 2)
+
+
+def test_a_draft_that_cannot_carry_both_arms_sits_out():
+    """Checking only the drawn arm would let such a unit feed one side only, so
+    the arm difference would partly be a unit difference."""
+    from research import experiments
+    one_sided = _Draft("y", {"A": "這間公司的毛利在倒數。", "B": "這間公司的估值太貴。"})
+    assert not experiments.eligible(one_sided, _h002())
+    assert experiments.assign(one_sided, "Threads", _h002(), day="2026-08-01") is None
+
+
+def test_assignment_is_stable_within_a_day_and_moves_across_days():
+    """Stable so a retried slot cannot switch arms; moving so a framework is not
+    pinned to one arm for the whole run."""
+    from research import experiments
+    h, d = _h002(), _Draft("porter", BOTH)
+    days = [f"2026-08-{i:02d}" for i in range(1, 21)]
+    arms = [experiments.assign(d, "Threads", h, day=x).arm for x in days]
+    assert experiments.assign(d, "Threads", h, day=days[0]).arm == arms[0]
+    assert len(set(arms)) == 2, "the same draft never changed arm across 20 days"
+
+
+def test_assignment_respects_the_cards_platform():
+    from research import experiments
+    h, d = _h002(), _Draft("porter", BOTH)
+    assert experiments.assign(d, "Threads", h, day="2026-08-01") is not None
+    assert experiments.assign(d, "X", h, day="2026-08-01") is None
+
+
+def test_the_arm_tag_lands_on_the_performance_row():
+    from research import experiments
+    a = experiments.assign(_Draft("porter", BOTH), "Threads", _h002(), day="2026-08-01")
+    assert a.tag == {"h002_arm": a.arm}
+
+
+def test_enough_units_can_carry_both_arms_to_finish_the_run():
+    """A starved experiment looks like a running one. It never reaches n."""
+    from pathlib import Path
+    from core.parsing import parse_units
+    from research import experiments
+    h = _h002()
+    ok = sum(
+        experiments.eligible(_Draft(p.stem, parse_units(p.read_text("utf-8"))[0].hooks), h)
+        for p in Path("units").glob("*.md") if not p.stem.isdigit()
+    )
+    assert ok >= 8, f"only {ok} units can carry both arms of {h.id}"
+
+
+# ── digest guards ────────────────────────────────────────────────────────────
+
+def test_digest_refuses_to_report_an_arm_that_stopped_being_assigned():
+    from loops.learn_loop import _ab_line, _arm_last_seen
+    rows = [{"tags": {"x_link_arm": "link"}, "posted_at": "2026-07-19T05:00:00Z"},
+            {"tags": {"x_link_arm": "no_link"}, "posted_at": "2026-07-28T05:00:00Z"}]
+    line = _ab_line("X link A/B", [("no_link", 0.0065, 28), ("link", 0.0, 15)],
+                    _arm_last_seen(rows, "x_link_arm"))
+    assert "STALE" in line and "0.65%" not in line
+
+
+def test_digest_reports_concurrent_arms_normally():
+    from loops.learn_loop import _ab_line, _arm_last_seen
+    rows = [{"tags": {"x_link_arm": "link"}, "posted_at": "2026-07-27T05:00:00Z"},
+            {"tags": {"x_link_arm": "no_link"}, "posted_at": "2026-07-28T05:00:00Z"}]
+    line = _ab_line("X link A/B", [("no_link", 0.0065, 28), ("link", 0.0, 15)],
+                    _arm_last_seen(rows, "x_link_arm"))
+    assert "0.65%" in line and "STALE" not in line
+
+
+def test_hook_winner_is_reported_with_its_sample_size_and_margin():
+    """A 3x lead and a 0.02% lead used to print identically."""
+    from loops.learn_loop import _hook_line
+    line = _hook_line({"Threads": [("A", 0.0048, 12), ("B", 0.0031, 9)]})
+    assert "n=12" in line and "1.55x" in line

@@ -36,6 +36,25 @@ from services.threads import ThreadsService
 from services.twitter import TwitterService
 
 
+def assign_arm(draft: Draft, platform: str, day: Optional[str] = None):
+    """Arm for the live experiment, or None.
+
+    Deterministic in (experiment, draft, day), so the two call sites — choosing
+    the hook and stamping the tag — cannot disagree about which arm a post is in.
+    Both pass the run's own date rather than letting it default, so a run that
+    straddles midnight UTC still agrees with itself.
+
+    Never raises. A malformed hypothesis card is a research problem; it must not
+    stop the account from posting.
+    """
+    try:
+        from research import experiments          # local: research/ is optional at runtime
+        return experiments.assign(draft, platform, day=day)
+    except Exception as exc:                      # noqa: BLE001 — posting outranks research
+        logging.getLogger("loop.post").warning("experiment assignment skipped: %s", exc)
+        return None
+
+
 def run(
     dry_run: bool = False,
     slot: Optional[str] = None,
@@ -179,7 +198,8 @@ def _publish_one(
     #    restores it) and chains are capped at X_MAX_THREAD_POSTS (every
     #    chained tweet costs a monthly write credit). Threads keeps the CTA
     #    and the full chain, and gets its own 500-char limit.
-    hook_for = _pick_hooks_per_platform(draft, rules, targets)
+    run_day = ref.date().isoformat()
+    hook_for = _pick_hooks_per_platform(draft, rules, targets, run_day)
     posts_for: dict = {}
     cta_for: dict = {}
     x_link_arm = _x_link_arm()  # W5: randomized link/no-link A/B on X
@@ -255,7 +275,11 @@ def _publish_one(
             plat_posts = posts_for[platform]
             plat_cta = cta_for[platform]
             cta_present = bool(plat_cta) and any(plat_cta in p for p in plat_posts)
-            extra = {"x_link_arm": x_link_arm} if platform == "X" else None
+            extra = {"x_link_arm": x_link_arm} if platform == "X" else {}
+            arm = assign_arm(draft, platform, run_day)
+            if arm:
+                extra.update(arm.tag)
+            extra = extra or None
             tags = build_tags(
                 platform=platform, hook=hook_for[platform][0], posts=plat_posts,
                 cta_url=plat_cta, cta_present=cta_present, title=draft.title, extra=extra,
@@ -321,7 +345,7 @@ def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
     return default_cta
 
 
-def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
+def _pick_hooks_per_platform(draft: Draft, rules, targets: list, day: str) -> dict:
     """{platform: (hook_key, hook_text)}. Each platform is biased toward ITS OWN
     learned winner (Best Hook (X) / Best Hook (Threads), falling back to the
     pooled winner, else random). To keep cross-platform exploration, if a
@@ -330,6 +354,16 @@ def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
     by_plat = getattr(rules, "best_hook_by_platform", {}) or {}
     picks = {p: select_hook(draft, rules, winner_override=by_plat.get(p)) for p in targets}
     available = draft.available_hooks()
+
+    # A live experiment overrides the learned pick on its platform. It has to:
+    # `select_hook` biases toward the current winner, and a randomised arm that
+    # is then filtered through a preference for one of its own arms is not
+    # randomised. Assignments that cannot be honoured return None and leave the
+    # learned pick alone.
+    for p in targets:
+        a = assign_arm(draft, p, day)
+        if a and a.hook_key and available.get(a.hook_key):
+            picks[p] = (a.hook_key, available[a.hook_key])
     if ("X" in picks and "Threads" in picks and len(available) >= 2
             and picks["X"][0] and picks["X"][0] == picks["Threads"][0]):
         keys = sorted(available)
