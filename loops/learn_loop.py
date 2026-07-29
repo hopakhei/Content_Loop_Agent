@@ -138,6 +138,11 @@ def run(
         "best_hook_by_platform": best_hook_by_platform,
         "link_ab": link_ab,
         "rules_updated": False,
+        # Computed here, not after the MIN_DATA_POINTS gate below: the digest is
+        # written before that gate, so a confidence assigned later never reached
+        # it. Every digest ever written said "confidence: 0%" — including the one
+        # at 151 data points, which is full confidence four times over.
+        "confidence": min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS)),
     }
 
     notes = _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas)
@@ -152,12 +157,11 @@ def run(
     if len(points) < MIN_DATA_POINTS:
         log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)
         return summary
-    confidence = min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS))
+    confidence = summary["confidence"]
     evidence_ids = [
         r["post_id"] for r in rows
         if r.get("post_id") and not r["post_id"].startswith("DRYRUN-")
     ]
-    summary["confidence"] = confidence
 
     if dry_run:
         log.info("[dry-run] would update Agent Rules (confidence=%d): %s", confidence, summary)
