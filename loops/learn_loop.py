@@ -407,6 +407,20 @@ def _signed(v) -> str:
     return "n/a" if v is None else f"{v:+d}"
 
 
+def _runway_lines() -> str:
+    """Days of content left, in the file the producer already reads.
+
+    runway.yml is the alarm; this is the gauge. The alarm only speaks when
+    something is wrong, and a number nobody sees until it is wrong is a number
+    nobody has a feel for.
+    """
+    try:
+        from scripts import runway
+        return runway.render(runway.report())
+    except Exception as exc:                      # never break the digest
+        return f"(runway unavailable: {exc})"
+
+
 def _write_digest(path: str, summary: dict, notes: str, log) -> None:
     """Write a small, human-readable performance digest into the repo so the
     auto-producer (which has no Notion access) can read the latest signals over
@@ -438,6 +452,7 @@ def _write_digest(path: str, summary: dict, notes: str, log) -> None:
         else:
             lines.append("- Not enough data yet — keep the three hook styles "
                          "(反共識 / 數據衝擊 / 懸念缺口) balanced and vary framework topics.")
+        lines += ["", "## Runway", "", _runway_lines()]
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
         log.info("Wrote performance digest → %s", path)

@@ -1,0 +1,62 @@
+name: Content runway
+
+# Fails while there is still a week of content left, instead of going quiet
+# when there is none.
+#
+# The pipeline has run dry twice. Both times every job stayed green: the post
+# loop found no eligible draft, logged a notice and exited zero, and the
+# carousel drip published nothing from an empty queue. A green tick on a job
+# that produced nothing is indistinguishable from a green tick on one that
+# worked, so the only signal left was a human noticing days of silence.
+#
+# This job exists to be the complaint. It runs before the 04:30 UTC publishing
+# slot, refreshes the ranked backlog so the answer to "write what?" is already
+# committed, and fails when either channel drops below the floor.
+on:
+  schedule:
+    - cron: "0 2 * * *"          # ahead of fetch-backgrounds (02:40) and the drip (04:30)
+  workflow_dispatch:
+
+concurrency:
+  group: loop-runway
+  cancel-in-progress: false
+
+jobs:
+  runway:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write            # commit the refreshed shortlist
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
+      NOTION_CONTENT_DRAFTS_DB: "216ebf08-3c4a-44fc-9467-a30bc12030a6"
+      NOTION_PERFORMANCE_LOG_DB: "21e2c21c-b4ca-4d2f-823b-426f530e6fca"
+      NOTION_AGENT_RULES_DB: "4acdaa17-0e02-4aa6-988a-06927c905b96"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+
+      - name: Refresh the ranked backlog
+        run: python scripts/next_frameworks.py
+
+      - name: Commit the shortlist
+        run: |
+          git config user.name "loop-bot"
+          git config user.email "noreply@anthropic.com"
+          git add frameworks/next.md
+          if git diff --cached --quiet; then
+            echo "Shortlist unchanged."
+          else
+            git commit -m "chore(frameworks): refresh backlog shortlist $(date -u +%F)"
+            for i in 1 2 3 4; do
+              git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }
+            done
+          fi
+
+      # Last, so the shortlist is committed even on the days this fails —
+      # the failure notice is only useful if it points at a current file.
+      - name: Check the runway
+        run: python scripts/runway.py --check
