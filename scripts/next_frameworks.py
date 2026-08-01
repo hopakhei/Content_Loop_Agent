@@ -24,14 +24,12 @@ from __future__ import annotations
 
 import argparse
 import csv
-import re
 import sys
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "frameworks" / "index.csv"
-RAW = ROOT / "frameworks" / "raw"
 OUT = ROOT / "frameworks" / "next.md"
 
 SHORTLIST = 12
@@ -62,70 +60,36 @@ INVESTOR_CAP = 10
 # no reason to stay for eight straight posts on operating models.
 W_CATEGORY_CROWDING = -1.2
 
-FIRMS = ("McKinsey", "Boston Consulting Group", "BCG", "Bain")
-# Named people and named institutions only. "taught in business schools"
-# appears in a fifth of these origins and is a claim about who adopted a
-# framework, not about who wrote it — the same distinction the x-post skill
-# draws before letting a post name anybody.
-AUTHORS = (
-    "Porter", "Christensen", "Ansoff", "Bowman", "Henderson", "Treacy",
-    "Wiersema", "Kim", "Mauborgne", "Grove", "Rogers", "Moore", "Ulwick",
-    "Kaplan", "Norton", "Prahalad", "Hamel", "Ghemawat", "Kotter", "Osterwalder",
-    "Harvard", "INSEAD", "Stanford", "MIT", "Wharton", "Cranfield",
-)
-INVESTOR_TERMS = (
-    "ROIC", "return on invested capital", "margin", "capital allocation",
-    "market share", "valuation", "moat", "profit pool", "cost position",
-    "pricing power", "switching cost", "churn", "retention", "cash flow",
-    "unit economics", "payback", "shareholder", "EBIT", "capital intensity",
-)
-
-# Measured performance stays out of the ranking until the corpus can support a
-# comparison. The retro tester refuses to call a winner on thin arms; a ranker
-# that quietly ordered categories on two posts each would be doing exactly what
-# that refusal exists to prevent.
 MIN_PER_CATEGORY = 5
 
-_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
+# Both inputs are read off the ledger, never off frameworks/raw/. The briefs
+# are gitignored copyrighted prose, so a ranker that reads them scores every
+# framework at zero anywhere but the machine that ran the ingest — and the
+# cron then commits that as the shortlist. scripts/build_framework_index.py
+# distils the two facts into index.csv on the machine that has the books.
+PROVENANCE_WEIGHT = {"firm": W_FIRM, "author": W_AUTHOR, "dated": W_DATED, "none": 0.0}
 
 
-def _brief(slug: str) -> str:
-    path = RAW / f"{slug}.md"
-    return path.read_text("utf-8") if path.exists() else ""
+def score(row: dict, taken_per_category: Counter) -> tuple[float, list[str]]:
+    why, total = [], 0.0
 
+    tier = row.get("provenance") or "none"
+    total += PROVENANCE_WEIGHT.get(tier, 0.0)
+    if tier == "firm":
+        why.append("originated by one of the three firms")
+    elif tier == "author":
+        why.append("named author or institution")
+    elif tier == "dated":
+        why.append("dated origin only")
 
-def _origin(text: str) -> str:
-    m = re.search(r"Origin and Background(.{0,1600})", text, re.S)
-    return m.group(1) if m else text[:1600]
-
-
-def score(slug: str, category: str, published_per_category: Counter) -> tuple[float, list[str]]:
-    text = _brief(slug)
-    if not text:
-        return 0.0, ["no prose on disk"]
-
-    origin, why, total = _origin(text), [], 0.0
-
-    firms = [f for f in FIRMS if f in origin]
-    authors = [a for a in AUTHORS if a in origin]
-    if firms:
-        total += W_FIRM
-        why.append(f"origin names {firms[0]}")
-    elif authors:
-        total += W_AUTHOR
-        why.append(f"origin names {authors[0]}")
-    if _YEAR.search(origin):
-        total += W_DATED
-        why.append("dated origin")
-
-    hits = {t for t in INVESTOR_TERMS if t.lower() in text.lower()}
-    if hits:
-        total += W_INVESTOR * min(len(hits), INVESTOR_CAP)
-        why.append(f"{len(hits)} investing term{'s' * (len(hits) != 1)} in source")
+    terms = int(row.get("investor_terms") or 0)
+    if terms:
+        total += W_INVESTOR * min(terms, INVESTOR_CAP)
+        why.append(f"{terms} investing term{'s' * (terms != 1)} in source")
 
     # Counts what is published plus what the greedy pass has already taken, so
     # the wording has to cover both.
-    crowding = published_per_category.get(category, 0)
+    crowding = taken_per_category.get(row["category"], 0)
     if crowding:
         total += W_CATEGORY_CROWDING * crowding
         why.append(f"{crowding} already ahead of it in this category")
@@ -147,7 +111,7 @@ def build() -> dict:
     running = Counter(published)
     shortlist, pool = [], list(candidates)
     while pool and len(shortlist) < SHORTLIST:
-        scored = [(*score(r["slug"], r["category"], running), r) for r in pool]
+        scored = [(*score(r, running), r) for r in pool]
         scored.sort(key=lambda x: (-x[0], x[2]["category"], x[2]["slug"]))
         s, why, row = scored[0]
         shortlist.append({**row, "score": s, "why": why})

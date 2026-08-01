@@ -6,9 +6,15 @@ without anything turning red.
 from __future__ import annotations
 
 import csv
+import os
 from pathlib import Path
 
-from scripts import next_frameworks, runway
+import subprocess
+import sys
+
+import pytest
+
+from scripts import build_framework_index, next_frameworks, runway
 
 BASE = Path(__file__).resolve().parent.parent
 
@@ -47,17 +53,32 @@ def test_unmeasured_channel_is_never_reported_as_short(monkeypatch):
     Reporting `0 days` there would fail the job every day in any environment
     without secrets; reporting it as healthy would be the silent success this
     whole check exists to kill. It reports neither."""
+    healthy_reserve = {"writable": runway.RESERVE_FLOOR, "needs_prose": 0}
     r = {"instagram_days": 30, "x_threads_days": None,
-         "notion_drafts": None, "pending_inserts": 0, "reserve": {}}
+         "notion_drafts": None, "pending_inserts": 0, "reserve": healthy_reserve}
     assert runway.short(r) == []
-    assert "unmeasured" in runway.render({**r, "reserve": {"writable": 1, "needs_prose": 2}})
+    assert "unmeasured" in runway.render(r)
 
 
 def test_a_short_channel_is_named(monkeypatch):
-    r = {"instagram_days": 2, "x_threads_days": 40,
-         "notion_drafts": 40, "pending_inserts": 0, "reserve": {}}
+    r = {"instagram_days": 2, "x_threads_days": 40, "notion_drafts": 40,
+         "pending_inserts": 0,
+         "reserve": {"writable": runway.RESERVE_FLOOR, "needs_prose": 0}}
     problems = runway.short(r)
     assert len(problems) == 1 and "Instagram" in problems[0]
+
+
+def test_a_draining_reserve_is_flagged_long_before_it_bites():
+    """63 frameworks exist only as contents-page entries because the Drive
+    reader truncates each PDF around page 80. The day the writable pile empties
+    is the day the shortlist comes back blank, and by then extracting them is
+    urgent. Two batches of warning is months at one post a day."""
+    r = {"instagram_days": 30, "x_threads_days": 30, "notion_drafts": 30,
+         "pending_inserts": 0,
+         "reserve": {"writable": runway.RESERVE_FLOOR - 1, "needs_prose": 63}}
+    problems = runway.short(r)
+    assert len(problems) == 1 and "Reserve" in problems[0]
+    assert runway.RESERVE_FLOOR >= 2 * runway.BATCH_DAYS
 
 
 def test_the_floor_and_the_batch_size_are_a_workable_pair():
@@ -143,3 +164,66 @@ def test_committed_shortlist_is_current():
 def test_measured_performance_stays_out_until_the_corpus_can_carry_it():
     """Same discipline the retro tester applies: no verdict on thin arms."""
     assert next_frameworks.MIN_PER_CATEGORY >= 5
+
+
+# ── the two ways this system broke on its first CI run ───────────────────────
+
+def _outside_repo() -> str:
+    """Run from somewhere that is not the repo, so a pass cannot be the current
+    working directory quietly doing the work."""
+    import tempfile
+    return tempfile.gettempdir()
+
+
+def test_ranking_never_reads_the_gitignored_briefs(monkeypatch):
+    """Nothing under frameworks/raw/ may be touched while ranking.
+
+    That directory is gitignored — it holds verbatim book prose and never gets
+    published — so a ranker that reads it scores every framework at zero
+    anywhere but the machine that ran the ingest. On this system's first CI run
+    that is exactly what happened, and the cron committed the zeroed list as
+    the shortlist. The scoring inputs live in the ledger for this reason."""
+    real_read = Path.read_text
+    raw = (BASE / "frameworks" / "raw").resolve()
+
+    def guarded(self, *a, **kw):
+        if raw in self.resolve().parents:
+            raise AssertionError(f"ranking read a gitignored brief: {self}")
+        return real_read(self, *a, **kw)
+
+    monkeypatch.setattr(Path, "read_text", guarded)
+    shortlist = next_frameworks.build()["shortlist"]
+    assert len(shortlist) == next_frameworks.SHORTLIST
+    assert any(r["score"] > 0 for r in shortlist), (
+        "every score is zero — the ledger is missing its distilled columns")
+
+
+def test_index_builder_refuses_to_run_without_the_briefs(tmp_path, monkeypatch):
+    """Rewriting the ledger from an empty frameworks/raw/ would mark all 102
+    writable frameworks as contents-page-only and blank every provenance tier —
+    erasing the record this ledger exists to keep."""
+    monkeypatch.setattr(build_framework_index, "RAW_DIR", tmp_path / "empty")
+    with pytest.raises(SystemExit):
+        build_framework_index.build()
+
+
+def test_runway_runs_as_a_standalone_file():
+    """`python scripts/runway.py` puts scripts/ on sys.path, not the repo root,
+    so `from services.notion import ...` died with ModuleNotFoundError — and
+    only on a machine holding a NOTION_TOKEN, which is CI and never a laptop."""
+    script = str(BASE / "scripts" / "runway.py")
+    env = {**os.environ, "NOTION_TOKEN": ""}
+
+    proc = subprocess.run([sys.executable, script], capture_output=True,
+                          text=True, cwd=_outside_repo(), env=env)
+    assert proc.returncode == 0, proc.stderr
+    assert "Content runway" in proc.stdout
+
+    # The branch the CLI run never reaches without a token: executing the file
+    # has to leave the repo root importable.
+    probe = subprocess.run(
+        [sys.executable, "-c",
+         f"import runpy; runpy.run_path({script!r}, run_name='probe'); "
+         "import services.notion"],
+        capture_output=True, text=True, cwd=_outside_repo(), env=env)
+    assert probe.returncode == 0, probe.stderr

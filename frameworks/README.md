@@ -66,6 +66,17 @@ source text already carries, and on category crowding — each pick charged
 against its own category so a batch does not come out as six posts from one
 book.
 
+Both scoring inputs are columns in `index.csv`, distilled from the briefs by
+`build_framework_index.py` on a machine that has them. The ranker never opens
+`frameworks/raw/`, and a test enforces that: the briefs are gitignored, so a
+ranker that read them would score every framework at zero everywhere else — and
+the cron would commit that as the shortlist. It did exactly that once.
+
+For the same reason `build_framework_index.py` refuses to run when
+`frameworks/raw/` is empty. Rewriting the ledger without the briefs would mark
+all 102 writable frameworks as contents-page-only and blank every provenance
+tier, erasing the record the ledger exists to keep.
+
 What the ranker deliberately does not do: order the batch. Each flagship unit
 closes by teasing the next framework, so a batch is a chain, and choosing the
 chain is editorial.
@@ -101,4 +112,6 @@ Recovering them means reading the PDFs by another route, then rerunning
 
 At one post a day, the 84 already-extracted frameworks are about three months
 of content. That is the reason the truncation is not urgent — and the reason to
-fix it before it is.
+fix it before it is. `runway.py` carries a second floor for exactly this: when
+the writable pile drops below `RESERVE_FLOOR` (two batches) the check starts
+failing on the reserve, months before the shortlist would come back empty.

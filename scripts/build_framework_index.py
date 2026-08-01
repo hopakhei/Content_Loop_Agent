@@ -35,7 +35,33 @@ RAW_DIR = ROOT / "frameworks" / "raw"
 UNITS_DIR = ROOT / "units"
 INDEX = ROOT / "frameworks" / "index.csv"
 
-FIELDS = ["slug", "name", "category", "source", "status", "unit"]
+FIELDS = ["slug", "name", "category", "source", "status", "unit",
+          "provenance", "investor_terms"]
+
+# Two facts distilled from each brief so that ranking the backlog never needs
+# the brief itself. frameworks/raw/ is gitignored — it is verbatim book prose
+# and never gets published — so anything downstream that reads it works only on
+# the one machine that ran the ingest. A provenance tier and a term count are
+# derived facts about a framework rather than the book's expression, so they
+# can live in the committed ledger, and the ranker becomes reproducible in CI.
+FIRMS = ("McKinsey", "Boston Consulting Group", "BCG", "Bain")
+# Named people and named institutions only. "taught in business schools"
+# appears in a fifth of these origins and is a claim about who adopted a
+# framework, not who wrote it — the same distinction the x-post skill draws
+# before letting a post name anybody.
+AUTHORS = (
+    "Porter", "Christensen", "Ansoff", "Bowman", "Henderson", "Treacy",
+    "Wiersema", "Kim", "Mauborgne", "Grove", "Rogers", "Moore", "Ulwick",
+    "Kaplan", "Norton", "Prahalad", "Hamel", "Ghemawat", "Kotter", "Osterwalder",
+    "Harvard", "INSEAD", "Stanford", "MIT", "Wharton", "Cranfield",
+)
+INVESTOR_TERMS = (
+    "ROIC", "return on invested capital", "margin", "capital allocation",
+    "market share", "valuation", "moat", "profit pool", "cost position",
+    "pricing power", "switching cost", "churn", "retention", "cash flow",
+    "unit economics", "payback", "shareholder", "EBIT", "capital intensity",
+)
+_YEAR = re.compile(r"\b(?:19|20)\d{2}\b")
 
 # Every name on the 13 contents pages, in print order. Transcribed from the
 # books; the extractor flattens a contents page into one run-on line, so this
@@ -264,8 +290,47 @@ def slugify(name: str) -> str:
     return s[:60]
 
 
+def distil(slug: str) -> tuple[str, int]:
+    """(provenance tier, investor-term count) for one brief.
+
+    Tier is `firm` when the origin names one of the three firms the series is
+    sold on, `author` when it names a person or institution, `dated` when it
+    only carries a year, and `none` otherwise. Naming a firm that did not
+    invent a framework is off the table, so the tier is a ceiling on how the
+    authority hook can be written, not just a score.
+    """
+    path = RAW_DIR / f"{slug}.md"
+    if not path.exists():
+        return "", 0
+    text = path.read_text("utf-8")
+    m = re.search(r"Origin and Background(.{0,1600})", text, re.S)
+    origin = m.group(1) if m else text[:1600]
+
+    if any(f in origin for f in FIRMS):
+        tier = "firm"
+    elif any(a in origin for a in AUTHORS):
+        tier = "author"
+    elif _YEAR.search(origin):
+        tier = "dated"
+    else:
+        tier = "none"
+    lowered = text.lower()
+    return tier, sum(1 for t in INVESTOR_TERMS if t.lower() in lowered)
+
+
 def build() -> list[dict]:
     briefs = {p.stem for p in RAW_DIR.glob("*.md")} if RAW_DIR.exists() else set()
+    if not briefs:
+        # Without the briefs every row would be rewritten to source=book-toc
+        # and provenance="", which erases the record of what is writable. That
+        # is the failure this ledger was built to end, so refuse rather than
+        # produce a confident, wrong file.
+        raise SystemExit(
+            "frameworks/raw/ is empty — run scripts/ingest_frameworks.py on the "
+            "source books first. This script rewrites the ledger from the briefs, "
+            "so running it without them would erase what is on disk."
+        )
+
     rows, seen = [], set()
     for category, names in BOOK_CONTENTS.items():
         for name in names:
@@ -275,6 +340,7 @@ def build() -> list[dict]:
             seen.add(slug)
             unit = UNIT_SLUGS.get(slug, "")
             published = bool(unit) and (UNITS_DIR / f"{unit}.md").exists()
+            tier, terms = distil(slug)
             rows.append({
                 "slug": slug,
                 "name": name,
@@ -282,6 +348,8 @@ def build() -> list[dict]:
                 "source": "brief" if slug in briefs else "book-toc",
                 "status": "published" if published else "backlog",
                 "unit": unit if published else "",
+                "provenance": tier,
+                "investor_terms": terms,
             })
     return rows
 

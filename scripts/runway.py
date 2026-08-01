@@ -28,6 +28,14 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# `python scripts/runway.py` puts scripts/ on sys.path, not the repo root, so
+# the Notion branch below dies with ModuleNotFoundError — and only on a machine
+# that has a token, which is CI and not a laptop. The first run of this file in
+# CI failed exactly there.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 QUEUE = ROOT / "queue" / "carousel_queue.txt"
 UNITS = ROOT / "units"
 LEDGER = ROOT / "state" / "inserted_units.txt"
@@ -48,6 +56,14 @@ PER_DAY = 1
 # schedule, and twelve is the shortlist frameworks/next.md hands you.
 WARN_DAYS = 5
 BATCH_DAYS = 12
+
+# The deep reserve has its own floor. 84 frameworks with prose on disk is about
+# three months at one a day; the other 63 exist only as contents-page entries,
+# because the Drive reader truncates each source PDF around page 80. When the
+# writable pile drops to two batches, extracting the rest stops being a someday
+# job — and two batches is months of warning, which is the point of saying it
+# early rather than discovering it on the day the shortlist comes back empty.
+RESERVE_FLOOR = 2 * BATCH_DAYS
 
 # Numbered essays (101-201, 127) run on a separate pipeline and are filtered
 # out of the framework feed by POST_FRAMEWORKS_ONLY — counting them as runway
@@ -136,19 +152,30 @@ def render(r: dict) -> str:
         f"  X / Threads (post loop)   : {xt_txt}{detail}",
         f"  Reserve                   : {res['writable']} frameworks with prose on disk, "
         f"{res['needs_prose']} needing prose",
-        f"  Floor                     : {WARN_DAYS} days",
+        f"  Floors                    : {WARN_DAYS} days per channel, "
+        f"{RESERVE_FLOOR} frameworks in reserve",
     ])
 
 
 def short(r: dict) -> list[str]:
-    """Channels below the floor. An unmeasured channel is not 'short' — the
-    caller decides, and the token branch above already fails hard on a broken
-    token, so unmeasured here only means nobody asked for it."""
+    """Everything below its floor: the two publishing channels, and the reserve.
+
+    An unmeasured channel is never 'short'. The token branch in `report` already
+    fails hard on a token that is set and broken, so unmeasured here only means
+    nobody asked for that channel — reporting it as zero would fail every run in
+    any environment without secrets, and reporting it as healthy would rebuild
+    the silent success this whole check exists to kill."""
     out = []
     if r["instagram_days"] < WARN_DAYS:
         out.append(f"Instagram: {r['instagram_days']} days of carousels queued")
     if r["x_threads_days"] is not None and r["x_threads_days"] < WARN_DAYS:
         out.append(f"X/Threads: {r['x_threads_days']} days of framework drafts left")
+    writable = r["reserve"].get("writable", 0)
+    if writable < RESERVE_FLOOR:
+        out.append(
+            f"Reserve: only {writable} frameworks left with prose on disk "
+            f"({r['reserve'].get('needs_prose', 0)} more need extracting from the "
+            "source PDFs first) — see frameworks/README.md")
     return out
 
 
@@ -165,7 +192,8 @@ def main() -> None:
 
     problems = short(r)
     if not problems:
-        print(f"\nOK — every measured channel is above the {WARN_DAYS}-day floor.")
+        print(f"\nOK — every measured channel is above the {WARN_DAYS}-day floor, "
+              f"with {r['reserve']['writable']} frameworks in reserve.")
         return
     print("\nRUNWAY SHORT:")
     for p in problems:

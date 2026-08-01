@@ -12,18 +12,18 @@ Picked one at a time on provenance, how much investing vocabulary the source alr
 
 | # | Framework | Category | Score | Why |
 |---|---|---|---|---|
-| 1 | B2B2C Value Chain Mapping | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 2 | Business Model Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 3 | Business Model Patterns Library | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 4 | Lean Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 5 | Operating Model Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 6 | Profit Formula Framework | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 7 | Two-sided Platform Business Model | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 8 | Value Proposition Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
-| 9 | Capability Map | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
-| 10 | Capability Maturity Model | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
-| 11 | Galbraith Star Model | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
-| 12 | McKinsey 7S Framework | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
+| 1 | Profit Formula Framework | Business Model & Value Proposition | 5.5 | named author or institution; 10 investing terms in source |
+| 2 | MECE Principle | Strategy Process, Problem Solving & Decision-Making | 4.4 | originated by one of the three firms; 4 investing terms in source |
+| 3 | McKinsey 7S Framework | Capabilities, Organization & Operating Model | 4.05 | originated by one of the three firms; 3 investing terms in source |
+| 4 | Digital Maturity Model | Digital, Data, Platforms & Ecosystems | 3.75 | named author or institution; 5 investing terms in source |
+| 5 | Shared Value Framework | Social Impact, ESG & Public Value | 3.75 | named author or institution; 5 investing terms in source |
+| 6 | Net Promoter System | Customer, Marketing & Brand | 3.7 | originated by one of the three firms; 2 investing terms in source |
+| 7 | Lean Canvas | Business Model & Value Proposition | 3.6 | named author or institution; 8 investing terms in source; 1 already ahead of it in this category |
+| 8 | CAGE Distance Framework | International & Global Strategy | 3.05 | named author or institution; 3 investing terms in source |
+| 9 | Lean Six Sigma House of Quality | Operations, Supply Chain & Efficiency | 2.35 | named author or institution; 1 investing term in source |
+| 10 | Real Options Valuation | Risk, Uncertainty & Scenarios | 2.25 | dated origin only; 5 investing terms in source |
+| 11 | RAPID Decision-rights Framework | Strategy Process, Problem Solving & Decision-Making | 2.15 | originated by one of the three firms; 1 investing term in source; 1 already ahead of it in this category |
+| 12 | Business Model Canvas | Business Model & Value Proposition | 2.05 | named author or institution; 7 investing terms in source; 2 already ahead of it in this category |
 
 ## Category balance
 
