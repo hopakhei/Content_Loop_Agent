@@ -1,0 +1,92 @@
+{
+  "issue": "shared-value",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "wave",
+  "caption": "同一筆錢，捐出去叫慈善，投進去叫策略。分界線只有一條：有沒有回到損益表。\n\n2011 年，Michael Porter 和 Mark Kramer 在《哈佛商業評論》提出共享價值：社會問題裡藏著商業機會。路徑有三條——為未被服務的族群做產品、重造價值鏈的生產力、投資自己生意賴以生存的生態圈。教科書案例是農產供應鏈：小農收入漲兩成，公司供應更穩、損耗更低，還多一條可溢價的可追溯產品線，兩邊的帳都是正的。\n\n對投資者的用處：把 ESG 報告分成兩堆——停掉會痛的，和停掉沒感覺的。只有第一堆值得進估值。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十八篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #ESG #永續 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 28",
+      "head": "捐錢是慈善，\n解題是策略",
+      "sub": "Porter 的共享價值：\n把社會問題，當生意做。",
+      "image": "backgrounds/shared-value-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "策略學之父，\n晚年的主張",
+      "body": "2006、2011 年，Michael Porter 和 Mark Kramer 在《哈佛商業評論》提出共享價值：企業社會責任離本業越來越遠，而社會問題裡藏著商業機會——做進核心業務，同時創造利潤和社會成果。",
+      "image": "backgrounds/shared-value-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 路徑一",
+      "head": "為沒人服務的，\n做產品",
+      "body": "平價診斷、節能設備、普惠金融。在未被服務的族群做出可行的單位經濟，就是新的成長曲線——靠重新設計價格帶和通路，而且不用補貼。",
+      "image": "backgrounds/shared-value-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 路徑二",
+      "head": "省下來的，\n是成本結構",
+      "body": "省能源、省水、減廢料、提升供應商。聽起來像公益，算起來是成本結構——安全文化降低事故，供應商計劃提高良率，每一項都回到損益表。",
+      "image": "backgrounds/shared-value-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 路徑三",
+      "head": "投資自己的\n生態圈",
+      "body": "物流、教育、供應鏈金融——投資自己生意賴以生存的基礎。這類投資對手最難抄，因為生態圈要用年建。",
+      "image": "backgrounds/shared-value-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 分界線",
+      "head": "停掉會痛，\n才是策略",
+      "body": "和 CSR 的分界線只有一條：錢有沒有回到損益表。判斷任何倡議：明天停掉，損益表會痛嗎？會痛的是策略，不會痛的是廣告。",
+      "image": "backgrounds/shared-value-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 案例",
+      "head": "小農多收，\n公司少損",
+      "body": "原料商幫小農提升灌溉、種子、儲存：農民收入漲兩成，公司拿到更穩的供應、更低的損耗，和一條可溢價的可追溯產品線。兩邊的帳都是正的。",
+      "image": "backgrounds/shared-value-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "ESG 報告，\n分成兩堆",
+      "body": "一堆是合規和公關，一堆真的在改變成本結構或打開市場——第二堆才值得進估值。找出停掉會痛的那一兩項，追蹤成果指標，其餘翻頁。",
+      "image": "backgrounds/shared-value-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱",
+      "head": "產出，\n不等於成果",
+      "body": "最大的陷阱是重新貼牌：捐款改名共享價值。分辨方法：量的是辦了幾場培訓（產出），還是收入漲幾成、缺陷率降多少（成果）？歸因量不好，就成了漂綠素材。",
+      "image": "backgrounds/shared-value-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這條分界線",
+      "body": "翻開你持股的 ESG 報告，找「停掉會痛」的項目。找得到，加分；找不到，那疊紙只是公關。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 28",
+      "image": "backgrounds/shared-value-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

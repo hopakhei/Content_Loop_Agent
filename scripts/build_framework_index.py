@@ -281,6 +281,22 @@ UNIT_SLUGS = {
     "strategic-inflection-point-framework": "strategic-inflection-point",
     "jobs-to-be-done-framework": "jobs-to-be-done",
     "treacy-wiersema-value-disciplines": "value-disciplines",
+    "profit-formula-framework": "profit-formula",
+    "net-promoter-system": "net-promoter",
+    "kano-model": "kano-model",
+    "mece-principle": "mece-principle",
+    "mckinsey-7s-framework": "mckinsey-7s",
+    "digital-maturity-model": "digital-maturity",
+    "lean-canvas": "lean-canvas",
+    "make-buy-decision-framework": "make-buy",
+    "cage-distance-framework": "cage-distance",
+    "shared-value-framework": "shared-value",
+    "stress-testing-framework": "stress-testing",
+    "core-vs-non-core-portfolio-framework": "core-vs-non-core",
+    # The Industry & Market Structure book prints the GE–McKinsey nine-box
+    # under its generic name. Same framework, same axes — publishing it twice
+    # would be a rehash, so it points at the unit that already shipped.
+    "market-attractiveness-competitive-position-matrix": "ge-mckinsey-matrix",
 }
 
 

@@ -1,0 +1,92 @@
+{
+  "issue": "mckinsey-7s",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "scatter-groups",
+  "caption": "一間公司換了 CEO、改了組織圖，半年後一切照舊。麥肯錫用七個 S 解釋這件事，解釋了四十年。\n\n1970 年代末，McKinsey 顧問 Tom Peters 和 Robert Waterman 研究執行得動的組織，答案是七個互相牽動的元素：策略、結構、制度、共同價值、技能、人員、風格。前三個寫得進文件，後四個藏在組織圖看不到的地方——而績效來自七個對齊，單獨一個都扛不動。1982 年這份研究寫成《追求卓越》，成了史上最暢銷的商業書之一。\n\n對投資者的用處：公司宣布轉型時，別只看目標，看七個 S 有沒有一起動。獎金怎麼改、請了什麼人、管理層的語言換了沒有——這三件事最早洩露真假。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十三篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #企業轉型 #併購 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 23",
+      "head": "改了組織圖，\n一切照舊",
+      "sub": "麥肯錫的七個 S：績效來自對齊，\n單獨一個都扛不動。",
+      "image": "backgrounds/mckinsey-7s-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1977 年的\n內部任務",
+      "body": "McKinsey 顧問 Tom Peters 和 Robert Waterman 研究表現突出的企業，把答案整理成七個以 S 開頭的元素。1982 年寫成《追求卓越》——史上最暢銷的商業書之一。",
+      "image": "backgrounds/mckinsey-7s-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 硬元素",
+      "head": "寫得進\n文件的三個",
+      "body": "策略：往哪裡打、怎麼贏。結構：誰管誰、權責怎麼分。制度：預算、考核、流程。多數改革只動這三個——因為它們看得見、改得快、對外好交代。",
+      "image": "backgrounds/mckinsey-7s-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 軟元素",
+      "head": "組織圖\n看不到的四個",
+      "body": "共同價值是真心相信什麼，技能是實際擅長什麼，人員是找什麼人、怎麼養，風格是管理層每天示範什麼。它們寫不進文件，卻決定前三個 S 動起來的樣子。",
+      "image": "backgrounds/mckinsey-7s-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 核心",
+      "head": "績效，\n來自對齊",
+      "body": "嘴上說創新，考核卻罰犯錯；說以客戶為中心，獎金只看出貨量。七個元素互相打架，策略就執行不動。7S 的用途是把打架的位置找出來。",
+      "image": "backgrounds/mckinsey-7s-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 改組熱",
+      "head": "新的格子，\n舊的行為",
+      "body": "1970 年代的改組熱：績效不好就改組織圖，改完問題原封不動搬進新格子。結構只是七分之一——另外六個不動，新結構跑的還是舊行為。",
+      "image": "backgrounds/mckinsey-7s-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "轉型真假，\n看七格",
+      "body": "公司宣布轉向訂閱制，先別看目標：銷售獎金還綁一次性出貨嗎？請進做過訂閱生意的人了嗎？管理層的語言換了沒有？策略頁換了、其他六格沒換，兩年後多半只剩簡報。",
+      "image": "backgrounds/mckinsey-7s-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 併購",
+      "head": "買下的，\n是七個 S",
+      "body": "財報上的資產之外，買下來的還有對方的共同價值、技能和風格。文化對不上的併購，綜效算得再漂亮都收不到——歷史上最貴的併購教訓，多數埋在軟的那四格。",
+      "image": "backgrounds/mckinsey-7s-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 弱點",
+      "head": "檢查表，\n不給答案",
+      "body": "七個都「要對齊」，但往哪裡對、先動哪個，靠判斷。用得好的人拿它找矛盾；用不好的人拿它開會——七個 S 各寫三頁，結論是「都很重要」。",
+      "image": "backgrounds/mckinsey-7s-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這七個 S",
+      "body": "下次讀到轉型新聞，挑軟的三個看：請了什麼人、獎金怎麼改、管理層開會先問什麼。這三件事最早洩露真假。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 23",
+      "image": "backgrounds/mckinsey-7s-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

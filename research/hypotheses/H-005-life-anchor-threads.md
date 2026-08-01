@@ -72,3 +72,13 @@ framework-era reach shift (H-004).
 
 Promotion path: when H-002 closes, this card inherits the live slot if its
 retro pass by then still shows a direction worth the posting slots.
+
+## Trial corpus — batch 19–30, written 2026-08-01
+
+The batch the owner asked to "try a few posts" with. Four units are written
+life-anchored and lead the chain (profit-formula 早餐店, net-promoter 餐廳,
+kano-model 手機, mece-principle 行李); the other eight are written straight
+and verified free of every LIFE_NOUN, so the `no` arm is clean rather than
+accidental. Scorer-checked before commit: all twelve land in their intended
+arm under either H-002 hook, so the two experiments stay independent in this
+corpus. Both treatments follow the H-002 rule — equally well made.

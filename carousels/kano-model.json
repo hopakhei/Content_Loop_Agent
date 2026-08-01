@@ -1,0 +1,92 @@
+{
+  "issue": "kano-model",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "s-curve",
+  "caption": "有些功能做到滿分也沒人稱讚，有些功能做一半就有人尖叫。1980 年代的狩野模型，把這件事畫成三條曲線。\n\n東京理科大學教授狩野紀昭在品質管理研究裡推翻「功能越多越好」：必備型做得再好沒掌聲、出一次事就失去客人；期望型多一分是一分；魅力型沒有它沒人吵，有了它客人主動到處講。更麻煩的是類別會漂移——今天的驚喜，三年後變標配。手機夜拍、電商兩日到貨、倒車顯影，全走過這條路。\n\n對投資者的用處：把法說會的新功能分進三個籃子——補課、跟隊、造驚喜。補課佔大多數的發表會，市場通常當天就給出答案。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十一篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #產品策略 #科技股 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 21",
+      "head": "做得再好，\n沒人感謝",
+      "sub": "狩野模型：三種功能，\n三條完全不同的滿意度曲線。",
+      "image": "backgrounds/kano-model-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1980 年代，\n來自日本",
+      "body": "東京理科大學教授狩野紀昭，在品質管理研究裡推翻「功能越多越好」：產品屬性分三類，各走一條滿意度曲線。這個模型後來成了產品經理和顧問排功能優先順序的標準工具。",
+      "image": "backgrounds/kano-model-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 必備型",
+      "head": "做到滿分，\n也沒掌聲",
+      "body": "手機的通話、收訊、安全性。做得再好拿不到稱讚，出一次問題就失去這個客人。必備型只有下行風險——它決定你能不能上場，決定不了你贏不贏。",
+      "image": "backgrounds/kano-model-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 期望型",
+      "head": "多一分，\n是一分",
+      "body": "電池續航、螢幕、速度。滿意度跟表現成正比，客人願意為進步付錢，也會為落後離開。多數公司的軍備競賽，發生在這一類。",
+      "image": "backgrounds/kano-model-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 魅力型",
+      "head": "沒有不吵，\n有了尖叫",
+      "body": "第一次用到夜拍模式的那種驚喜。沒有它沒人抱怨，有了它客人主動到處講。魅力型是差異化和口碑的來源——也最難靠問「你要什麼」問出來。",
+      "image": "backgrounds/kano-model-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 問法",
+      "head": "一對問題，\n交叉歸類",
+      "body": "「有這個功能你覺得怎樣？」「沒有呢？」兩個答案交叉，把功能歸進類別。同一個功能，對不同客群可以是完全不同的類別——平均會把訊號抹掉。",
+      "image": "backgrounds/kano-model-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 漂移",
+      "head": "驚喜，\n有保鮮期",
+      "body": "今天的魅力型，三年後變期望型，再過幾年變必備型。手機相機、電商兩日到貨、倒車顯影，全部走過這條路。模型要定期重跑——昨天的答案會過期。",
+      "image": "backgrounds/kano-model-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "發表會，\n拿三個籃子",
+      "body": "法說會講的新功能先分類：補必備型是補課，追期望型是跟隊，真押中魅力型，毛利和口碑會一起來。再問一句——舊的驚喜變成標配之後，下一個接棒的在哪？",
+      "image": "backgrounds/kano-model-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱",
+      "head": "說重要，\n未必加分",
+      "body": "客人嘴上說最重要的，多半是必備型——做好了他也只當應該。要問的是「有」和「沒有」之間的落差，重要程度排名答不了這個問題。",
+      "image": "backgrounds/kano-model-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這三條曲線",
+      "body": "拿你持股的下一場產品發表會試一次：把每個新功能分進三個籃子，數一數哪個籃子最滿。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 21",
+      "image": "backgrounds/kano-model-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

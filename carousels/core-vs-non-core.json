@@ -1,0 +1,92 @@
+{
+  "issue": "core-vs-non-core",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "grid2x2",
+  "caption": "一間公司規模最大的業務，可能正是最該賣掉的那個。「核心」看的是能力，尺寸只是干擾。\n\n1990 年代收購潮把很多企業買成了難以解釋的組合，董事會的投資組合檢討從此多了一把刀：三條問題——用得上獨有能力嗎？我們是它最好的老闆嗎？強化還是稀釋優勢？五個籃子——核心、準核心、財務型、非核心、選擇權。最鋒利的是「更好的老闆」測試：這業務在別人手上值更多錢，就該賣，不管它現在賺不賺錢。\n\n對投資者的用處：出售公告分兩種——賣真非核心的，ROIC 之後會升；缺錢賣祖產的，只剩下降的槓桿。收購公告先問一句：買來的落在哪個籃子？\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第三十篇，本輯收尾。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #企業分拆 #資本配置 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 30",
+      "head": "最大的業務，\n未必是核心",
+      "sub": "五個籃子，分清該加碼的，\n和早該放手的。",
+      "image": "backgrounds/core-vs-non-core-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "收購潮後的\n難解組合",
+      "body": "1990 年代，多角化企業一路買，買成了難以解釋的組合：五個事業體，三套邏輯，誰都說自己重要。董事會檢討的題目越來越常是同一條——哪些留，哪些賣？",
+      "image": "backgrounds/core-vs-non-core-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 三條問題",
+      "head": "沒有一條，\n問規模",
+      "body": "用得上我們獨有的能力嗎——品牌、通路、數據？我們是它最好的老闆嗎，還是別人經營得更好？它強化控制點，還是稀釋焦點？尺寸和歷史，都只是干擾。",
+      "image": "backgrounds/core-vs-non-core-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 五個籃子",
+      "head": "從核心，\n到選擇權",
+      "body": "核心：加碼、放最好的人。準核心：補能力、分段投。財務型：現金穩、不礙事，當壓艙石。非核心：賣、拆、合資。選擇權：圈起來養，到點放大或放棄。",
+      "image": "backgrounds/core-vs-non-core-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 最鋒利的",
+      "head": "別人手上，\n值更多嗎",
+      "body": "「更好的老闆」測試：這個業務在別人手上會值更多錢嗎？會，就該賣——不管它現在賺不賺錢。有些好資產，壞在放錯了家；賣給對的買家，價格裡含著對方的綜效。",
+      "image": "backgrounds/core-vs-non-core-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 最常見的罪",
+      "head": "把大，\n當成核心",
+      "body": "佔營收一半的老業務，能力不再特殊、市場不再成長，誰都不敢動——它交的現金養著預算。分拆案一再證明：被分出去的「非核心」，獨立後常常跑贏老東家。",
+      "image": "backgrounds/core-vs-non-core-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "兩種公告，\n兩種讀法",
+      "body": "出售公告：賣真非核心，ROIC 會升；缺錢賣祖產，只剩降槓桿。收購公告：買來的落在哪個籃子？落不進核心的收購，多數在三五年後以減損收場。",
+      "image": "backgrounds/core-vs-non-core-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 活的分類",
+      "head": "核心，\n也會過期",
+      "body": "能力被技術淘汰，核心變包袱；十年前圈起來養的小賭注，今天可能是新核心。每年重分一次，標籤跟著證據走。最難的是人——五個籃子，要五種管法。",
+      "image": "backgrounds/core-vs-non-core-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 本輯收尾",
+      "head": "錢和注意力，\n放對了沒",
+      "body": "這一輯十二個框架，從獲利公式到這張分類表，問的都是同一條問題：錢和注意力，放對地方了沒有。對一間公司如此，對一個投資組合，也如此。",
+      "image": "backgrounds/core-vs-non-core-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏五個籃子",
+      "body": "把你持股的多角化公司拆進五個籃子，再對照它的資本流向。「核心」和錢對得上，加分；對不上，折價是應得的。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 30",
+      "image": "backgrounds/core-vs-non-core-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

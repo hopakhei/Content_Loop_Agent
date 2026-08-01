@@ -1,0 +1,92 @@
+{
+  "issue": "digital-maturity",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "s-curve",
+  "caption": "每間公司的年報都說自己在數位轉型。差距在哪？MIT 畫了一把五級的尺。\n\n2010 年代初，MIT 史隆管理學院與 Capgemini 評估幾百家大型企業，把「數位化」拆成八到十二個維度、五個等級，每一級都要掛證據。結論之一：成熟度高的企業，獲利能力比同業平均高出兩成以上。多數自稱轉型中的公司，誠實打分落在二到三級——換了幾套系統，經營方式沒換。\n\n對投資者的用處：三個查得到的數字勝過整份新聞稿——新版本釋出頻率、故障修復時間、數位通路佔營收比例。三個都在進步，轉型是真的；只有簡報在進步，要小心。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十四篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #數位轉型 #科技股 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 24",
+      "head": "都說轉型，\n差距五級",
+      "sub": "數位成熟度模型：\n把口號變成查得到的分數。",
+      "image": "backgrounds/digital-maturity-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "MIT 量了\n幾百家企業",
+      "body": "2010 年代初，MIT 史隆與 Capgemini 聯合研究幾百家大型企業的數位能力：成熟度可以分維度、分等級量——而高成熟度企業的獲利能力，比同業平均高出兩成以上。",
+      "image": "backgrounds/digital-maturity-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 骨架",
+      "head": "維度，\n乘以等級",
+      "body": "策略與價值、客戶體驗、平台架構、數據與 AI、工作方式、人才、治理、資安——八到十二個維度，每個給一到五級，每一級都掛證據：文件、指標、訪談。單靠自評，分數會通膨。",
+      "image": "backgrounds/digital-maturity-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 五級",
+      "head": "一級試點，\n五級護城河",
+      "body": "一級：各部門自己做試點，互不相通。三級：產品團隊成規模、上雲、數據平台就位。五級：數位平台本身成了護城河。多數自稱轉型中的企業，誠實打分落在二到三級。",
+      "image": "backgrounds/digital-maturity-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 釘到錢",
+      "head": "分數，\n先釘到錢上",
+      "body": "最常見的死法是分數崇拜：今年 2.7、明年 3.2，獲利沒動。用得對的做法：低分維度對應哪項流失的價值？開通新客戶要 21 天，卡在哪一關？那才是值得投資的缺口。",
+      "image": "backgrounds/digital-maturity-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 地基",
+      "head": "先修地基，\n再蓋門面",
+      "body": "數據品質和平台可靠度沒到位，前台體驗和 AI 做得再炫都是脆的——出一次事故就打回原形。成熟的企業先修平台、數據、工作方式，再談體驗和 AI。",
+      "image": "backgrounds/digital-maturity-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "三個數字，\n騙不了人",
+      "body": "新版本釋出頻率、故障修復時間、數位通路佔營收比例。法說會講 AI，先問數據治理在第幾級；講數位通路，先問多久釋出一次。這些查得到，簡報美化不了。",
+      "image": "backgrounds/digital-maturity-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 同業對比",
+      "head": "按季釋出，\n對上按年",
+      "body": "兩間都說在轉型的同業，一間按季度釋出新版本、一間按年，五年後的成本結構會差出一個量級。能力成熟度的複利，和財務的複利同一個原理。",
+      "image": "backgrounds/digital-maturity-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 限制",
+      "head": "這把尺，\n自己不誠實",
+      "body": "等級寫得模糊，自評就通膨；同一把尺量性質不同的事業，分數會誤導。像樣的評估把證據掛在每個分數後面，而且每季重量——能力會退步。",
+      "image": "backgrounds/digital-maturity-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這把尺",
+      "body": "把你持股喊的「數位轉型」翻譯一次：釋出頻率、修復時間、數位營收佔比。三個都在進步，是真的；只有簡報在進步，要小心。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 24",
+      "image": "backgrounds/digital-maturity-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

@@ -6,3 +6,15 @@ technology-adoption-curve
 strategic-inflection-point
 jobs-to-be-done
 value-disciplines
+profit-formula
+net-promoter
+kano-model
+mece-principle
+mckinsey-7s
+digital-maturity
+lean-canvas
+make-buy
+cage-distance
+shared-value
+stress-testing
+core-vs-non-core

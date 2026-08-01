@@ -1,0 +1,92 @@
+{
+  "issue": "profit-formula",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "grid2x2",
+  "caption": "滿街排隊的店，未必是留下最多錢的店。一間公司可以營收翻倍，同時越來越缺現金。\n\n2008 年，Clayton Christensen 和 Mark Johnson、Henning Kagermann 在《哈佛商業評論》把一門生意壓成一條獲利公式：收入模式、成本結構、單位利潤、資源速度。巷口早餐店是最好的教材——蛋餅的定價是收入模式，麵粉跟著份數走是成本結構，每份剩多少是單位利潤，食材兩天轉一輪、客人付現金，是多數上市公司都羨慕的資源速度。\n\n對投資者的用處：四個數字全部可以從財報反拆。營收成長來自哪個部分、毛利下滑是哪裡變了、現金轉換循環在變長還是變短，答案都在報表裡。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十九篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #商業模式 #現金流 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 19",
+      "head": "越忙的店，\n未必越有錢",
+      "sub": "2008 年《哈佛商業評論》的獲利公式，\n四個數字拆穿一門生意。",
+      "image": "backgrounds/profit-formula-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "一條公式，\n四個數字",
+      "body": "2008 年，Christensen 和 Johnson、Kagermann 在《哈佛商業評論》發表〈Reinventing Your Business Model〉。獲利公式是文章的核心之一：收入模式、成本結構、單位利潤、資源速度，四個數字決定一門生意能否賺錢。",
+      "image": "backgrounds/profit-formula-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 收入模式",
+      "head": "錢怎麼進來",
+      "body": "巷口早餐店：一份蛋餅三十五元、一個上午兩百份。定價、銷量、頻率、產品組合，全在這一格。訂閱制和單次買斷收的是同一群客人，走的是兩條完全不同的公式。",
+      "image": "backgrounds/profit-formula-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 成本結構",
+      "head": "哪些成本\n跟著單量走",
+      "body": "麵粉和蛋跟著份數走，房租和人手不跟。變動成本決定每一份的底線，固定成本決定要賣多少份才開始賺——營運槓桿就藏在兩者的比例裡。",
+      "image": "backgrounds/profit-formula-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 單位利潤",
+      "head": "每一份\n剩多少",
+      "body": "一份蛋餅扣掉材料剩多少，一個訂閱用戶扣掉獲客成本剩多少。排隊最長的店可以是單位利潤最薄的店——人流和留得下來的錢，兩回事。",
+      "image": "backgrounds/profit-formula-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 資源速度",
+      "head": "資本多久\n轉一圈",
+      "body": "四個數字裡最常被漏掉的一個：存貨幾天出清、客人多快付錢、你可以多慢付供應商。同樣一成利潤率，一年轉六圈和一年轉一圈是兩門生意。早餐店養得起一家人，靠的是轉得快。",
+      "image": "backgrounds/profit-formula-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 極端案例",
+      "head": "讓客人\n出錢擴張",
+      "body": "Costco 先收會員年費，Amazon 先收貨款、幾十天後才付供應商。兩間公司把資源速度做到營運資金是負數——生意越大，手上握著的別人的錢越多。",
+      "image": "backgrounds/profit-formula-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "用公式\n反拆財報",
+      "body": "營收成長來自漲價、放量還是併購？毛利下滑是成本變了還是組合變了？現金轉換循環在變長還是變短？公式的四個部分，各自對應報表上查得到的數字。",
+      "image": "backgrounds/profit-formula-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱",
+      "head": "平均數\n會說謊",
+      "body": "賺錢的客群和賠錢的客群混在一起算，平均值看起來健康，兩邊的真相都被蓋住。顧問會分客群、分通路各算一條公式；對外財報只給你平均——這一層要投資者自己拆。",
+      "image": "backgrounds/profit-formula-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這條公式",
+      "body": "拿手上任何一檔持股試一次：錢從哪裡進來、多少留得下來、資本多久轉一圈。三個答案有一個含糊，先別加碼。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 19",
+      "image": "backgrounds/profit-formula-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}
