@@ -12,18 +12,18 @@ Picked one at a time on provenance, how much investing vocabulary the source alr
 
 | # | Framework | Category | Score | Why |
 |---|---|---|---|---|
-| 1 | Profit Formula Framework | Business Model & Value Proposition | 6.0 | origin names Christensen; dated origin; 10 investing terms in source |
-| 2 | McKinsey 7S Framework | Capabilities, Organization & Operating Model | 4.55 | origin names McKinsey; dated origin; 3 investing terms in source |
-| 3 | MECE Principle | Strategy Process, Problem Solving & Decision-Making | 4.4 | origin names McKinsey; 4 investing terms in source |
-| 4 | Shared Value Framework | Social Impact, ESG & Public Value | 4.25 | origin names Porter; dated origin; 5 investing terms in source |
-| 5 | Net Promoter System | Customer, Marketing & Brand | 4.2 | origin names Bain; dated origin; 2 investing terms in source |
-| 6 | Lean Canvas | Business Model & Value Proposition | 4.1 | origin names Osterwalder; dated origin; 8 investing terms in source; 1 already ahead of it in this category |
-| 7 | Digital Maturity Model | Digital, Data, Platforms & Ecosystems | 3.75 | origin names MIT; 5 investing terms in source |
-| 8 | CAGE Distance Framework | International & Global Strategy | 3.55 | origin names Ghemawat; dated origin; 3 investing terms in source |
-| 9 | Lean Six Sigma House of Quality | Operations, Supply Chain & Efficiency | 2.85 | origin names Harvard; dated origin; 1 investing term in source |
-| 10 | Business Model Canvas | Business Model & Value Proposition | 2.55 | origin names Osterwalder; dated origin; 7 investing terms in source; 2 already ahead of it in this category |
-| 11 | Real Options Valuation | Risk, Uncertainty & Scenarios | 2.25 | dated origin; 5 investing terms in source |
-| 12 | RAPID Decision-rights Framework | Strategy Process, Problem Solving & Decision-Making | 2.15 | origin names Bain; 1 investing term in source; 1 already ahead of it in this category |
+| 1 | B2B2C Value Chain Mapping | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 2 | Business Model Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 3 | Business Model Patterns Library | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 4 | Lean Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 5 | Operating Model Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 6 | Profit Formula Framework | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 7 | Two-sided Platform Business Model | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 8 | Value Proposition Canvas | Business Model & Value Proposition | 0.0 | no prose on disk |
+| 9 | Capability Map | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
+| 10 | Capability Maturity Model | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
+| 11 | Galbraith Star Model | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
+| 12 | McKinsey 7S Framework | Capabilities, Organization & Operating Model | 0.0 | no prose on disk |
 
 ## Category balance
 
