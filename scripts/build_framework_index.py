@@ -249,6 +249,12 @@ UNIT_SLUGS = {
     "bowmans-strategy-clock": "bowmans-strategy-clock",
     "key-success-factors-analysis": "key-success-factors",
     "relative-cost-positioning-framework": "relative-cost-positioning",
+    "ge-mckinsey-nine-box-matrix": "ge-mckinsey-matrix",
+    "bcg-advantage-matrix": "bcg-advantage-matrix",
+    "technology-adoption-life-cycle": "technology-adoption-curve",
+    "strategic-inflection-point-framework": "strategic-inflection-point",
+    "jobs-to-be-done-framework": "jobs-to-be-done",
+    "treacy-wiersema-value-disciplines": "value-disciplines",
 }
 
 

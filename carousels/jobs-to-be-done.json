@@ -1,0 +1,92 @@
+{
+  "issue": "jobs-to-be-done",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "chain",
+  "caption": "一間公司的市佔率，是在別人畫的框裡算出來的。\n\n一家速食店想弄清楚早上為什麼有那麼多人點奶昔。訪談常客、問要更濃還是更甜，照著答案改配方，銷量沒動。換一個問法——這些人早上把奶昔拿去做什麼——才發現他們要的是一段很長很無聊的通勤路上，一隻手能拿住、又撐得到公司的東西。在這個問法之下，奶昔要贏過的是香蕉、貝果和甜甜圈。\n\nClayton Christensen 在 2005 年的〈Marketing Malpractice〉和 2016 年的《Competing Against Luck》裡把它整理成待完成任務：客戶在某個處境裡僱用一個東西幫自己前進一步。對投資者的用處：市佔率一定是在某個範圍定義之下算出來的，而那個範圍是人畫的。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十七篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #市佔率 #消費股 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 17",
+      "head": "早上那杯\n奶昔",
+      "sub": "Christensen 的待完成任務：\n客戶僱它去做什麼。",
+      "image": "backgrounds/jobs-to-be-done-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 現場",
+      "head": "問錯了\n問題",
+      "body": "一家速食店想弄清楚早上為什麼有那麼多人點奶昔。做法很標準：找常喝的顧客來訪談，問想要更濃還是更甜、要不要加果粒，照著答案改配方。改完，銷量沒動。",
+      "image": "backgrounds/jobs-to-be-done-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 換個問法",
+      "head": "他們僱它\n去做什麼",
+      "body": "後來有人站在門口看了一整天，換了一個問題：這些人早上把奶昔拿去做什麼。答案是一段很長、很無聊的通勤路上，一隻手能拿住、又撐得到公司的東西。改配方的方向於是完全變了：要更稠，不是更甜。",
+      "image": "backgrounds/jobs-to-be-done-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 對手",
+      "head": "對手是香蕉\n和貝果",
+      "body": "在這個問法之下，奶昔要贏過的是香蕉、貝果和甜甜圈，別家的奶昔反而排在後面。香蕉太快吃完，貝果會掉屑又要兩隻手，甜甜圈會弄髒方向盤。奶昔贏在夠稠、吸得久。",
+      "image": "backgrounds/jobs-to-be-done-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 框架",
+      "head": "Christensen\n的說法",
+      "body": "2005 年的〈Marketing Malpractice〉和 2016 年的《Competing Against Luck》把它整理成待完成任務：客戶在某個處境裡，僱用一個東西幫自己前進一步。任務很穩定，解法會一直換。",
+      "image": "backgrounds/jobs-to-be-done-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 三層",
+      "head": "一個任務，\n三層需求",
+      "body": "功能層是要完成什麼事，情緒層是要感覺到什麼，社交層是要在別人眼中變成什麼樣子。同一杯奶昔，早上被僱來填一段無聊的路，下午被爸爸僱來當「今天我對你很好」的道具——兩個任務，該做成兩種產品。",
+      "image": "backgrounds/jobs-to-be-done-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 重新定義",
+      "head": "對手不在\n你的名單上",
+      "body": "任何能被僱來做這件事的東西都是對手，包括不做任何改變、包括一張手工維護的試算表。很多產品輸掉的那一仗，對手根本不在同一個產業分類裡，所以事前的競爭分析從頭到尾沒有提過它。",
+      "image": "backgrounds/jobs-to-be-done-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "市佔率的\n分母",
+      "body": "市佔率一定是在某個範圍定義之下算出來的，那個範圍是人畫的。範圍畫得太窄，一間公司可以在自己的品類裡拿到七成份額，同時在客戶的任務裡節節敗退——兩件事可以同時是真的。",
+      "image": "backgrounds/jobs-to-be-done-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "他們以前\n怎麼辦",
+      "body": "看到漂亮的市佔率，我會先去找這份數字的分母怎麼定義，再問一句：這些客戶在僱用這間公司之前，是用什麼方法把事情辦完的？那個舊方法還在不在，才看得出競爭的實況。",
+      "image": "backgrounds/jobs-to-be-done-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這個問法",
+      "body": "下次看到一份市佔率報告，先讀開頭那句「本研究涵蓋的範圍是」，再問客戶原本用什麼把這件事辦完。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 17",
+      "image": "backgrounds/jobs-to-be-done-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

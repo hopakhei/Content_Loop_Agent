@@ -1,0 +1,92 @@
+{
+  "issue": "bcg-advantage-matrix",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "grid2x2",
+  "caption": "有些行業裡，最強和最弱的公司，報酬率差不了多少。\n\n1980 年代 BCG 提出優勢矩陣，處理一個很常見的毛病：集團總部把「搶市佔、壓成本、集中採購」原封不動套在每條業務線上。矩陣只問兩件事——在這門生意裡優勢最大能有多大，通往優勢的路有幾條——切出量產型、專門型、僵持型、分散型四種生意，四種各有各的贏法。\n\n對投資者的用處：把一個行業裡前五名的投入資本報酬率排出來。差距很窄，代表這門生意本身封了頂，「這家公司經營得比同業好」這個故事值不了多少錢；差距很寬，選股才有意義。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十四篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #護城河 #ROIC #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 14",
+      "head": "有些行業，\n贏了也贏不多",
+      "sub": "BCG 優勢矩陣：\n先看這門生意的上限。",
+      "image": "backgrounds/bcg-advantage-matrix-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "一套劇本，\n四條線一起壞",
+      "body": "1980 年代，集團總部流行把同一套打法套在所有業務線上：搶市佔、壓成本、集中採購。這套在某些生意裡是對的，在另一些生意裡會把價值燒掉。BCG 提出優勢矩陣，就是為了先分清楚在打哪一種仗。",
+      "image": "backgrounds/bcg-advantage-matrix-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 第一問",
+      "head": "優勢，\n最大能有多大",
+      "body": "在這門生意裡，龍頭最多能領先到什麼程度？有些行業的第一名能拿到很大的成本或價格優勢，撐得久也守得住；有些行業的優勢又薄又容易被抹平，今年拉開的差距明年就不見了。",
+      "image": "backgrounds/bcg-advantage-matrix-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 第二問",
+      "head": "贏法\n有幾條路",
+      "body": "第二個問題是通往優勢的路有幾條。有些行業只有一種贏法，規模夠大就贏；有些行業容許很多種，品牌、專利、設計、服務模式各自都能建立差距。兩個問題交叉，切出四種完全不同的生意。",
+      "image": "backgrounds/bcg-advantage-matrix-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 四格",
+      "head": "量產型，\n專門型",
+      "body": "量產型：優勢大、路只有一兩條，靠規模和學習曲線，半導體製造和汽車平台屬於這一類。專門型：優勢大、路很多，品牌、專利、設計、服務模式各自都能拉開差距，醫療器材、精品和部分企業軟體屬於這一類。",
+      "image": "backgrounds/bcg-advantage-matrix-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 四格",
+      "head": "僵持型，\n分散型",
+      "body": "僵持型：優勢小、路又少，大家的技術和成本結構差不多，競爭最後落到價格上，基礎金屬和大宗化工的某些次產業在這裡。分散型：優勢小、路很多，餐飲、專業服務、設施管理，每種模式都能活，沒有一種能拉開距離。",
+      "image": "backgrounds/bcg-advantage-matrix-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 扣回前作",
+      "head": "經驗曲線\n只在一格成立",
+      "body": "累計產量翻倍、單位成本下跌一截，這條 BCG 自己的曲線，只在量產型那一格站得住。僵持型行業裡它跌得很淺，分散型行業裡幾乎不存在——每一單都不一樣，學不到東西。把量產型的打法搬去分散型，就是總部集中化把服務業做死的那條路。",
+      "image": "backgrounds/bcg-advantage-matrix-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "報酬率的\n離散度",
+      "body": "投資者最快的入口，是把一個行業裡前五名的投入資本報酬率排出來。差距很窄，代表這門生意本身封了頂：管理層再優秀，能加的分也有限。差距很寬，這門生意才容得下「誰做得比較好」這件事。",
+      "image": "backgrounds/bcg-advantage-matrix-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "先看行業，\n再看公司",
+      "body": "研究一間公司之前，我會先看它那個行業的報酬率分佈，再決定要不要花時間讀下去。差距窄的行業我通常直接跳過，就算裡面有一家經營得特別好——那份好，在這門生意裡換不到多少錢。",
+      "image": "backgrounds/bcg-advantage-matrix-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這四種生意",
+      "body": "下次看到一家「經營得比同業好」的公司，先問它所在的那門生意，第一名能比第五名好多少。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 14",
+      "image": "backgrounds/bcg-advantage-matrix-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

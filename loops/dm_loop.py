@@ -41,9 +41,15 @@ def run(
     notion: Optional[NotionService] = None,
     ig: Optional[InstagramService] = None,
     state_file: str = STATE_FILE,
-    comment_log: str = COMMENT_LOG,
+    comment_log: Optional[str] = None,
     now: Optional[datetime] = None,
 ) -> dict:
+    # Resolved here rather than bound as a default argument so a test can
+    # redirect COMMENT_LOG. Bound as a default, every test run appended its
+    # fixture comments to the real research log — 45 fabricated rows reached
+    # the repository that way, in a file whose only purpose is to hold
+    # audience evidence that did not come from us.
+    comment_log = COMMENT_LOG if comment_log is None else comment_log
     log = logger or logging.getLogger("loop.igdm")
     if ig is None:
         if not settings.IG_ACCESS_TOKEN:

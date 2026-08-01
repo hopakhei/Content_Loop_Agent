@@ -1,0 +1,92 @@
+{
+  "issue": "value-disciplines",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "three-paths",
+  "caption": "一間公司說自己三樣都做得好，通常代表三樣都不夠好。\n\n1995 年，Michael Treacy 和 Fred Wiersema 出版《The Discipline of Market Leaders》。他們研究長期跑贏同業的企業，結論是贏家在三條價值準則裡挑一條做到業界第一，另外兩條做到及格就好：營運卓越（總成本最低、最省事）、產品領先（永遠拿得到最好的東西）、顧客親密（給你最合身的解法）。當時同時追求三樣的那一批，表現最差。\n\n對投資者的用處：三條準則各自對應一組可查的指標。一間公司說自己走產品領先，研發只佔營收三個百分點、兩年內新品貢獻不到一成，這個說法就站不住。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十八篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #商業模式 #毛利率 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 18",
+      "head": "三樣都好，\n等於都不好",
+      "sub": "1995 年的三條價值準則，\n逼一間公司選邊站。",
+      "image": "backgrounds/value-disciplines-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1995 年的\n那份研究",
+      "body": "Michael Treacy 和 Fred Wiersema 出版《The Discipline of Market Leaders》，研究長期跑贏同業的企業。當時多數公司同時追最低成本、最強產品和最貼心服務，這一批表現最差。",
+      "image": "backgrounds/value-disciplines-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 第一條",
+      "head": "營運卓越",
+      "body": "對客戶的承諾是總成本最低、最省事：品質穩定、交付準時、流程不出錯。撐起它的是精實作業、供應鏈可靠度、標準化、資產利用率。代價是放棄變化——少一點型號，少一點客製。",
+      "image": "backgrounds/value-disciplines-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 第二條",
+      "head": "產品領先",
+      "body": "承諾是永遠拿得到最好的東西，客戶為新意、設計和效能付溢價。撐起它的是研發速度、產品管理、設計、專利佈局、實驗文化。代價是接受更高的成本和一定程度的營運波動，換取推得快。",
+      "image": "backgrounds/value-disciplines-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 第三條",
+      "head": "顧客親密",
+      "body": "承諾是給你最合身的解法，主動服務，算的是一個客戶幾年下來的總值。撐起它的是客群洞察、方案配置、大客戶經營、彈性流程。代價是服務成本更高、複雜度更高，得靠模組化和劇本才擴得動。",
+      "image": "backgrounds/value-disciplines-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 規矩一",
+      "head": "只挑一條\n當主軸",
+      "body": "第一條規矩是集中。把投資和管理注意力壓在同一條準則上，做到業界第一。三條同時追，資源攤薄之外還會互相打架：標準化和客製化拉反方向，快速推新和零缺陷也拉反方向。",
+      "image": "backgrounds/value-disciplines-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 規矩二",
+      "head": "另外兩條\n要及格",
+      "body": "第二條規矩是守底線。做創新的那家還是得準時交貨，做低價的那家不能讓客服爛掉。掉到及格線以下的那一項，會把主軸掙來的溢價一起拖垮——客戶記住的是最差的那次體驗。",
+      "image": "backgrounds/value-disciplines-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "每條路，\n自己的指標",
+      "body": "營運卓越看服務成本、庫存週轉、準時交付率；產品領先看研發強度、上市時間、兩年內新產品的營收佔比；顧客親密看留存率、客戶終身價值與獲客成本的比例、單一客群的方案毛利。指標對不上，說法就站不住。",
+      "image": "backgrounds/value-disciplines-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "先從數字\n讀出準則",
+      "body": "我讀一間公司，會先從數字把它的準則讀出來，再回頭看管理層的說法對不對得上。兩邊對得上，那份溢價或那份成本優勢通常撐得住；兩邊對不上，多半代表它還沒選。",
+      "image": "backgrounds/value-disciplines-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這三條路",
+      "body": "拿手上任何一檔持股試一次：先從它的成本結構讀出走哪一條，再翻它的年報看寫的是不是同一條。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 18",
+      "image": "backgrounds/value-disciplines-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

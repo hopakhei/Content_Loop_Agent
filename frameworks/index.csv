@@ -4,15 +4,15 @@ extended-five-forces,Extended Five Forces,Industry & Market Structure,brief,back
 pest-analysis,PEST Analysis,Industry & Market Structure,brief,backlog,
 pestel-steep-steeple-framework,PESTEL / STEEP / STEEPLE Framework,Industry & Market Structure,brief,backlog,
 industry-life-cycle-model,Industry Life Cycle Model,Industry & Market Structure,brief,backlog,
-technology-adoption-life-cycle,Technology Adoption Life Cycle,Industry & Market Structure,brief,backlog,
+technology-adoption-life-cycle,Technology Adoption Life Cycle,Industry & Market Structure,brief,published,technology-adoption-curve
 s-curve-of-industry-technology-evolution,S-Curve of Industry / Technology Evolution,Industry & Market Structure,brief,backlog,
-strategic-inflection-point-framework,Strategic Inflection Point Framework,Industry & Market Structure,brief,backlog,
+strategic-inflection-point-framework,Strategic Inflection Point Framework,Industry & Market Structure,brief,published,strategic-inflection-point
 market-attractiveness-competitive-position-matrix,Market Attractiveness-Competitive Position Matrix,Industry & Market Structure,book-toc,backlog,
 competitor-response-profile,Competitor Response Profile,Industry & Market Structure,book-toc,backlog,
 market-mapping-landscape-mapping,Market Mapping / Landscape Mapping,Industry & Market Structure,book-toc,backlog,
 ecosystem-mapping,Ecosystem Mapping,Industry & Market Structure,book-toc,backlog,
 porters-generic-strategies,Porter's Generic Strategies,Competitive & Business-Level Strategy,brief,published,porter
-treacy-wiersema-value-disciplines,Treacy & Wiersema Value Disciplines,Competitive & Business-Level Strategy,brief,backlog,
+treacy-wiersema-value-disciplines,Treacy & Wiersema Value Disciplines,Competitive & Business-Level Strategy,brief,published,value-disciplines
 bowmans-strategy-clock,Bowman's Strategy Clock,Competitive & Business-Level Strategy,brief,published,bowmans-strategy-clock
 porters-value-chain,Porter's Value Chain,Competitive & Business-Level Strategy,brief,published,value-chain
 experience-curve,Experience Curve,Competitive & Business-Level Strategy,brief,published,experience-curve
@@ -31,8 +31,8 @@ shell-directional-policy-matrix,Shell Directional Policy Matrix,Competitive & Bu
 bcg-time-based-competition-framework,BCG Time-based Competition Framework,Competitive & Business-Level Strategy,book-toc,backlog,
 profit-pool-mapping,Profit Pool Mapping,Competitive & Business-Level Strategy,book-toc,backlog,
 bcg-growth-share-matrix,BCG Growth-Share Matrix,Corporate & Portfolio Strategy,brief,published,bcg-matrix
-ge-mckinsey-nine-box-matrix,GE-McKinsey Nine-Box Matrix,Corporate & Portfolio Strategy,brief,backlog,
-bcg-advantage-matrix,BCG Advantage Matrix,Corporate & Portfolio Strategy,brief,backlog,
+ge-mckinsey-nine-box-matrix,GE-McKinsey Nine-Box Matrix,Corporate & Portfolio Strategy,brief,published,ge-mckinsey-matrix
+bcg-advantage-matrix,BCG Advantage Matrix,Corporate & Portfolio Strategy,brief,published,bcg-advantage-matrix
 ashridge-portfolio-display,Ashridge Portfolio Display,Corporate & Portfolio Strategy,brief,backlog,
 parenting-advantage-framework,Parenting Advantage Framework,Corporate & Portfolio Strategy,brief,backlog,
 corporate-scope-matrix,Corporate Scope Matrix,Corporate & Portfolio Strategy,brief,backlog,
@@ -50,7 +50,7 @@ restructuring-portfolio-pruning-framework,Restructuring / Portfolio Pruning Fram
 ansoff-product-market-growth-matrix,Ansoff Product-Market Growth Matrix,"Growth, Innovation & Disruption",brief,published,ansoff-matrix
 innovation-ambition-matrix,Innovation Ambition Matrix,"Growth, Innovation & Disruption",brief,backlog,
 mckinsey-seven-degrees-of-freedom-for-growth,McKinsey Seven Degrees of Freedom for Growth,"Growth, Innovation & Disruption",brief,backlog,
-jobs-to-be-done-framework,Jobs to Be Done Framework,"Growth, Innovation & Disruption",brief,backlog,
+jobs-to-be-done-framework,Jobs to Be Done Framework,"Growth, Innovation & Disruption",brief,published,jobs-to-be-done
 disruptive-innovation-theory,Disruptive Innovation Theory,"Growth, Innovation & Disruption",brief,published,disruptive-innovation
 blue-ocean-strategy-canvas,Blue Ocean Strategy Canvas,"Growth, Innovation & Disruption",brief,published,blue-ocean
 blue-ocean-four-actions-framework,Blue Ocean Four Actions Framework,"Growth, Innovation & Disruption",brief,backlog,
