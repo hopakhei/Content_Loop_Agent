@@ -6,30 +6,30 @@ pestel-steep-steeple-framework,PESTEL / STEEP / STEEPLE Framework,Industry & Mar
 industry-life-cycle-model,Industry Life Cycle Model,Industry & Market Structure,brief,backlog,,dated,8
 technology-adoption-life-cycle,Technology Adoption Life Cycle,Industry & Market Structure,brief,published,technology-adoption-curve,author,6
 s-curve-of-industry-technology-evolution,S-Curve of Industry / Technology Evolution,Industry & Market Structure,brief,backlog,,firm,5
-strategic-inflection-point-framework,Strategic Inflection Point Framework,Industry & Market Structure,brief,published,strategic-inflection-point,author,1
-market-attractiveness-competitive-position-matrix,Market Attractiveness-Competitive Position Matrix,Industry & Market Structure,book-toc,backlog,,,0
-competitor-response-profile,Competitor Response Profile,Industry & Market Structure,book-toc,backlog,,,0
-market-mapping-landscape-mapping,Market Mapping / Landscape Mapping,Industry & Market Structure,book-toc,backlog,,,0
-ecosystem-mapping,Ecosystem Mapping,Industry & Market Structure,book-toc,backlog,,,0
+strategic-inflection-point-framework,Strategic Inflection Point Framework,Industry & Market Structure,brief,published,strategic-inflection-point,author,5
+market-attractiveness-competitive-position-matrix,Market Attractiveness-Competitive Position Matrix,Industry & Market Structure,brief,backlog,,firm,11
+competitor-response-profile,Competitor Response Profile,Industry & Market Structure,brief,backlog,,author,9
+market-mapping-landscape-mapping,Market Mapping / Landscape Mapping,Industry & Market Structure,brief,backlog,,none,4
+ecosystem-mapping,Ecosystem Mapping,Industry & Market Structure,brief,backlog,,dated,4
 porters-generic-strategies,Porter's Generic Strategies,Competitive & Business-Level Strategy,brief,published,porter,author,7
 treacy-wiersema-value-disciplines,Treacy & Wiersema Value Disciplines,Competitive & Business-Level Strategy,brief,published,value-disciplines,author,6
-bowmans-strategy-clock,Bowman's Strategy Clock,Competitive & Business-Level Strategy,brief,published,bowmans-strategy-clock,author,8
+bowmans-strategy-clock,Bowman's Strategy Clock,Competitive & Business-Level Strategy,brief,published,bowmans-strategy-clock,author,7
 porters-value-chain,Porter's Value Chain,Competitive & Business-Level Strategy,brief,published,value-chain,author,7
 experience-curve,Experience Curve,Competitive & Business-Level Strategy,brief,published,experience-curve,firm,4
 relative-cost-positioning-framework,Relative Cost Positioning Framework,Competitive & Business-Level Strategy,brief,published,relative-cost-positioning,none,6
 key-success-factors-analysis,Key Success Factors Analysis,Competitive & Business-Level Strategy,brief,published,key-success-factors,author,7
 strategic-group-mapping,Strategic Group Mapping,Competitive & Business-Level Strategy,brief,published,strategic-group-mapping,author,7
-game-theory-co-opetition-framework,Game Theory / Co-opetition Framework,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-value-net,Value Net,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-delta-model,Delta Model,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-resource-based-view,Resource-Based View,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-vrio-vrin-analysis,VRIO / VRIN Analysis,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-core-competence-framework,Core Competence Framework,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-pims-model,PIMS Model,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-adl-life-cycle-competitive-position-matrix,ADL Life Cycle-Competitive Position Matrix,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-shell-directional-policy-matrix,Shell Directional Policy Matrix,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-bcg-time-based-competition-framework,BCG Time-based Competition Framework,Competitive & Business-Level Strategy,book-toc,backlog,,,0
-profit-pool-mapping,Profit Pool Mapping,Competitive & Business-Level Strategy,book-toc,backlog,,,0
+game-theory-co-opetition-framework,Game Theory / Co-opetition Framework,Competitive & Business-Level Strategy,brief,backlog,,author,4
+value-net,Value Net,Competitive & Business-Level Strategy,brief,backlog,,dated,6
+delta-model,Delta Model,Competitive & Business-Level Strategy,brief,backlog,,author,6
+resource-based-view,Resource-Based View,Competitive & Business-Level Strategy,brief,backlog,,author,7
+vrio-vrin-analysis,VRIO / VRIN Analysis,Competitive & Business-Level Strategy,brief,backlog,,dated,7
+core-competence-framework,Core Competence Framework,Competitive & Business-Level Strategy,brief,backlog,,author,3
+pims-model,PIMS Model,Competitive & Business-Level Strategy,brief,backlog,,dated,6
+adl-life-cycle-competitive-position-matrix,ADL Life Cycle-Competitive Position Matrix,Competitive & Business-Level Strategy,brief,backlog,,firm,9
+shell-directional-policy-matrix,Shell Directional Policy Matrix,Competitive & Business-Level Strategy,brief,backlog,,firm,11
+bcg-time-based-competition-framework,BCG Time-based Competition Framework,Competitive & Business-Level Strategy,brief,backlog,,firm,7
+profit-pool-mapping,Profit Pool Mapping,Competitive & Business-Level Strategy,brief,backlog,,firm,8
 bcg-growth-share-matrix,BCG Growth-Share Matrix,Corporate & Portfolio Strategy,brief,published,bcg-matrix,firm,11
 ge-mckinsey-nine-box-matrix,GE-McKinsey Nine-Box Matrix,Corporate & Portfolio Strategy,brief,published,ge-mckinsey-matrix,firm,8
 bcg-advantage-matrix,BCG Advantage Matrix,Corporate & Portfolio Strategy,brief,published,bcg-advantage-matrix,firm,8
@@ -37,16 +37,16 @@ ashridge-portfolio-display,Ashridge Portfolio Display,Corporate & Portfolio Stra
 parenting-advantage-framework,Parenting Advantage Framework,Corporate & Portfolio Strategy,brief,backlog,,author,6
 corporate-scope-matrix,Corporate Scope Matrix,Corporate & Portfolio Strategy,brief,backlog,,author,4
 role-of-the-center-corporate-parenting-styles,Role of the Center / Corporate Parenting Styles,Corporate & Portfolio Strategy,brief,backlog,,dated,2
-make-buy-ally-vertical-integration-framework,Make-Buy-Ally / Vertical Integration Framework,Corporate & Portfolio Strategy,brief,backlog,,dated,2
-adjacency-expansion-matrix,Adjacency Expansion Matrix,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-mckinsey-three-horizons-of-growth,McKinsey Three Horizons of Growth,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-corporate-value-creation-logic,Corporate Value Creation Logic,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-sbu-segmentation-framework,SBU Segmentation Framework,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-strategic-control-map,Strategic Control Map,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-portfolio-value-gap-analysis,Portfolio Value Gap Analysis,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-capital-allocation-framework,Capital Allocation Framework,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-core-vs-non-core-portfolio-framework,Core vs Non-core Portfolio Framework,Corporate & Portfolio Strategy,book-toc,backlog,,,0
-restructuring-portfolio-pruning-framework,Restructuring / Portfolio Pruning Framework,Corporate & Portfolio Strategy,book-toc,backlog,,,0
+make-buy-ally-vertical-integration-framework,Make-Buy-Ally / Vertical Integration Framework,Corporate & Portfolio Strategy,brief,backlog,,dated,4
+adjacency-expansion-matrix,Adjacency Expansion Matrix,Corporate & Portfolio Strategy,brief,backlog,,firm,8
+mckinsey-three-horizons-of-growth,McKinsey Three Horizons of Growth,Corporate & Portfolio Strategy,brief,backlog,,firm,5
+corporate-value-creation-logic,Corporate Value Creation Logic,Corporate & Portfolio Strategy,brief,backlog,,none,7
+sbu-segmentation-framework,SBU Segmentation Framework,Corporate & Portfolio Strategy,brief,backlog,,firm,7
+strategic-control-map,Strategic Control Map,Corporate & Portfolio Strategy,brief,backlog,,none,6
+portfolio-value-gap-analysis,Portfolio Value Gap Analysis,Corporate & Portfolio Strategy,brief,backlog,,none,11
+capital-allocation-framework,Capital Allocation Framework,Corporate & Portfolio Strategy,brief,backlog,,none,7
+core-vs-non-core-portfolio-framework,Core vs Non-core Portfolio Framework,Corporate & Portfolio Strategy,brief,backlog,,firm,9
+restructuring-portfolio-pruning-framework,Restructuring / Portfolio Pruning Framework,Corporate & Portfolio Strategy,brief,backlog,,none,9
 ansoff-product-market-growth-matrix,Ansoff Product-Market Growth Matrix,"Growth, Innovation & Disruption",brief,published,ansoff-matrix,firm,7
 innovation-ambition-matrix,Innovation Ambition Matrix,"Growth, Innovation & Disruption",brief,backlog,,author,6
 mckinsey-seven-degrees-of-freedom-for-growth,McKinsey Seven Degrees of Freedom for Growth,"Growth, Innovation & Disruption",brief,backlog,,firm,7
@@ -54,16 +54,16 @@ jobs-to-be-done-framework,Jobs to Be Done Framework,"Growth, Innovation & Disrup
 disruptive-innovation-theory,Disruptive Innovation Theory,"Growth, Innovation & Disruption",brief,published,disruptive-innovation,author,5
 blue-ocean-strategy-canvas,Blue Ocean Strategy Canvas,"Growth, Innovation & Disruption",brief,published,blue-ocean,author,3
 blue-ocean-four-actions-framework,Blue Ocean Four Actions Framework,"Growth, Innovation & Disruption",brief,backlog,,author,5
-10-types-of-innovation,10 Types of Innovation,"Growth, Innovation & Disruption",brief,backlog,,dated,1
-stage-gate-innovation-process,Stage-Gate Innovation Process,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-ambidextrous-organization-framework,Ambidextrous Organization Framework,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-real-options-logic,Real Options Logic,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-platform-launch-scaling-lifecycle,Platform Launch & Scaling Lifecycle,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-aarrr-pirate-metrics-funnel,AARRR Pirate Metrics Funnel,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-growth-flywheel-framework,Growth Flywheel Framework,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-network-effects-map,Network Effects Map,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-mvp-learning-loop,MVP Learning Loop,"Growth, Innovation & Disruption",book-toc,backlog,,,0
-design-thinking-double-diamond,Design Thinking Double Diamond,"Growth, Innovation & Disruption",book-toc,backlog,,,0
+10-types-of-innovation,10 Types of Innovation,"Growth, Innovation & Disruption",brief,backlog,,dated,5
+stage-gate-innovation-process,Stage-Gate Innovation Process,"Growth, Innovation & Disruption",brief,backlog,,dated,4
+ambidextrous-organization-framework,Ambidextrous Organization Framework,"Growth, Innovation & Disruption",brief,backlog,,dated,7
+real-options-logic,Real Options Logic,"Growth, Innovation & Disruption",brief,backlog,,dated,4
+platform-launch-scaling-lifecycle,Platform Launch & Scaling Lifecycle,"Growth, Innovation & Disruption",brief,backlog,,none,6
+aarrr-pirate-metrics-funnel,AARRR Pirate Metrics Funnel,"Growth, Innovation & Disruption",brief,backlog,,dated,6
+growth-flywheel-framework,Growth Flywheel Framework,"Growth, Innovation & Disruption",brief,backlog,,dated,5
+network-effects-map,Network Effects Map,"Growth, Innovation & Disruption",brief,backlog,,none,4
+mvp-learning-loop,MVP Learning Loop,"Growth, Innovation & Disruption",brief,backlog,,author,3
+design-thinking-double-diamond,Design Thinking Double Diamond,"Growth, Innovation & Disruption",brief,backlog,,dated,3
 business-model-canvas,Business Model Canvas,Business Model & Value Proposition,brief,backlog,,author,7
 lean-canvas,Lean Canvas,Business Model & Value Proposition,brief,backlog,,author,8
 value-proposition-canvas,Value Proposition Canvas,Business Model & Value Proposition,brief,backlog,,author,3
@@ -72,8 +72,8 @@ profit-formula-framework,Profit Formula Framework,Business Model & Value Proposi
 business-model-patterns-library,Business Model Patterns Library,Business Model & Value Proposition,brief,backlog,,author,5
 two-sided-platform-business-model,Two-sided Platform Business Model,Business Model & Value Proposition,brief,backlog,,none,8
 b2b2c-value-chain-mapping,B2B2C Value Chain Mapping,Business Model & Value Proposition,brief,backlog,,author,5
-service-dominant-logic,Service-Dominant Logic,Business Model & Value Proposition,book-toc,backlog,,,0
-razor-and-blades-business-model-pattern,Razor-and-Blades Business Model Pattern,Business Model & Value Proposition,book-toc,backlog,,,0
+service-dominant-logic,Service-Dominant Logic,Business Model & Value Proposition,brief,backlog,,dated,5
+razor-and-blades-business-model-pattern,Razor-and-Blades Business Model Pattern,Business Model & Value Proposition,brief,backlog,,none,6
 mckinsey-7s-framework,McKinsey 7S Framework,"Capabilities, Organization & Operating Model",brief,backlog,,firm,3
 galbraith-star-model,Galbraith Star Model,"Capabilities, Organization & Operating Model",brief,backlog,,dated,1
 operating-model-4d,Operating Model 4D,"Capabilities, Organization & Operating Model",brief,backlog,,none,2
@@ -82,10 +82,10 @@ capability-maturity-model,Capability Maturity Model,"Capabilities, Organization 
 span-of-control-layering-analysis,Span of Control & Layering Analysis,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
 raci-matrix,RACI Matrix,"Capabilities, Organization & Operating Model",brief,backlog,,none,0
 organizational-health-index,Organizational Health Index,"Capabilities, Organization & Operating Model",brief,backlog,,firm,0
-agile-operating-model,Agile Operating Model,"Capabilities, Organization & Operating Model",book-toc,backlog,,,0
-shared-services-vs-business-partnering-model,Shared Services vs Business Partnering Model,"Capabilities, Organization & Operating Model",book-toc,backlog,,,0
-centers-of-excellence-design-framework,Centers of Excellence Design Framework,"Capabilities, Organization & Operating Model",book-toc,backlog,,,0
-strategic-alignment-model,Strategic Alignment Model,"Capabilities, Organization & Operating Model",book-toc,backlog,,,0
+agile-operating-model,Agile Operating Model,"Capabilities, Organization & Operating Model",brief,backlog,,dated,2
+shared-services-vs-business-partnering-model,Shared Services vs Business Partnering Model,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
+centers-of-excellence-design-framework,Centers of Excellence Design Framework,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
+strategic-alignment-model,Strategic Alignment Model,"Capabilities, Organization & Operating Model",brief,backlog,,author,1
 digital-maturity-model,Digital Maturity Model,"Digital, Data, Platforms & Ecosystems",brief,backlog,,author,5
 digital-transformation-roadmap,Digital Transformation Roadmap,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,1
 platform-strategy-framework,Platform Strategy Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,6
@@ -93,10 +93,10 @@ ecosystem-roles-map,Ecosystem Roles Map,"Digital, Data, Platforms & Ecosystems",
 api-economy-framework,API Economy Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,5
 north-star-metric-framework,North Star Metric Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,4
 data-monetization-framework,Data Monetization Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,6
-ai-value-creation-framework,AI Value Creation Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,dated,3
-digital-twin-framework,Digital Twin Framework,"Digital, Data, Platforms & Ecosystems",book-toc,backlog,,,0
+ai-value-creation-framework,AI Value Creation Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,dated,4
+digital-twin-framework,Digital Twin Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,dated,2
 omnichannel-strategy-framework,Omnichannel Strategy Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,3
-product-led-growth-framework,Product-Led Growth Framework,"Digital, Data, Platforms & Ecosystems",book-toc,backlog,,,0
+product-led-growth-framework,Product-Led Growth Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,5
 stp-framework,STP Framework,"Customer, Marketing & Brand",brief,backlog,,dated,5
 4ps-marketing-mix,4Ps Marketing Mix,"Customer, Marketing & Brand",brief,backlog,,dated,5
 7ps-marketing-mix,7Ps Marketing Mix,"Customer, Marketing & Brand",brief,backlog,,dated,5
@@ -105,12 +105,12 @@ customer-lifecycle-framework,Customer Lifecycle Framework,"Customer, Marketing &
 customer-lifetime-value-model,Customer Lifetime Value Model,"Customer, Marketing & Brand",brief,backlog,,none,9
 share-of-wallet-framework,Share of Wallet Framework,"Customer, Marketing & Brand",brief,backlog,,none,7
 net-promoter-system,Net Promoter System,"Customer, Marketing & Brand",brief,backlog,,firm,2
-rfm-segmentation,RFM Segmentation,"Customer, Marketing & Brand",book-toc,backlog,,,0
-kano-model,Kano Model,"Customer, Marketing & Brand",book-toc,backlog,,,0
-moments-of-truth-framework,Moments of Truth Framework,"Customer, Marketing & Brand",book-toc,backlog,,,0
-brand-equity-pyramid,Brand Equity Pyramid,"Customer, Marketing & Brand",book-toc,backlog,,,0
-brand-positioning-map,Brand Positioning Map,"Customer, Marketing & Brand",book-toc,backlog,,,0
-brand-archetypes-framework,Brand Archetypes Framework,"Customer, Marketing & Brand",book-toc,backlog,,,0
+rfm-segmentation,RFM Segmentation,"Customer, Marketing & Brand",brief,backlog,,none,3
+kano-model,Kano Model,"Customer, Marketing & Brand",brief,backlog,,none,4
+moments-of-truth-framework,Moments of Truth Framework,"Customer, Marketing & Brand",brief,backlog,,dated,3
+brand-equity-pyramid,Brand Equity Pyramid,"Customer, Marketing & Brand",brief,backlog,,dated,5
+brand-positioning-map,Brand Positioning Map,"Customer, Marketing & Brand",brief,backlog,,none,2
+brand-archetypes-framework,Brand Archetypes Framework,"Customer, Marketing & Brand",brief,backlog,,dated,2
 service-blueprinting,Service Blueprinting,"Operations, Supply Chain & Efficiency",brief,backlog,,author,0
 theory-of-constraints,Theory of Constraints,"Operations, Supply Chain & Efficiency",book-toc,backlog,,,0
 lean-value-stream-mapping,Lean Value Stream Mapping,"Operations, Supply Chain & Efficiency",brief,backlog,,dated,0
@@ -119,9 +119,9 @@ lean-six-sigma-house-of-quality,Lean Six Sigma House of Quality,"Operations, Sup
 scor-model,SCOR Model,"Operations, Supply Chain & Efficiency",brief,backlog,,dated,0
 capacity-planning-framework,Capacity Planning Framework,"Operations, Supply Chain & Efficiency",brief,backlog,,none,1
 just-in-time-system,Just-in-Time System,"Operations, Supply Chain & Efficiency",brief,backlog,,none,0
-total-productive-maintenance,Total Productive Maintenance,"Operations, Supply Chain & Efficiency",book-toc,backlog,,,0
-make-buy-decision-framework,Make-Buy Decision Framework,"Operations, Supply Chain & Efficiency",book-toc,backlog,,,0
-operations-footprint-optimization,Operations Footprint Optimization,"Operations, Supply Chain & Efficiency",book-toc,backlog,,,0
+total-productive-maintenance,Total Productive Maintenance,"Operations, Supply Chain & Efficiency",brief,backlog,,none,1
+make-buy-decision-framework,Make-Buy Decision Framework,"Operations, Supply Chain & Efficiency",brief,backlog,,author,4
+operations-footprint-optimization,Operations Footprint Optimization,"Operations, Supply Chain & Efficiency",brief,backlog,,none,3
 ooda-loop,OODA Loop,"Risk, Uncertainty & Scenarios",brief,backlog,,none,3
 war-gaming-framework,War-gaming Framework,"Risk, Uncertainty & Scenarios",brief,backlog,,none,5
 scenario-planning,Scenario Planning,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,5
@@ -129,9 +129,9 @@ risk-heat-map,Risk Heat Map,"Risk, Uncertainty & Scenarios",brief,backlog,,none,
 risk-adjusted-return-on-capital,Risk-Adjusted Return on Capital,"Risk, Uncertainty & Scenarios",brief,backlog,,none,3
 strategic-flexibility-matrix,Strategic Flexibility Matrix,"Risk, Uncertainty & Scenarios",brief,backlog,,none,3
 real-options-valuation,Real Options Valuation,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,5
-decision-tree-analysis,Decision Tree Analysis,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,0
-black-swan-barbell-strategy,Black Swan / Barbell Strategy,"Risk, Uncertainty & Scenarios",book-toc,backlog,,,0
-stress-testing-framework,Stress Testing Framework,"Risk, Uncertainty & Scenarios",book-toc,backlog,,,0
+decision-tree-analysis,Decision Tree Analysis,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,2
+black-swan-barbell-strategy,Black Swan / Barbell Strategy,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,4
+stress-testing-framework,Stress Testing Framework,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,6
 cage-distance-framework,CAGE Distance Framework,International & Global Strategy,brief,backlog,,author,3
 aaa-global-strategy-framework,AAA Global Strategy Framework,International & Global Strategy,brief,backlog,,author,2
 oli-eclectic-paradigm,OLI / Eclectic Paradigm,International & Global Strategy,brief,backlog,,none,3
@@ -147,20 +147,20 @@ issue-tree,Issue Tree,"Strategy Process, Problem Solving & Decision-Making",brie
 hypothesis-driven-problem-solving,Hypothesis-driven Problem Solving,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,4
 mece-principle,MECE Principle,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,firm,4
 stakeholder-mapping,Stakeholder Mapping,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,dated,0
-rasci-framework,RASCI Framework,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-decision-quality-chain,Decision Quality Chain,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-adkar-change-management-model,ADKAR Change Management Model,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-strategic-planning-rhythm,Strategic Planning Rhythm,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-hoshin-kanri,Hoshin Kanri,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-management-flight-simulators,Management Flight Simulators,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
-lewins-force-field-analysis,Lewin's Force Field Analysis,"Strategy Process, Problem Solving & Decision-Making",book-toc,backlog,,,0
+rasci-framework,RASCI Framework,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,0
+decision-quality-chain,Decision Quality Chain,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,3
+adkar-change-management-model,ADKAR Change Management Model,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,dated,2
+strategic-planning-rhythm,Strategic Planning Rhythm,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
+hoshin-kanri,Hoshin Kanri,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
+management-flight-simulators,Management Flight Simulators,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,3
+lewins-force-field-analysis,Lewin's Force Field Analysis,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,0
 triple-bottom-line,Triple Bottom Line,"Social Impact, ESG & Public Value",brief,backlog,,dated,5
 shared-value-framework,Shared Value Framework,"Social Impact, ESG & Public Value",brief,backlog,,author,5
 esg-materiality-matrix,ESG Materiality Matrix,"Social Impact, ESG & Public Value",brief,backlog,,none,1
 theory-of-change,Theory of Change,"Social Impact, ESG & Public Value",brief,backlog,,none,3
 logical-framework-approach,Logical Framework Approach,"Social Impact, ESG & Public Value",brief,backlog,,dated,1
-social-return-on-investment,Social Return on Investment,"Social Impact, ESG & Public Value",brief,backlog,,dated,2
+social-return-on-investment,Social Return on Investment,"Social Impact, ESG & Public Value",brief,backlog,,dated,1
 collective-impact-framework,Collective Impact Framework,"Social Impact, ESG & Public Value",brief,backlog,,author,2
-sustainable-development-goals-mapping,Sustainable Development Goals Mapping,"Social Impact, ESG & Public Value",book-toc,backlog,,,0
-impact-management-project-dimensions,Impact Management Project Dimensions,"Social Impact, ESG & Public Value",book-toc,backlog,,,0
-stakeholder-capitalism-framework,Stakeholder Capitalism Framework,"Social Impact, ESG & Public Value",book-toc,backlog,,,0
+sustainable-development-goals-mapping,Sustainable Development Goals Mapping,"Social Impact, ESG & Public Value",brief,backlog,,dated,0
+impact-management-project-dimensions,Impact Management Project Dimensions,"Social Impact, ESG & Public Value",brief,backlog,,dated,3
+stakeholder-capitalism-framework,Stakeholder Capitalism Framework,"Social Impact, ESG & Public Value",brief,backlog,,dated,2
