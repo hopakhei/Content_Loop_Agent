@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Ingest an Umbrex "Strategy Frameworks" PDF (already extracted to text) into
-one structured brief per framework, plus a master index/queue.
+one structured brief per framework.
 
 The editorial step (brief -> investing-lens carousel + units) stays human — this
 script only does the deterministic part: split a book into per-framework briefs
@@ -11,22 +11,30 @@ Usage:
     python scripts/ingest_frameworks.py <raw_text_file> --category "Competitive"
 
 <raw_text_file> is the plain text of one PDF (the fileContent from the Drive
-reader). Writes frameworks/raw/<slug>.md and appends frameworks/index.csv.
+reader). Writes frameworks/raw/<slug>.md, which is gitignored: it is verbatim
+book prose and never gets published.
+
+This writes briefs only. frameworks/index.csv has one writer,
+scripts/build_framework_index.py — run it afterwards to refresh the ledger.
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RAW_DIR = ROOT / "frameworks" / "raw"
-INDEX = ROOT / "frameworks" / "index.csv"
 
 # Each framework body opens with its name on a line, then "1. What Is <name>?".
-# The name capture is greedy-safe: stop at the question mark.
-ANCHOR = re.compile(r"\n([A-Z][^\n]{2,70}?)\n+\d\\?\.\s+What Is\b", re.M)
+# A leading digit is allowed because some names start with one ("4Ps Marketing
+# Mix", "10 Types of Innovation") — anchoring on [A-Z] alone silently drops them.
+# The running-head line only marks where a section starts; the name comes from
+# the "What Is" sentence, which is the one the books get right. Two books
+# disagree with their own running heads (the Operations book heads the
+# omnichannel section "Theory of Constraints"; the ESG book appends "Explained"
+# to every head), and taking the head at face value mislabels those briefs.
+ANCHOR = re.compile(r"\n([A-Z0-9][^\n]{2,70}?)\n+\d\\?\.\s+What Is\s+(.+?)\?", re.M)
 FOOTER = re.compile(r"Find an independent consultant.*?Strategy Frameworks", re.S)
 
 
@@ -36,9 +44,14 @@ def slugify(name: str) -> str:
     return s[:60]
 
 
+def clean_name(name: str) -> str:
+    name = re.sub(r"\s+", " ", name).strip()
+    return re.sub(r"^(?:the|The)\s+", "", name)
+
+
 def split_frameworks(text: str) -> list[tuple[str, str]]:
     """Return [(name, body)] — body runs from one anchor to the next."""
-    marks = [(m.start(), m.group(1).strip()) for m in ANCHOR.finditer(text)]
+    marks = [(m.start(), clean_name(m.group(2))) for m in ANCHOR.finditer(text)]
     out = []
     for i, (pos, name) in enumerate(marks):
         end = marks[i + 1][0] if i + 1 < len(marks) else len(text)
@@ -53,7 +66,6 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("raw_text_file")
     ap.add_argument("--category", required=True)
-    ap.add_argument("--priority", default="", help="optional launch-priority tag")
     args = ap.parse_args()
 
     text = Path(args.raw_text_file).read_text(encoding="utf-8")
@@ -65,21 +77,15 @@ def main() -> None:
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     frameworks = split_frameworks(text)
 
-    new_index = INDEX.exists()
-    with INDEX.open("a", newline="", encoding="utf-8") as fh:
-        w = csv.writer(fh)
-        if not new_index:
-            w.writerow(["slug", "name", "category", "status", "priority"])
-        for name, body in frameworks:
-            slug = slugify(name)
-            path = RAW_DIR / f"{slug}.md"
-            path.write_text(f"# {name}\n\n- category: {args.category}\n\n{body}\n",
-                            encoding="utf-8")
-            w.writerow([slug, name, args.category, "raw", args.priority])
+    for name, body in frameworks:
+        path = RAW_DIR / f"{slugify(name)}.md"
+        path.write_text(f"# {name}\n\n- category: {args.category}\n\n{body}\n",
+                        encoding="utf-8")
 
     print(f"{len(frameworks)} frameworks -> {RAW_DIR} (category={args.category})")
     for name, _ in frameworks:
         print("  -", name)
+    print("now run: python scripts/build_framework_index.py")
 
 
 if __name__ == "__main__":
