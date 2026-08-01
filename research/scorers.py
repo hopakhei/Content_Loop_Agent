@@ -127,6 +127,34 @@ def x_link_arm(row: dict) -> Optional[str]:
     return (row.get("tags") or {}).get("x_link_arm")
 
 
+# Scenes from ordinary life, as opposed to boardrooms and balance sheets. The
+# list is the operational definition of "貼地" for H-005: a post is life-anchored
+# when its text puts the reader somewhere they actually stand in a normal week.
+# Editing this list after H-005 goes live would move posts between arms
+# retroactively — treat it as frozen while the card is in `testing`.
+LIFE_NOUNS = (
+    "奶昔", "早餐", "咖啡", "通勤", "排隊", "餐廳", "茶餐廳", "超市", "便利商店",
+    "外送", "菜市場", "夜市", "衣櫃", "行李", "房租", "水電", "手機", "追劇",
+    "健身房", "捷運", "公車", "計程車", "巷口", "樓下", "週末", "下班", "加班",
+    "薪水", "帳單", "團購", "網購", "遊戲", "理髮", "洗衣",
+)
+
+
+def life_anchor(row: dict) -> Optional[str]:
+    """Does the post text ground its argument in an everyday scene?
+
+    Full-text, not line 1: H-002 already owns the opening line, and this
+    variable is about whether the argument itself travels through a scene the
+    reader lives in (the JTBD milkshake) or stays inside the boardroom (the
+    GE capital-allocation table). A post can be investor-opened and still
+    life-anchored — the two variables are deliberately independent.
+    """
+    text = row.get("text")
+    if not text:
+        return None
+    return "yes" if _any(text, LIFE_NOUNS) else "no"
+
+
 def series_era(row: dict) -> Optional[str]:
     """Numbered-essay era vs framework-series era.
 
@@ -147,6 +175,7 @@ REGISTRY: dict[str, Scorer] = {
     "line1_len_bucket": line1_len_bucket,
     "hook_label": hook_label,
     "x_link_arm": x_link_arm,
+    "life_anchor": life_anchor,
     "series_era": series_era,
 }
 
