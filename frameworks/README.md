@@ -98,7 +98,10 @@ refuses to make.
    run the de-AI pass in `.claude/skills/content-anti-ai/SKILL.md` before shipping.
 4. `python scripts/build_framework_index.py` — add each new unit to `UNIT_SLUGS`
    first, or the ledger will keep counting it as unwritten.
-5. `python scripts/next_frameworks.py && python -m pytest -q`
+5. `python scripts/next_frameworks.py && python -m pytest -q`, then run the
+   suite once more with `frameworks/raw/` moved aside. CI never has that
+   directory, so a test that touches it passes locally and fails there — which
+   has now happened twice, both times on this system's own checks.
 6. Commit, push. `generate-pending.yml` turns the units into Notion drafts twice
    a day; `fetch-backgrounds.yml` collects the photos nightly.
 

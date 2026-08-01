@@ -137,11 +137,16 @@ def test_every_queued_carousel_has_a_spec():
 
 def test_shortlist_only_offers_frameworks_with_prose_on_disk():
     """Ranking a contents-page entry would send whoever picks it up looking for
-    source text that was never extracted."""
-    data = next_frameworks.build()
-    for row in data["shortlist"]:
+    source text that was never extracted.
+
+    Checked against the ledger, not the filesystem: frameworks/raw/ is
+    gitignored, so a filesystem check passes only on the machine that ran the
+    ingest and fails everywhere else. A distilled provenance tier is written
+    only when a brief was present at build time, so it carries the same fact
+    into checkouts that will never have the prose."""
+    for row in next_frameworks.build()["shortlist"]:
         assert row["source"] == "brief", row["slug"]
-        assert (BASE / "frameworks" / "raw" / f"{row['slug']}.md").exists()
+        assert row["provenance"], row["slug"]
 
 
 def test_shortlist_spreads_across_categories():
