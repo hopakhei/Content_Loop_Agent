@@ -40,6 +40,7 @@ QUEUE = ROOT / "queue" / "carousel_queue.txt"
 UNITS = ROOT / "units"
 LEDGER = ROOT / "state" / "inserted_units.txt"
 INDEX = ROOT / "frameworks" / "index.csv"
+FACTSHEETS = ROOT / "frameworks" / "factsheets"
 
 # Both channels publish once a day (carousel-drip at 12:30 HKT, post loop at
 # the same slot), so a queued item is a day of runway.
@@ -64,6 +65,18 @@ BATCH_DAYS = 12
 # job — and two batches is months of warning, which is the point of saying it
 # early rather than discovering it on the day the shortlist comes back empty.
 RESERVE_FLOOR = 2 * BATCH_DAYS
+
+# The reserve above is measured on `frameworks/raw/`, which is gitignored — it
+# only exists on a machine that has processed the source PDFs. Any session
+# cloned fresh from git, including the auto-producer Routine, sees none of it.
+#
+# That gap is why the Routine has fired repeatedly and committed nothing: it
+# was asked to write frameworks whose source material lives somewhere it never
+# runs. `frameworks/factsheets/` is the committed, own-words substitute, and
+# this floor measures the only reserve a hands-off session can actually spend.
+# One batch, because topping it up needs a session with the briefs — so the
+# warning has to arrive while there is still a batch in hand.
+FACTSHEET_FLOOR = BATCH_DAYS
 
 # Numbered essays (101-201, 127) run on a separate pipeline and are filtered
 # out of the framework feed by POST_FRAMEWORKS_ONLY — counting them as runway
@@ -120,6 +133,18 @@ def reserve() -> dict:
     return counts
 
 
+def factsheets_available() -> int:
+    """Committed fact sheets for frameworks that have not shipped yet.
+
+    A fact sheet whose framework is already written is spent, so it does not
+    count — the number has to answer "how much can a fresh clone write from
+    today", not "how many files are in the folder"."""
+    if not FACTSHEETS.exists():
+        return 0
+    written = _framework_slugs()
+    return sum(1 for p in FACTSHEETS.glob("*.md") if p.stem not in written)
+
+
 def report() -> dict:
     """Days of runway per channel. `None` means the channel could not be read
     (no Notion token) — never treated as healthy, only as unmeasured."""
@@ -137,7 +162,13 @@ def report() -> dict:
         "notion_drafts": live_drafts,
         "pending_inserts": pending,
         "reserve": reserve(),
+        "factsheets": factsheets_available(),
     }
+
+
+def _fact_txt(r: dict) -> str:
+    n = r.get("factsheets")
+    return "unmeasured" if n is None else f"{n} unwritten"
 
 
 def render(r: dict) -> str:
@@ -152,8 +183,10 @@ def render(r: dict) -> str:
         f"  X / Threads (post loop)   : {xt_txt}{detail}",
         f"  Reserve                   : {res['writable']} frameworks with prose on disk, "
         f"{res['needs_prose']} needing prose",
+        f"  Fact sheets (committed)   : {_fact_txt(r)} — what a fresh clone can "
+        "write from",
         f"  Floors                    : {WARN_DAYS} days per channel, "
-        f"{RESERVE_FLOOR} frameworks in reserve",
+        f"{RESERVE_FLOOR} frameworks in reserve, {FACTSHEET_FLOOR} fact sheets",
     ])
 
 
@@ -176,6 +209,13 @@ def short(r: dict) -> list[str]:
             f"Reserve: only {writable} frameworks left with prose on disk "
             f"({r['reserve'].get('needs_prose', 0)} more need extracting from the "
             "source PDFs first) — see frameworks/README.md")
+    # Absent means unmeasured, the same courtesy the Notion channel gets above:
+    # a caller that did not ask for this number must not be told it is zero.
+    if r.get("factsheets") is not None and r["factsheets"] < FACTSHEET_FLOOR:
+        out.append(
+            f"Fact sheets: only {r['factsheets']} unwritten fact sheets committed — "
+            "a session with frameworks/raw/ has to top them up, or the auto-producer "
+            "wakes with nothing to write from (see frameworks/AUTOPRODUCER.md)")
     return out
 
 

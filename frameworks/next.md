@@ -10,20 +10,22 @@ Each framework ships as three files or it ships as nothing: `units/<slug>.md`, `
 
 Picked one at a time on provenance, how much investing vocabulary the source already carries, and how crowded the category is — each pick charged against its own category, so the list stays spread. Order within a batch is an editorial call: each unit closes by teasing the next one, so a batch is a chain, not a set.
 
-| # | Framework | Category | Score | Why |
-|---|---|---|---|---|
-| 1 | RAPID Decision-rights Framework | Strategy Process, Problem Solving & Decision-Making | 2.15 | originated by one of the three firms; 1 investing term in source; 1 already ahead of it in this category |
-| 2 | Business Model Canvas | Business Model & Value Proposition | 2.05 | named author or institution; 7 investing terms in source; 2 already ahead of it in this category |
-| 3 | Organizational Health Index | Capabilities, Organization & Operating Model | 1.8 | originated by one of the three firms; 1 already ahead of it in this category |
-| 4 | Ecosystem Roles Map | Digital, Data, Platforms & Ecosystems | 1.6 | 8 investing terms in source; 1 already ahead of it in this category |
-| 5 | AAA Global Strategy Framework | International & Global Strategy | 1.5 | named author or institution; 2 investing terms in source; 1 already ahead of it in this category |
-| 6 | Collective Impact Framework | Social Impact, ESG & Public Value | 1.5 | named author or institution; 2 investing terms in source; 1 already ahead of it in this category |
-| 7 | Lean Six Sigma House of Quality | Operations, Supply Chain & Efficiency | 1.15 | named author or institution; 1 investing term in source; 1 already ahead of it in this category |
-| 8 | Real Options Valuation | Risk, Uncertainty & Scenarios | 1.05 | dated origin only; 5 investing terms in source; 1 already ahead of it in this category |
-| 9 | Adjacency Expansion Matrix | Corporate & Portfolio Strategy | 1.0 | originated by one of the three firms; 8 investing terms in source; 4 already ahead of it in this category |
-| 10 | Customer Lifetime Value Model | Customer, Marketing & Brand | 0.75 | 9 investing terms in source; 2 already ahead of it in this category |
-| 11 | McKinsey Seven Degrees of Freedom for Growth | Growth, Innovation & Disruption | 0.65 | originated by one of the three firms; 7 investing terms in source; 4 already ahead of it in this category |
-| 12 | Decision Quality Chain | Strategy Process, Problem Solving & Decision-Making | 0.65 | named author or institution; 3 investing terms in source; 2 already ahead of it in this category |
+A ✅ in the last column means `frameworks/factsheets/<slug>.md` exists, so a session cloned fresh from git can write it. Everything else needs the gitignored briefs, which only a machine that has processed the source PDFs has — see `frameworks/AUTOPRODUCER.md`.
+
+| # | Framework | Category | Score | Why | Fact sheet |
+|---|---|---|---|---|---|
+| 1 | RAPID Decision-rights Framework | Strategy Process, Problem Solving & Decision-Making | 2.15 | originated by one of the three firms; 1 investing term in source; 1 already ahead of it in this category | ✅ |
+| 2 | Business Model Canvas | Business Model & Value Proposition | 2.05 | named author or institution; 7 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 3 | Organizational Health Index | Capabilities, Organization & Operating Model | 1.8 | originated by one of the three firms; 1 already ahead of it in this category | ✅ |
+| 4 | Ecosystem Roles Map | Digital, Data, Platforms & Ecosystems | 1.6 | 8 investing terms in source; 1 already ahead of it in this category | ✅ |
+| 5 | AAA Global Strategy Framework | International & Global Strategy | 1.5 | named author or institution; 2 investing terms in source; 1 already ahead of it in this category | ✅ |
+| 6 | Collective Impact Framework | Social Impact, ESG & Public Value | 1.5 | named author or institution; 2 investing terms in source; 1 already ahead of it in this category | ✅ |
+| 7 | Lean Six Sigma House of Quality | Operations, Supply Chain & Efficiency | 1.15 | named author or institution; 1 investing term in source; 1 already ahead of it in this category | ✅ |
+| 8 | Real Options Valuation | Risk, Uncertainty & Scenarios | 1.05 | dated origin only; 5 investing terms in source; 1 already ahead of it in this category | ✅ |
+| 9 | Adjacency Expansion Matrix | Corporate & Portfolio Strategy | 1.0 | originated by one of the three firms; 8 investing terms in source; 4 already ahead of it in this category | ✅ |
+| 10 | Customer Lifetime Value Model | Customer, Marketing & Brand | 0.75 | 9 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 11 | McKinsey Seven Degrees of Freedom for Growth | Growth, Innovation & Disruption | 0.65 | originated by one of the three firms; 7 investing terms in source; 4 already ahead of it in this category | ✅ |
+| 12 | Decision Quality Chain | Strategy Process, Problem Solving & Decision-Making | 0.65 | named author or institution; 3 investing terms in source; 2 already ahead of it in this category | ✅ |
 
 ## Category balance
 

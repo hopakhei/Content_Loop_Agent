@@ -30,6 +30,28 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 INDEX = ROOT / "frameworks" / "index.csv"
+FACTSHEETS = ROOT / "frameworks" / "factsheets"
+
+
+def factsheet_slugs() -> set[str]:
+    """Index slugs that have a committed fact sheet.
+
+    A fact sheet's filename is its published slug, which is often shorter than
+    the ledger's (`rapid-decision-rights` for `rapid-decision-rights-framework`),
+    so each sheet may also declare `- source-slug:` to name the ledger row it
+    covers. Both are accepted; the shortlist marks the difference because a
+    ranked framework without a sheet is one the auto-producer cannot write.
+    """
+    covered: set[str] = set()
+    if not FACTSHEETS.exists():
+        return covered
+    for p in FACTSHEETS.glob("*.md"):
+        covered.add(p.stem)
+        for ln in p.read_text("utf-8").splitlines():
+            if ln.startswith("- source-slug:"):
+                covered.add(ln.split(":", 1)[1].strip())
+                break
+    return covered
 OUT = ROOT / "frameworks" / "next.md"
 
 SHORTLIST = 12
@@ -151,12 +173,19 @@ def render(data: dict) -> str:
         "within a batch is an editorial call: each unit closes by teasing the "
         "next one, so a batch is a chain, not a set.",
         "",
-        "| # | Framework | Category | Score | Why |",
-        "|---|---|---|---|---|",
+        "A ✅ in the last column means `frameworks/factsheets/<slug>.md` exists, "
+        "so a session cloned fresh from git can write it. Everything else needs "
+        "the gitignored briefs, which only a machine that has processed the "
+        "source PDFs has — see `frameworks/AUTOPRODUCER.md`.",
+        "",
+        "| # | Framework | Category | Score | Why | Fact sheet |",
+        "|---|---|---|---|---|---|",
     ]
+    sheets = factsheet_slugs()
     for i, r in enumerate(shortlist, 1):
+        mark = "✅" if r["slug"] in sheets else "—"
         lines.append(f"| {i} | {r['name']} | {r['category']} | {r['score']} | "
-                     f"{'; '.join(r['why'])} |")
+                     f"{'; '.join(r['why'])} | {mark} |")
 
     lines += ["", "## Category balance", "", "| Category | Published | Writable backlog |",
               "|---|---|---|"]

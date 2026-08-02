@@ -232,3 +232,70 @@ def test_runway_runs_as_a_standalone_file():
          "import services.notion"],
         capture_output=True, text=True, cwd=_outside_repo(), env=env)
     assert probe.returncode == 0, probe.stderr
+
+
+# ── the fact sheets: the only reserve a fresh clone can spend ────────────────
+
+FACTSHEETS = BASE / "frameworks" / "factsheets"
+
+
+def test_factsheets_stop_counting_once_their_framework_ships(tmp_path, monkeypatch):
+    """The number has to answer "how much can a fresh clone write today", not
+    "how many files are in the folder" — otherwise it reads full forever."""
+    sheets, units = tmp_path / "factsheets", tmp_path / "units"
+    sheets.mkdir(); units.mkdir()
+    for name in ("alpha", "beta", "gamma"):
+        (sheets / f"{name}.md").write_text("x", encoding="utf-8")
+    (units / "beta.md").write_text("x", encoding="utf-8")   # already shipped
+    monkeypatch.setattr(runway, "FACTSHEETS", sheets)
+    monkeypatch.setattr(runway, "UNITS", units)
+    assert runway.factsheets_available() == 2
+
+
+def test_an_empty_factsheet_shelf_is_flagged():
+    """The auto-producer has no Notion access and no frameworks/raw/ — it can
+    only write from committed fact sheets. Four consecutive Routine fires
+    produced nothing because that shelf was empty and nothing said so."""
+    r = {"instagram_days": 30, "x_threads_days": 30, "notion_drafts": 30,
+         "pending_inserts": 0,
+         "reserve": {"writable": 100, "needs_prose": 0},
+         "factsheets": 0}
+    problems = runway.short(r)
+    assert len(problems) == 1 and "Fact sheets" in problems[0]
+
+
+def test_a_missing_factsheet_count_is_unmeasured_not_empty():
+    r = {"instagram_days": 30, "x_threads_days": 30, "notion_drafts": 30,
+         "pending_inserts": 0, "reserve": {"writable": 100, "needs_prose": 0}}
+    assert runway.short(r) == []
+
+
+def test_the_factsheet_floor_is_a_whole_batch():
+    """Topping up fact sheets needs a session that has frameworks/raw/, which
+    is not something the cron can summon. The warning therefore has to arrive
+    while a full batch is still in hand, not when the shelf is nearly bare."""
+    assert runway.FACTSHEET_FLOOR >= runway.BATCH_DAYS
+
+
+def test_every_factsheet_declares_a_provenance_tier():
+    """The series is sold on provenance, so the tier is a ceiling on how the
+    authority hook may be written — `firm` alone permits naming McKinsey, BCG
+    or Bain. A sheet without one invites the writer to guess."""
+    tiers = {"firm", "author", "dated", "none"}
+    bad = []
+    for p in sorted(FACTSHEETS.glob("*.md")):
+        line = next((ln for ln in p.read_text("utf-8").splitlines()
+                     if ln.startswith("- provenance:")), None)
+        if line is None or line.split(":", 1)[1].strip() not in tiers:
+            bad.append(p.name)
+    assert not bad, f"fact sheet(s) with no usable provenance tier: {bad}"
+
+
+def test_the_autoproducer_orders_exist_and_point_at_the_factsheets():
+    """The Routine's prompt is three lines that defer to this file. If it goes
+    missing the Routine has no rules at all, which is how the prompt drifted
+    out of sync with the pipeline in the first place."""
+    orders = (BASE / "frameworks" / "AUTOPRODUCER.md").read_text("utf-8")
+    assert "frameworks/factsheets/" in orders
+    assert "H-002" in orders and "H-005" in orders, (
+        "both live experiments have to be stated where the writer will read them")

@@ -105,6 +105,30 @@ refuses to make.
 6. Commit, push. `generate-pending.yml` turns the units into Notion drafts twice
    a day; `fetch-backgrounds.yml` collects the photos nightly.
 
+## Feeding the hands-off path
+
+Everything above assumes whoever writes the batch can read
+`frameworks/raw/`. The auto-producer Routine cannot: those briefs are
+gitignored, so a session cloned fresh from git sees an empty shelf where its
+source material should be. That is why the Routine fired four times and
+committed nothing — the job it was given was impossible, and it failed the way
+everything else here fails, silently and green.
+
+`frameworks/factsheets/<slug>.md` closes that gap. Each is an own-words Chinese
+distillation — origin and provenance tier, mechanism, investor angle, pitfalls,
+and the suggested H-005 arm — safe to commit because none of it is book prose.
+It carries everything needed to write the four files, and nothing that cannot
+be published.
+
+Only a session that has the briefs can write one, so they are a consumable
+inventory like the drafts, and `runway.py` meters them separately against
+`FACTSHEET_FLOOR`. When the alarm names the fact sheets, the fix is not to
+write another batch — it is to top up the shelf so the Routine can.
+
+`frameworks/AUTOPRODUCER.md` is what the Routine reads. Keep the rules there
+rather than in its prompt: every time they lived in the prompt they drifted,
+and a drifted prompt produces work the pipeline rejects.
+
 ## Getting more source material
 
 Thirteen Umbrex books sit in a Google Drive folder. 102 frameworks have prose
