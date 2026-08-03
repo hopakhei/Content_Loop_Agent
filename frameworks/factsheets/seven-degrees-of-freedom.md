@@ -6,6 +6,7 @@
 - provenance: firm
 - 大名擺法：1999 年《The Alchemy of Growth》，作者係麥肯錫合夥人 Mehrdad Baghai、Stephen Coley、David White。firm tier，**可以直接點名麥肯錫**。同一本書亦係「三個層面（Three Horizons）」嘅出處。
 - H-005 建議臂：no
+- 讀者切入點（鐵律零點六）：新手迷思「成長＝開多幾間店、賣多幾個國家」——實際上有七條路，多數公司只講其中三條。
 
 ## 框架講乜
 

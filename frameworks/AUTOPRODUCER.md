@@ -98,6 +98,30 @@ for h, want in ((A,"yes"), (B,"no")):
 EOF
 ```
 
+## The entry point: start from the reader, not from the framework
+
+This is the rule most likely to be broken, and it outranks anything else about
+style. The full version is 鐵律零點六 in `.claude/skills/x-post/SKILL.md`,
+including a rack of beginner myths to open on. The short version:
+
+**The reader is a beginner who wants to invest and knows almost nothing.** Not
+a fund manager. They cannot read a balance sheet yet, but they have money they
+want to put somewhere, a stock they are eyeing, and a pile of plausible-sounding
+beliefs they cannot justify.
+
+Every opening must be one of three things: something in the reader's own life,
+a beginner's confusion or myth, or the position they already hold. A framework's
+history, a boardroom, or a year is **not** an entry point — those belong in the
+second or third segment. Provenance still comes early, but in the back half of
+the first sentence or in the second: hook the reader first, then borrow the name.
+
+And every unit needs at least one sentence, with the reader as the subject,
+saying what they can actually do next — which stock, which page, which question.
+"投資者可以用它來分析公司" is not that sentence.
+
+This applies to **both** H-002 arms. Arm A opens on the reader's own holding;
+arm B opens on a scene the reader lives in — not on a scene from 1937.
+
 ## Voice and accuracy
 
 The skills in `.claude/skills/` are the voice: `x-post` for the thread,

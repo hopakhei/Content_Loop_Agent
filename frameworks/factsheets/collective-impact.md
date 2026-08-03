@@ -6,6 +6,7 @@
 - provenance: author
 - 大名擺法：John Kania 同 Mark Kramer，FSG，2011 年《史丹佛社會創新評論》〈Collective Impact〉。author tier。
 - H-005 建議臂：no
+- 讀者切入點（鐵律零點六）：新手迷思「ESG 報告印得厚＝真係有做嘢」——分唔清一項倡議係策略定係公關。
 - 注意：共享價值（第 28 篇）同樣有 Mark Kramer，已出。呢篇係佢另一條線——共享價值講一間公司點喺社會問題度賺錢，集體影響力講一個問題大到一間公司解決唔到嗰陣點做。
 
 ## 框架講乜

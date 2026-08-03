@@ -5,6 +5,7 @@
 - provenance: author
 - 大名擺法：Stewart Myers 1977 年提出 real options 呢個講法，理論基礎係 1973 年 Black–Scholes–Merton 選擇權定價；1990 年代 Lenos Trigeorgis 等人做細。author tier。
 - H-005 建議臂：yes（「保留一個可以唔去嘅權利」——訂金、可退機票，講得通）
+- 讀者切入點（鐵律零點六）：新手迷思「而家唔買就走寶」——保留唔買嘅權利本身有價值。生活版：可退嘅機票、落訂但未成交。
 
 ## 框架講乜
 

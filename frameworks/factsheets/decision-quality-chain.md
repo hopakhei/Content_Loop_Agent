@@ -5,6 +5,7 @@
 - provenance: author
 - 大名擺法：源自 1960 年代 Ronald A. Howard（史丹佛）開創嘅決策分析；1980 年代起由 Strategic Decisions Group 發展成「六個環節」同「最弱一環」嘅講法；2016 年 Carl Spetzler、Hannah Winter、Jennifer Meyer 出版《Decision Quality》。author tier。
 - H-005 建議臂：yes（買樓、轉工——「結果好唔等於決定好」呢個直覺，日常最強）
+- 讀者切入點（鐵律零點六）：新手迷思「賺咗＝我當時睇啱咗」——結果好唔等於決定好，運氣佔幾多分？生活版：買樓、轉工，事後點分係眼光定係彩數。
 - 注意：同 RAPID（同一輯）配對——RAPID 管邊個決定，DQ 管決定本身好唔好。兩篇要分清楚。
 
 ## 框架講乜

@@ -6,6 +6,7 @@
 - provenance: author
 - 大名擺法：Pankaj Ghemawat，《Redefining Global Strategy》。author tier，**唔可以屈落三大**。
 - H-005 建議臂：no
+- 讀者切入點（鐵律零點六）：新手迷思「進軍大市場＝成長」——公司話要打入某個大市場，聽落好似穩，實際上邊條槓桿都冇揀清楚。
 - 注意：CAGE（第 27 篇）同一個作者，已出。呢篇係佢嘅下半場——CAGE 量距離，AAA 講攞距離點做生意。開場可以扣返 CAGE，但要 self-contained（讀者未必睇過）。
 
 ## 框架講乜

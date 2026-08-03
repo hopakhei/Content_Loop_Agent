@@ -5,6 +5,7 @@
 - provenance: author
 - 大名擺法：Alexander Osterwalder 同 Yves Pigneur，2004 年博士研究，2010 年《Business Model Generation》推廣全球。author tier，**唔可以屈落三大**。
 - H-005 建議臂：yes（九格可以用一間實體小店行完）
+- 讀者切入點（鐵律零點六）：新手迷思「我自己用開呢間公司嘅嘢，所以我了解佢」——用戶睇到嘅係產品，唔係生意點賺錢。生活版：樓下嗰間店，你日日行過，講唔講得出佢靠乜賺錢？
 - 注意：Lean Canvas（第 25 篇）已出，嗰篇係新創版。呢篇要講清楚分別——BMC 管營運同規模，Lean Canvas 管搜尋階段。
 
 ## 框架講乜
