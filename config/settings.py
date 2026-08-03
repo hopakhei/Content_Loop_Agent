@@ -102,6 +102,20 @@ X_CTA_BY_ISSUE = _json_map("X_CTA_BY_ISSUE", {
 THREADS_ACCESS_TOKEN = os.getenv("THREADS_ACCESS_TOKEN", "").strip()
 THREADS_USER_ID = os.getenv("THREADS_USER_ID", "").strip()
 
+# Include the CTA link on Threads? On by default — Threads carries this
+# account's reach and the Substack link is how a reader gets from a post to the
+# article. Setting this false takes every Threads post link-free at once, which
+# also ends the A/B below: with one arm left, later posts get compared against
+# earlier ones and the gap measures elapsed time instead of the link. That is
+# what happened to the X version (see research/hypotheses/H-003-x-link-cost.md).
+THREADS_INCLUDE_CTA = _flag("THREADS_INCLUDE_CTA", True)
+# Randomized per-post Threads link A/B: each post flips a fair coin between
+# carrying its link and going link-free, tagged on the Performance row so the
+# reach difference is measured within the same weeks rather than across them.
+# This is the honest way to ask "does dropping the link lift reach" — see
+# research/hypotheses/H-006-threads-link-cost.md. Set false to stop the coin.
+THREADS_LINK_AB = _flag("THREADS_LINK_AB", True)
+
 # ── Instagram (Meta) — optional; posts Quote Cards as image cards ────────────
 IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "").strip()
 IG_USER_ID = os.getenv("IG_USER_ID", "").strip()          # auto-resolved from /me

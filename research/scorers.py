@@ -127,6 +127,16 @@ def x_link_arm(row: dict) -> Optional[str]:
     return (row.get("tags") or {}).get("x_link_arm")
 
 
+def threads_link_arm(row: dict) -> Optional[str]:
+    """Same question on the platform that actually carries this account's reach.
+
+    Kept as its own key rather than folded in with `x_link_arm`: the two ran in
+    different periods under different platform mechanics, and a shared key would
+    pool them into a comparison of X against Threads wearing a link's clothes.
+    """
+    return (row.get("tags") or {}).get("threads_link_arm")
+
+
 # Scenes from ordinary life, as opposed to boardrooms and balance sheets. The
 # list is the operational definition of "貼地" for H-005: a post is life-anchored
 # when its text puts the reader somewhere they actually stand in a normal week.
@@ -175,6 +185,7 @@ REGISTRY: dict[str, Scorer] = {
     "line1_len_bucket": line1_len_bucket,
     "hook_label": hook_label,
     "x_link_arm": x_link_arm,
+    "threads_link_arm": threads_link_arm,
     "life_anchor": life_anchor,
     "series_era": series_era,
 }

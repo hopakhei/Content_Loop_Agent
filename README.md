@@ -160,10 +160,17 @@ opening lines* used by the A/B/C experiment.
   - Older drafts baked the salesy `完整框架…👉 URL` line into their body; that
     line is **softened to the bare link at compose time**, so no draft rewrite
     is needed.
-  - **X carries the link by default** (`X_INCLUDE_CTA=true`). Set it `false` to
-    post X link-free (max reach, no link suppression, no write-quota CTA cost)
-    while growing followers — **Threads keeps the link regardless.** Rows are
-    stamped `Loop Version` so Loop 2 can compare composition eras.
+  - **X posts link-free by default** (`X_INCLUDE_CTA=false`) — no link
+    suppression, no write-quota cost for a CTA tweet — while the follower count
+    is low. Set it `true` to restore links.
+  - **Threads carries the link on a coin flip** (`THREADS_INCLUDE_CTA=true`,
+    `THREADS_LINK_AB=true`): each post is randomly assigned `link` or
+    `no_link` and the arm is tagged on the Performance row, so the reach
+    difference is measured inside the same weeks. Setting
+    `THREADS_INCLUDE_CTA=false` takes every Threads post link-free at once and
+    ends the measurement — see `research/hypotheses/H-006-threads-link-cost.md`
+    for why the coin exists. Rows are stamped `Loop Version` so Loop 2 can
+    compare composition eras.
 - **Threads**: a `Thread` body is split into tweets **only** on an explicit
   separator line — 3+ dashes/em-dashes (`---` or `———`). Blank lines inside a
   tweet are preserved; a body with no separator posts as a single tweet. (We do
@@ -205,10 +212,14 @@ continues.
 follower count into `Follower History (X/Threads/Instagram)` rules (90-day JSON)
 and reports the 7-day delta.
 
-**X link A/B.** With `X_LINK_AB` on, each X post is randomly assigned to a
-`link` or `no_link` arm (tagged), so "does dropping the Substack link help?" is
-answered by a clean randomized test rather than a confounded before/after. LEARN
-reports engagement per arm; it never auto-flips `X_INCLUDE_CTA` — you decide.
+**Link A/B, per platform.** With `X_LINK_AB` / `THREADS_LINK_AB` on, each post
+is randomly assigned to a `link` or `no_link` arm (tagged `x_link_arm` /
+`threads_link_arm`), so "does dropping the Substack link help?" is answered by a
+randomized test rather than a confounded before/after. The two arms are tagged
+under separate keys and never pooled — they are different platforms with
+different link mechanics. LEARN reports engagement per arm, and refuses to
+report an arm that has not been assigned in `STALE_ARM_DAYS`; it never
+auto-flips `X_INCLUDE_CTA` or `THREADS_INCLUDE_CTA` — you decide.
 
 With ≥20 usable points it writes the winners into **Agent Rules** as `Active`
 rows (with `Confidence` + `Evidence Post IDs`) that Loop 1 reads next run.

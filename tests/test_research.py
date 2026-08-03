@@ -288,6 +288,33 @@ def test_digest_reports_concurrent_arms_normally():
     assert "0.65%" in line and "STALE" not in line
 
 
+def test_threads_link_arm_gets_the_same_staleness_guard_as_x():
+    """The Threads coin can go one-armed the same way X's did — flipping
+    THREADS_INCLUDE_CTA off assigns `no_link` forever. The digest has to refuse
+    that comparison too, or the guard only covers the experiment that already
+    burned us."""
+    from loops.learn_loop import _ab_line, _arm_last_seen
+    rows = [{"tags": {"threads_link_arm": "link"}, "posted_at": "2026-08-03T05:00:00Z"},
+            {"tags": {"threads_link_arm": "no_link"}, "posted_at": "2026-08-20T05:00:00Z"}]
+    line = _ab_line("Threads link A/B", [("no_link", 0.021, 20), ("link", 0.014, 9)],
+                    _arm_last_seen(rows, "threads_link_arm"))
+    assert "STALE" in line and "2.10%" not in line
+
+
+def test_digest_notes_carry_both_link_experiments_separately():
+    """One shared line would pool two platforms into a single arm comparison."""
+    from loops.learn_loop import _build_notes
+    notes = _build_notes(
+        [], [], {}, [("no_link", 0.0065, 28), ("link", 0.004, 15)], {},
+        link_last_seen={"no_link": "2026-08-02T05:00:00Z", "link": "2026-08-01T05:00:00Z"},
+        threads_link_ab=[("no_link", 0.021, 20), ("link", 0.014, 19)],
+        threads_link_last_seen={"no_link": "2026-08-02T05:00:00Z",
+                                "link": "2026-08-01T05:00:00Z"},
+    )
+    assert "X link A/B" in notes and "Threads link A/B" in notes
+    assert "2.10%" in notes and "0.65%" in notes
+
+
 def test_hook_winner_is_reported_with_its_sample_size_and_margin():
     """A 3x lead and a 0.02% lead used to print identically."""
     from loops.learn_loop import _hook_line

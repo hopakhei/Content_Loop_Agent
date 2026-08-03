@@ -116,9 +116,12 @@ def run(
             r = ranked_by_tag(pts, tag)
             if len({k for k, _, _ in r}) >= 2:
                 _log_ranking(log, f"{tag} · {plat}", r)
-    # X link A/B (W5): engagement per arm.
+    # Link A/Bs: engagement per arm, one per platform. Kept apart because the
+    # two coins are separate experiments — see research/scorers.py.
     link_ab = ranked_by_tag(x_points, "x_link_arm")
     _log_ranking(log, "X link A/B (engagement)", link_ab)
+    threads_link_ab = ranked_by_tag(th_points, "threads_link_arm")
+    _log_ranking(log, "Threads link A/B (engagement)", threads_link_ab)
 
     best_hook_by_platform = {
         "X": best_hook(x_points, min_n=MIN_CELL_N, metric=_growth),
@@ -137,6 +140,7 @@ def run(
         "best_hook": best_hook(points, min_n=MIN_CELL_N),
         "best_hook_by_platform": best_hook_by_platform,
         "link_ab": link_ab,
+        "threads_link_ab": threads_link_ab,
         "rules_updated": False,
         # Computed here, not after the MIN_DATA_POINTS gate below: the digest is
         # written before that gate, so a confidence assigned later never reached
@@ -153,6 +157,8 @@ def run(
     notes = _build_notes(
         slot_rank, type_rank, hook_ranks, link_ab, follower_deltas,
         link_last_seen=_arm_last_seen(rows, "x_link_arm"),
+        threads_link_ab=threads_link_ab,
+        threads_link_last_seen=_arm_last_seen(rows, "threads_link_arm"),
     )
 
     # Close the feedback loop for the MCP-less auto-producer: write a committed
@@ -530,7 +536,9 @@ def _hook_line(hook_ranks: dict) -> str:
 
 
 def _build_notes(slot_rank, type_rank, hook_ranks, link_ab, follower_deltas,
-                 link_last_seen: Optional[dict] = None) -> str:
+                 link_last_seen: Optional[dict] = None,
+                 threads_link_ab=(),
+                 threads_link_last_seen: Optional[dict] = None) -> str:
     def fmt(rows):
         return "; ".join(f"{k}: {rate:.2%} (n={n})" for k, rate, n in rows) or "n/a"
     followers = ", ".join(f"{k} {_signed(v)}" for k, v in follower_deltas.items()) or "n/a"
@@ -539,5 +547,7 @@ def _build_notes(slot_rank, type_rank, hook_ranks, link_ab, follower_deltas,
         f"Content Types → {fmt(type_rank)}\n"
         f"Best Hook by platform → {_hook_line(hook_ranks)}\n"
         + _ab_line("X link A/B (engagement)", link_ab, link_last_seen or {}) + "\n"
+        + _ab_line("Threads link A/B (engagement)", threads_link_ab,
+                   threads_link_last_seen or {}) + "\n"
         f"Followers (7d) → {followers}"
     )

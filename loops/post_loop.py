@@ -196,25 +196,30 @@ def _publish_one(
     #    Threads the NEXT hook variant — a cross-platform A/B on every post.
     #  - X posts link-free while the follower count is low (X_INCLUDE_CTA
     #    restores it) and chains are capped at X_MAX_THREAD_POSTS (every
-    #    chained tweet costs a monthly write credit). Threads keeps the CTA
-    #    and the full chain, and gets its own 500-char limit.
+    #    chained tweet costs a monthly write credit). Threads keeps the full
+    #    chain and its own 500-char limit.
+    #  - Both platforms run a randomized link/no-link A/B, so "does the link
+    #    cost reach" is answered inside the same weeks on each platform.
     run_day = ref.date().isoformat()
     hook_for = _pick_hooks_per_platform(draft, rules, targets, run_day)
     posts_for: dict = {}
     cta_for: dict = {}
-    x_link_arm = _x_link_arm()  # W5: randomized link/no-link A/B on X
+    link_arm = {"X": _x_link_arm(), "Threads": _threads_link_arm()}
     for platform in targets:
         # X may carry a different destination than the article CTA (e.g. the
         # GitHub repo for build-in-public pieces — X suppresses Substack links
-        # hardest). Threads always keeps the article's own CTA.
+        # hardest). Threads always points at the article's own CTA when it
+        # carries one at all.
         plat_cta = _x_cta_for(draft, cta_url) if platform == "X" else cta_url
         if platform == "X" and plat_cta != cta_url:
             log.info("X CTA override: %s", plat_cta)
         base = compose_posts(draft, hook_for[platform][1], plat_cta)
+        if platform == "Threads" and link_arm["Threads"] == "no_link":
+            base = strip_cta(base, plat_cta)
         if platform == "X":
             # Link-free when the flag is off, or when the A/B assigns this post
             # to the no-link arm.
-            if (not settings.X_INCLUDE_CTA) or x_link_arm == "no_link":
+            if (not settings.X_INCLUDE_CTA) or link_arm["X"] == "no_link":
                 base = strip_cta(base, plat_cta)
             if settings.X_LONGPOST:
                 # Fold the whole argument into ONE X post (Premium ≤25k chars):
@@ -237,7 +242,9 @@ def _publish_one(
         for warning in length_warnings(base, limit=limit):
             log.warning("Length (%s): %s", platform, warning)
     if "X" in targets and settings.X_INCLUDE_CTA and settings.X_LINK_AB:
-        log.info("X link A/B: this post is in the '%s' arm.", x_link_arm)
+        log.info("X link A/B: this post is in the '%s' arm.", link_arm["X"])
+    if "Threads" in targets and settings.THREADS_INCLUDE_CTA and settings.THREADS_LINK_AB:
+        log.info("Threads link A/B: this post is in the '%s' arm.", link_arm["Threads"])
 
     if not any(posts_for.values()):
         log.warning("SKIP draft %s: composed to empty content.", draft.title)
@@ -275,7 +282,14 @@ def _publish_one(
             plat_posts = posts_for[platform]
             plat_cta = cta_for[platform]
             cta_present = bool(plat_cta) and any(plat_cta in p for p in plat_posts)
-            extra = {"x_link_arm": x_link_arm} if platform == "X" else {}
+            # One tag key per platform, never a shared `link_arm`: the two
+            # A/Bs are separate questions with separate histories, and a single
+            # key would pool them into a comparison of X against Threads.
+            extra = {}
+            if platform == "X":
+                extra["x_link_arm"] = link_arm["X"]
+            elif platform == "Threads":
+                extra["threads_link_arm"] = link_arm["Threads"]
             arm = assign_arm(draft, platform, run_day)
             if arm:
                 extra.update(arm.tag)
@@ -332,6 +346,28 @@ def _x_link_arm() -> str:
     if not settings.X_INCLUDE_CTA:
         return "no_link"
     if not settings.X_LINK_AB:
+        return "link"
+    return "no_link" if random.random() < 0.5 else "link"
+
+
+def _threads_link_arm() -> str:
+    """Randomized Threads link A/B — returns 'link' or 'no_link' for this post.
+
+    Same shape as the X arm above, for a reason worth stating: the question
+    asked here — does dropping the Substack link lift reach — has an obvious
+    cheap answer, which is to drop the link on every post and watch the number.
+    That answer is the one H-003 already produced on X, and it was worthless.
+    Reach on this account moved by a factor of four for reasons that had nothing
+    to do with links, so a before/after comparison measures whatever else changed
+    in those weeks. A coin per post keeps both arms running in the same weeks,
+    which is the only version of this comparison that can be believed.
+
+    THREADS_INCLUDE_CTA=false is still one env var away and takes every post
+    link-free at once; it just ends the measurement rather than making it.
+    """
+    if not settings.THREADS_INCLUDE_CTA:
+        return "no_link"
+    if not settings.THREADS_LINK_AB:
         return "link"
     return "no_link" if random.random() < 0.5 else "link"
 
