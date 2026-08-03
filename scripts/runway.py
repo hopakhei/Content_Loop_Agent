@@ -181,8 +181,12 @@ def render(r: dict) -> str:
         "Content runway",
         f"  Instagram (carousel drip) : {ig} days",
         f"  X / Threads (post loop)   : {xt_txt}{detail}",
-        f"  Reserve                   : {res['writable']} frameworks with prose on disk, "
-        f"{res['needs_prose']} needing prose",
+        # "on disk" was a lie in the place it mattered most: a fresh clone has
+        # no frameworks/raw/ at all, so a hands-off session read 133 available
+        # and went looking for material that was never going to be there.
+        f"  Source library (ledger)   : {res['writable']} frameworks with prose, "
+        f"{res['needs_prose']} needing extraction — only on a machine that has "
+        "frameworks/raw/",
         f"  Fact sheets (committed)   : {_fact_txt(r)} — what a fresh clone can "
         "write from",
         f"  Floors                    : {WARN_DAYS} days per channel, "
