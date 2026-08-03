@@ -73,6 +73,19 @@ jobs:
           done
           echo "did_insert=$DID" >> "$GITHUB_ENV"
           exit $FAILED
+      - name: Resync edited units into their existing drafts
+        # The insert above only ever runs once per unit. Editing units/<slug>.md
+        # afterwards used to change nothing anybody reads — the ledger skips the
+        # slug, Notion keeps the old wording, and the post loop publishes it.
+        # This pushes hooks and body back into un-posted drafts; posted ones are
+        # left alone because they are what the audience already read.
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::notice::NOTION_TOKEN not set — skipping resync."
+            exit 0
+          fi
+          python scripts/resync_drafts.py
       - name: Commit ledger
         if: ${{ github.event.inputs.dry_run != 'true' && env.did_insert == '1' }}
         run: |

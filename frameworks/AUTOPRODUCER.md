@@ -164,6 +164,18 @@ fits. Then commit and push to `claude/loop-product-spec-y45pgi`.
 `fetch-backgrounds.yml` collects the photos nightly, so a pushed batch needs no
 further help from you.
 
+## Fixing a unit that already shipped
+
+Editing `units/<slug>.md` after it has been inserted used to change nothing a
+reader ever sees: the ledger skips that slug forever, so Notion kept the old
+wording and the post loop kept publishing it. `scripts/resync_drafts.py` now
+runs in the same cron and pushes hooks and body back into any **un-posted**
+draft. Posted drafts are never rewritten — that text is what the audience read,
+and the experiment corpus is scored against it.
+
+So a fix is the same job as a new unit: edit the file, commit, push. Check the
+next `generate-pending` run for `updating #<slug>-NN`.
+
 ## If you cannot finish
 
 Commit what is complete — a framework with all four files is shippable on its

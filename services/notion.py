@@ -329,6 +329,23 @@ class NotionService:
         )
 
     # ── writes ───────────────────────────────────────────────────────────────
+    def update_draft_text(self, draft_id: str, hooks: dict, post_body: str) -> None:
+        """Overwrite an existing draft's hooks and body from its unit file.
+
+        The insert path is one-way: `create_draft` runs once per unit and the
+        ledger then skips that unit forever, so editing units/<slug>.md after
+        insertion changes nothing a reader ever sees. Rewriting the hooks of a
+        shipped batch is exactly that case, and it fails silently — the file
+        looks right, git looks right, and the old wording still posts.
+        """
+        props: dict[str, Any] = {
+            Drafts.POST_BODY: {"rich_text": [{"text": {"content": post_body}}]},
+        }
+        for key, field in (("A", Drafts.HOOK_A), ("B", Drafts.HOOK_B), ("C", Drafts.HOOK_C)):
+            if hooks.get(key):
+                props[field] = {"rich_text": [{"text": {"content": hooks[key]}}]}
+        self.client.pages.update(page_id=draft_id, properties=props)
+
     def mark_draft_posted(self, draft_id: str) -> None:
         self.client.pages.update(
             page_id=draft_id,
