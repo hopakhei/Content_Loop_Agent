@@ -36,6 +36,25 @@ from services.threads import ThreadsService
 from services.twitter import TwitterService
 
 
+def assign_arm(draft: Draft, platform: str, day: Optional[str] = None):
+    """Arm for the live experiment, or None.
+
+    Deterministic in (experiment, draft, day), so the two call sites — choosing
+    the hook and stamping the tag — cannot disagree about which arm a post is in.
+    Both pass the run's own date rather than letting it default, so a run that
+    straddles midnight UTC still agrees with itself.
+
+    Never raises. A malformed hypothesis card is a research problem; it must not
+    stop the account from posting.
+    """
+    try:
+        from research import experiments          # local: research/ is optional at runtime
+        return experiments.assign(draft, platform, day=day)
+    except Exception as exc:                      # noqa: BLE001 — posting outranks research
+        logging.getLogger("loop.post").warning("experiment assignment skipped: %s", exc)
+        return None
+
+
 def run(
     dry_run: bool = False,
     slot: Optional[str] = None,
@@ -177,24 +196,30 @@ def _publish_one(
     #    Threads the NEXT hook variant — a cross-platform A/B on every post.
     #  - X posts link-free while the follower count is low (X_INCLUDE_CTA
     #    restores it) and chains are capped at X_MAX_THREAD_POSTS (every
-    #    chained tweet costs a monthly write credit). Threads keeps the CTA
-    #    and the full chain, and gets its own 500-char limit.
-    hook_for = _pick_hooks_per_platform(draft, rules, targets)
+    #    chained tweet costs a monthly write credit). Threads keeps the full
+    #    chain and its own 500-char limit.
+    #  - Both platforms run a randomized link/no-link A/B, so "does the link
+    #    cost reach" is answered inside the same weeks on each platform.
+    run_day = ref.date().isoformat()
+    hook_for = _pick_hooks_per_platform(draft, rules, targets, run_day)
     posts_for: dict = {}
     cta_for: dict = {}
-    x_link_arm = _x_link_arm()  # W5: randomized link/no-link A/B on X
+    link_arm = {"X": _x_link_arm(), "Threads": _threads_link_arm()}
     for platform in targets:
         # X may carry a different destination than the article CTA (e.g. the
         # GitHub repo for build-in-public pieces — X suppresses Substack links
-        # hardest). Threads always keeps the article's own CTA.
+        # hardest). Threads always points at the article's own CTA when it
+        # carries one at all.
         plat_cta = _x_cta_for(draft, cta_url) if platform == "X" else cta_url
         if platform == "X" and plat_cta != cta_url:
             log.info("X CTA override: %s", plat_cta)
         base = compose_posts(draft, hook_for[platform][1], plat_cta)
+        if platform == "Threads" and link_arm["Threads"] == "no_link":
+            base = strip_cta(base, plat_cta)
         if platform == "X":
             # Link-free when the flag is off, or when the A/B assigns this post
             # to the no-link arm.
-            if (not settings.X_INCLUDE_CTA) or x_link_arm == "no_link":
+            if (not settings.X_INCLUDE_CTA) or link_arm["X"] == "no_link":
                 base = strip_cta(base, plat_cta)
             if settings.X_LONGPOST:
                 # Fold the whole argument into ONE X post (Premium ≤25k chars):
@@ -217,7 +242,9 @@ def _publish_one(
         for warning in length_warnings(base, limit=limit):
             log.warning("Length (%s): %s", platform, warning)
     if "X" in targets and settings.X_INCLUDE_CTA and settings.X_LINK_AB:
-        log.info("X link A/B: this post is in the '%s' arm.", x_link_arm)
+        log.info("X link A/B: this post is in the '%s' arm.", link_arm["X"])
+    if "Threads" in targets and settings.THREADS_INCLUDE_CTA and settings.THREADS_LINK_AB:
+        log.info("Threads link A/B: this post is in the '%s' arm.", link_arm["Threads"])
 
     if not any(posts_for.values()):
         log.warning("SKIP draft %s: composed to empty content.", draft.title)
@@ -255,7 +282,18 @@ def _publish_one(
             plat_posts = posts_for[platform]
             plat_cta = cta_for[platform]
             cta_present = bool(plat_cta) and any(plat_cta in p for p in plat_posts)
-            extra = {"x_link_arm": x_link_arm} if platform == "X" else None
+            # One tag key per platform, never a shared `link_arm`: the two
+            # A/Bs are separate questions with separate histories, and a single
+            # key would pool them into a comparison of X against Threads.
+            extra = {}
+            if platform == "X":
+                extra["x_link_arm"] = link_arm["X"]
+            elif platform == "Threads":
+                extra["threads_link_arm"] = link_arm["Threads"]
+            arm = assign_arm(draft, platform, run_day)
+            if arm:
+                extra.update(arm.tag)
+            extra = extra or None
             tags = build_tags(
                 platform=platform, hook=hook_for[platform][0], posts=plat_posts,
                 cta_url=plat_cta, cta_present=cta_present, title=draft.title, extra=extra,
@@ -312,6 +350,28 @@ def _x_link_arm() -> str:
     return "no_link" if random.random() < 0.5 else "link"
 
 
+def _threads_link_arm() -> str:
+    """Randomized Threads link A/B — returns 'link' or 'no_link' for this post.
+
+    Same shape as the X arm above, for a reason worth stating: the question
+    asked here — does dropping the Substack link lift reach — has an obvious
+    cheap answer, which is to drop the link on every post and watch the number.
+    That answer is the one H-003 already produced on X, and it was worthless.
+    Reach on this account moved by a factor of four for reasons that had nothing
+    to do with links, so a before/after comparison measures whatever else changed
+    in those weeks. A coin per post keeps both arms running in the same weeks,
+    which is the only version of this comparison that can be believed.
+
+    THREADS_INCLUDE_CTA=false is still one env var away and takes every post
+    link-free at once; it just ends the measurement rather than making it.
+    """
+    if not settings.THREADS_INCLUDE_CTA:
+        return "no_link"
+    if not settings.THREADS_LINK_AB:
+        return "link"
+    return "no_link" if random.random() < 0.5 else "link"
+
+
 def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
     """The CTA to use on X: the per-issue override (X_CTA_BY_ISSUE, keyed by
     the issue number in the draft title '#201-04 …') or the article CTA."""
@@ -321,7 +381,7 @@ def _x_cta_for(draft: Draft, default_cta: Optional[str]) -> Optional[str]:
     return default_cta
 
 
-def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
+def _pick_hooks_per_platform(draft: Draft, rules, targets: list, day: str) -> dict:
     """{platform: (hook_key, hook_text)}. Each platform is biased toward ITS OWN
     learned winner (Best Hook (X) / Best Hook (Threads), falling back to the
     pooled winner, else random). To keep cross-platform exploration, if a
@@ -330,6 +390,16 @@ def _pick_hooks_per_platform(draft: Draft, rules, targets: list) -> dict:
     by_plat = getattr(rules, "best_hook_by_platform", {}) or {}
     picks = {p: select_hook(draft, rules, winner_override=by_plat.get(p)) for p in targets}
     available = draft.available_hooks()
+
+    # A live experiment overrides the learned pick on its platform. It has to:
+    # `select_hook` biases toward the current winner, and a randomised arm that
+    # is then filtered through a preference for one of its own arms is not
+    # randomised. Assignments that cannot be honoured return None and leave the
+    # learned pick alone.
+    for p in targets:
+        a = assign_arm(draft, p, day)
+        if a and a.hook_key and available.get(a.hook_key):
+            picks[p] = (a.hook_key, available[a.hook_key])
     if ("X" in picks and "Threads" in picks and len(available) >= 2
             and picks["X"][0] and picks["X"][0] == picks["Threads"][0]):
         keys = sorted(available)

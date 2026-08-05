@@ -1,0 +1,92 @@
+{
+  "issue": "stress-testing",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "curve-down",
+  "caption": "薪水如果停三個月，你的房租和保費撐得過幾期？財測講的是最可能的情況。壓力測試只問一件事：最壞的情況來，你撐幾個月？\n\n2008 年金融危機後，聯準會逼大銀行公開做這道題，從此壓力測試走出銀行業。三種測法——敏感度動一個變數、情境動一組、反向先設定死法再倒推。完整的測試還要疊上應對和觸發器：氣價超標十五天自動加價、港口延誤十天自動切備援。危機中最貴的是決策時間，觸發器把它預付了。\n\n對投資者的用處：對自己的組合反向問一次——什麼組合會讓它腰斬？答不出來，買的是故事；答得出來而且接受得了，才叫風險管理。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十九篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #風險管理 #現金流 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 29",
+      "head": "最壞情況，\n先算一次",
+      "sub": "薪水停三個月，你撐得過幾期？\n銀行每年都要公開回答這一題。",
+      "image": "backgrounds/stress-testing-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "2008 年後的\n新考卷",
+      "body": "常規預測模型在金融危機集體失靈，尾部風險被平均值蓋住。聯準會 CCAR、歐洲 EBA 逼大銀行公開回答：經濟崩到最壞，資本夠不夠。壓力測試從此走出銀行業。",
+      "image": "backgrounds/stress-testing-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 三種測法",
+      "head": "敏感度、\n情境、反向",
+      "body": "敏感度測試動一個變數，找斷裂點。情境測試動一組變數，同時發生、持續兩季。反向測試最狠：先設定死法——現金跑道少於三個月——倒推什麼組合會把你送到那裡。",
+      "image": "backgrounds/stress-testing-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 算法",
+      "head": "答案，\n叫做餘裕",
+      "body": "先用你自己的帳單算一次：薪水停三個月，房租、保費、貸款撐得過幾期？企業做的是同一件事，只是要算穿損益、資產負債、現金流三張報表。輸出只有一個數字——離斷裂還有多遠。",
+      "image": "backgrounds/stress-testing-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 應對",
+      "head": "先鎖好的，\n才是保險",
+      "body": "光算傷害只是診斷。完整測試疊上應對——對沖、加價、備援供應商——每個標上可行時間。危機中才談對沖，價格是平時的幾倍；預先鎖好和臨時申請，是兩種保險。",
+      "image": "backgrounds/stress-testing-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 觸發器",
+      "head": "條件到了，\n自動執行",
+      "body": "測完的輸出是 if-then：氣價超標十五天，自動啟動附加費；港口延誤十天，自動切備援航線。危機中最貴的是決策時間——觸發器把它預付了。",
+      "image": "backgrounds/stress-testing-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 案例",
+      "head": "劇本照走，\n傷害減半",
+      "body": "化學品公司測「能源漲六成」：不應對，EBITDA 掉九千五百萬；疊上對沖和附加費，縮到四千八百萬。後來能源真漲，實際傷害五千二百萬——答案早在抽屜裡。",
+      "image": "backgrounds/stress-testing-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "反向問：\n什麼會腰斬",
+      "body": "持股對哪個變數最敏感？什麼組合會讓它腰斬？答不出來，買的是故事。年報有像樣敏感度分析的管理層，通常比只給樂觀指引的可信。",
+      "image": "backgrounds/stress-testing-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱",
+      "head": "測完歸檔，\n等於沒測",
+      "body": "三種死法：情境太溫和，得到假安心；應對假設太英雄，紙上餘裕全是幻覺；測完寫報告歸檔，不改任何決定。像樣的測試要咬得到肉——歷史最壞只是下限。",
+      "image": "backgrounds/stress-testing-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這份考卷",
+      "body": "對自己的組合問三條：哪檔對單一變數曝險最大？最壞情境跌多少？你睡不睡得著？第三條的答案，決定倉位。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 29",
+      "image": "backgrounds/stress-testing-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

@@ -116,9 +116,12 @@ def run(
             r = ranked_by_tag(pts, tag)
             if len({k for k, _, _ in r}) >= 2:
                 _log_ranking(log, f"{tag} · {plat}", r)
-    # X link A/B (W5): engagement per arm.
+    # Link A/Bs: engagement per arm, one per platform. Kept apart because the
+    # two coins are separate experiments — see research/scorers.py.
     link_ab = ranked_by_tag(x_points, "x_link_arm")
     _log_ranking(log, "X link A/B (engagement)", link_ab)
+    threads_link_ab = ranked_by_tag(th_points, "threads_link_arm")
+    _log_ranking(log, "Threads link A/B (engagement)", threads_link_ab)
 
     best_hook_by_platform = {
         "X": best_hook(x_points, min_n=MIN_CELL_N, metric=_growth),
@@ -137,10 +140,26 @@ def run(
         "best_hook": best_hook(points, min_n=MIN_CELL_N),
         "best_hook_by_platform": best_hook_by_platform,
         "link_ab": link_ab,
+        "threads_link_ab": threads_link_ab,
         "rules_updated": False,
+        # Computed here, not after the MIN_DATA_POINTS gate below: the digest is
+        # written before that gate, so a confidence assigned later never reached
+        # it. Every digest ever written said "confidence: 0%" — including the one
+        # at 151 data points, which is full confidence four times over.
+        "confidence": min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS)),
     }
 
-    notes = _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas)
+    hook_ranks = {
+        "X": ranked(x_points, lambda p: p.hook, metric=_growth),
+        "Threads": ranked(th_points, lambda p: p.hook),
+        "Instagram": ranked(ig_points, lambda p: p.hook),
+    }
+    notes = _build_notes(
+        slot_rank, type_rank, hook_ranks, link_ab, follower_deltas,
+        link_last_seen=_arm_last_seen(rows, "x_link_arm"),
+        threads_link_ab=threads_link_ab,
+        threads_link_last_seen=_arm_last_seen(rows, "threads_link_arm"),
+    )
 
     # Close the feedback loop for the MCP-less auto-producer: write a committed
     # digest it can read over git (it has no Notion access) and bias the next
@@ -152,12 +171,11 @@ def run(
     if len(points) < MIN_DATA_POINTS:
         log.info("Only %d/%d data points — not updating Agent Rules yet.", len(points), MIN_DATA_POINTS)
         return summary
-    confidence = min(100, round(100 * len(points) / FULL_CONFIDENCE_POINTS))
+    confidence = summary["confidence"]
     evidence_ids = [
         r["post_id"] for r in rows
         if r.get("post_id") and not r["post_id"].startswith("DRYRUN-")
     ]
-    summary["confidence"] = confidence
 
     if dry_run:
         log.info("[dry-run] would update Agent Rules (confidence=%d): %s", confidence, summary)
@@ -395,6 +413,20 @@ def _signed(v) -> str:
     return "n/a" if v is None else f"{v:+d}"
 
 
+def _runway_lines() -> str:
+    """Days of content left, in the file the producer already reads.
+
+    runway.yml is the alarm; this is the gauge. The alarm only speaks when
+    something is wrong, and a number nobody sees until it is wrong is a number
+    nobody has a feel for.
+    """
+    try:
+        from scripts import runway
+        return runway.render(runway.report())
+    except Exception as exc:                      # never break the digest
+        return f"(runway unavailable: {exc})"
+
+
 def _write_digest(path: str, summary: dict, notes: str, log) -> None:
     """Write a small, human-readable performance digest into the repo so the
     auto-producer (which has no Notion access) can read the latest signals over
@@ -426,6 +458,7 @@ def _write_digest(path: str, summary: dict, notes: str, log) -> None:
         else:
             lines.append("- Not enough data yet — keep the three hook styles "
                          "(反共識 / 數據衝擊 / 懸念缺口) balanced and vary framework topics.")
+        lines += ["", "## Runway", "", _runway_lines()]
         Path(path).parent.mkdir(parents=True, exist_ok=True)
         Path(path).write_text("\n".join(lines) + "\n", encoding="utf-8")
         log.info("Wrote performance digest → %s", path)
@@ -433,15 +466,88 @@ def _write_digest(path: str, summary: dict, notes: str, log) -> None:
         log.warning("Could not write performance digest: %s", exc)
 
 
-def _build_notes(slot_rank, type_rank, best_hook_by_platform, link_ab, follower_deltas) -> str:
+# An arm this far behind the freshest one is no longer being assigned, so the
+# comparison has stopped being an experiment. The X link A/B sat in exactly that
+# state for nine days — `link` stopped when X_INCLUDE_CTA was switched off while
+# `no_link` kept accruing through a period when X reach quadrupled — and the
+# digest went on printing the two side by side the whole time.
+STALE_ARM_DAYS = 7
+
+
+def _arm_last_seen(rows, tag: str) -> dict:
+    """{arm: latest posted_at} for a machine tag, straight off the rows."""
+    seen: dict = {}
+    for r in rows:
+        arm = (r.get("tags") or {}).get(tag)
+        at = r.get("posted_at")
+        if arm and at:
+            seen[str(arm)] = max(seen.get(str(arm), ""), at)
+    return seen
+
+
+def _ab_line(label: str, ranked_rows, last_seen: dict) -> str:
+    """Format an arm comparison, or refuse to when the arms are not concurrent."""
+    if len(ranked_rows) < 2:
+        return f"{label} → n/a"
+    fresh = max(last_seen.values(), default="")
+    stale = [
+        (arm, at[:10]) for arm, at in sorted(last_seen.items())
+        if fresh and (_days_between(at, fresh) > STALE_ARM_DAYS)
+    ]
+    if stale:
+        detail = ", ".join(f"{arm} last assigned {at}" for arm, at in stale)
+        return (
+            f"{label} → STALE, not reported ({detail}). "
+            "One arm stopped being assigned, so the gap measures elapsed time, not the variable."
+        )
+    return f"{label} → " + "; ".join(f"{k}: {rate:.2%} (n={n})" for k, rate, n in ranked_rows)
+
+
+def _days_between(a: str, b: str) -> float:
+    try:
+        da = datetime.fromisoformat(a.replace("Z", "+00:00"))
+        db = datetime.fromisoformat(b.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return 0.0
+    return abs((db - da).total_seconds()) / 86400.0
+
+
+def _hook_line(hook_ranks: dict) -> str:
+    """Winner per platform WITH its sample size and its margin over the runner-up.
+
+    Printing a bare letter made a 3x lead and a 0.02% lead read identically, and
+    the auto-producer downstream had no way to tell them apart.
+    """
+    parts = []
+    for plat, rows in sorted(hook_ranks.items()):
+        if not rows:
+            continue
+        top = rows[0]
+        if len(rows) == 1:
+            parts.append(f"{plat}={top[0]} (n={top[2]}, only arm)")
+            continue
+        second = rows[1]
+        margin = (top[1] / second[1]) if second[1] > 0 else float("inf")
+        parts.append(
+            f"{plat}={top[0]} (n={top[2]}, {top[1]:.2%}) vs {second[0]} "
+            f"(n={second[2]}, {second[1]:.2%}) = {margin:.2f}x"
+        )
+    return ", ".join(parts) or "n/a"
+
+
+def _build_notes(slot_rank, type_rank, hook_ranks, link_ab, follower_deltas,
+                 link_last_seen: Optional[dict] = None,
+                 threads_link_ab=(),
+                 threads_link_last_seen: Optional[dict] = None) -> str:
     def fmt(rows):
         return "; ".join(f"{k}: {rate:.2%} (n={n})" for k, rate, n in rows) or "n/a"
-    hooks = ", ".join(f"{k}={v}" for k, v in best_hook_by_platform.items()) or "n/a"
     followers = ", ".join(f"{k} {_signed(v)}" for k, v in follower_deltas.items()) or "n/a"
     return (
         f"Slots → {fmt(slot_rank)}\n"
         f"Content Types → {fmt(type_rank)}\n"
-        f"Best Hook by platform → {hooks}\n"
-        f"X link A/B (engagement) → {fmt(link_ab)}\n"
+        f"Best Hook by platform → {_hook_line(hook_ranks)}\n"
+        + _ab_line("X link A/B (engagement)", link_ab, link_last_seen or {}) + "\n"
+        + _ab_line("Threads link A/B (engagement)", threads_link_ab,
+                   threads_link_last_seen or {}) + "\n"
         f"Followers (7d) → {followers}"
     )

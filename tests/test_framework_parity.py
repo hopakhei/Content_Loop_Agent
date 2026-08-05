@@ -116,7 +116,12 @@ def test_every_framework_hook_carries_an_authority_signal():
 
     trio = ("McKinsey", "麥肯錫", "BCG", "Bain")
     authors = ("Porter", "Christensen", "Ansoff", "Bowman", "Henderson",
-               "INSEAD", "Harvard", "Cranfield", "顧問")
+               "INSEAD", "Harvard", "哈佛", "Cranfield", "顧問",
+               # batch 19-30: each name is that framework's real author or
+               # institution — 狩野 (Kano), Maurya (Lean Canvas), Coase
+               # (make-buy), Ghemawat (CAGE), MIT (digital maturity),
+               # 聯準會 (supervisory stress testing).
+               "狩野", "Maurya", "Coase", "Ghemawat", "MIT", "聯準會")
     bare = []
     for path in sorted((BASE / "units").glob("*.md")):
         slug = path.stem

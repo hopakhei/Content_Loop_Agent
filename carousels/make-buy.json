@@ -1,0 +1,92 @@
+{
+  "issue": "make-buy",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "three-paths",
+  "caption": "你自己煮飯還是叫外送，算的是同一本帳。「工廠已經買了，所以繼續自己做」——這句話讓無數公司把資本鎖死在錯的地方。\n\n自製或外購的理論根基，來自 1937 年 Ronald Coase 的怪問題：市場這麼有效率，為什麼還會有公司？答案是交易成本，這條線後來拿了諾貝爾獎。實務上的決定要過四道關——策略、經濟、能力、風險；最常見的兩個錯，一個是只比單價（總帳算完優勢蒸發），一個是捨不得沉沒成本（正確比較只看未來現金流）。蘋果設計晶片但不擁有晶圓廠，台積電只做製造不做設計——各自把自己那格做到獨佔。\n\n對投資者的用處：垂直整合度寫在毛利率和資本支出比例裡；公司宣布轉向時，看它算的是單價還是總帳。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十六篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #供應鏈 #半導體 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 26",
+      "head": "自己做，\n還是用買的",
+      "sub": "你煮飯還是叫外送，公司自製還是外購，\n算的是同一本帳。",
+      "image": "backgrounds/make-buy-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1937 年的\n怪問題",
+      "body": "經濟學家 Ronald Coase 問：市場有效率，為什麼還有公司？答案是交易成本——找供應商、談合約、防違約的成本高過內部管理時，活動就該留在公司裡。這條線後來拿了諾貝爾獎。",
+      "image": "backgrounds/make-buy-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 四道關",
+      "head": "策略、經濟、\n能力、風險",
+      "body": "這個環節構成差異化嗎？總持有成本多少？自己做得到規格嗎——良率、認證、人才？斷供、洩密、退不了場的風險多大？四道關全過，才輪到拍板。",
+      "image": "backgrounds/make-buy-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 總帳",
+      "head": "單價便宜，\n總帳更貴",
+      "body": "你自己煮飯還是叫外送，用的是同一套算法：外送單價貴，省下的是買菜、備料、洗鍋的時間。公司多算的只是運費、關稅、庫存資金和出事時的空運救火——像樣的比較用總持有成本。",
+      "image": "backgrounds/make-buy-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 沉沒成本",
+      "head": "設備買了，\n跟決定無關",
+      "body": "「已經投了幾億」讓公司繼續自製外面更便宜的零件，資本和工程師全被鎖住。正確的比較只看未來現金流——設備能賣就賣，買它花過的錢已經花了。",
+      "image": "backgrounds/make-buy-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 組合拳",
+      "head": "蘋果設計，\n台積電製造",
+      "body": "成熟的做法是組合：先外購搶速度，量起來再自建；關鍵零件自製，其餘交出去；同一個零件養兩個來源防斷供。把自己那格做到獨佔，把別人的格子留給別人。",
+      "image": "backgrounds/make-buy-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "毛利率裡，\n讀出哲學",
+      "body": "垂直整合度寫在毛利率和資本支出的比例裡。自製多：毛利高、資本重、彈性差。外購多：資本輕，護城河要另外找。什麼都自己做的，常有環節在暗中賠錢；什麼都外包的，要問它握著什麼。",
+      "image": "backgrounds/make-buy-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 治理",
+      "head": "翻臉時，\n拿得回來嗎",
+      "body": "外購要配合約：價格公式、品質協議、模具託管。自製要配誠實的良率爬坡假設——用樂觀假設批出來的自建產線，是資本開支災難最常見的起點。",
+      "image": "backgrounds/make-buy-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 訊號",
+      "head": "垂直整合，\n或輕資產",
+      "body": "公司宣布垂直整合或輕資產轉型時，方向本身無所謂對錯，看兩件事：算的是單價還是總帳？認的是沉沒成本還是未來現金流？",
+      "image": "backgrounds/make-buy-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這道算法",
+      "body": "拿你持股的最新資本開支公告試一次：它算給你看的是單價，還是總持有成本？兩個答案，差一整層看不見的成本。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 26",
+      "image": "backgrounds/make-buy-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

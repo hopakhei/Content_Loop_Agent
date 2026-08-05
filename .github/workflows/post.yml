@@ -1,20 +1,19 @@
 name: Loop 1 — POST
 
-# Cron is UTC. HKT = UTC+8, so the five HKT slots map to:
-#   07:30 HKT -> 23:30 UTC (previous day)
-#   10:00 HKT -> 02:00 UTC
-#   12:30 HKT -> 04:30 UTC
-#   18:30 HKT -> 10:30 UTC
-#   21:30 HKT -> 13:30 UTC
+# One post a day, at 12:30 HKT -> 04:30 UTC.
+#
+# This used to fire five times a day (07:30, 10:00, 12:30, 18:30, 21:30 HKT).
+# Two reasons it doesn't any more. Consumption: a framework takes a day to
+# write and five slots eat five of them, so the ten-framework library drained
+# in four days and X and Threads went silent twice. Quality: 12:30 measures
+# 1.76% engagement against 0.71/0.61/0.47/0.24% for the rest, so four of every
+# five posts were being spent on slots up to seven times worse.
+#
 # GitHub-hosted cron is best-effort and can be delayed a few minutes; the loop
 # auto-detects the nearest slot from the current HKT time, so small drift is fine.
 on:
   schedule:
-    - cron: "30 23 * * *"
-    - cron: "0 2 * * *"
     - cron: "30 4 * * *"
-    - cron: "30 10 * * *"
-    - cron: "30 13 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

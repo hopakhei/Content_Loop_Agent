@@ -51,11 +51,11 @@ jobs:
         run: |
           git config user.name "loop-bot"
           git config user.email "noreply@anthropic.com"
-          git add state/ 2>/dev/null || true
+          git add state/ research/audience/ 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "No state change."
           else
-            git commit -m "chore(ig): dm state"
+            git commit -m "chore(ig): dm state + comment log"
             for i in 1 2 3 4; do git pull --rebase && git push && break || sleep $((2 ** i)); done
           fi
       - name: Upload run log

@@ -1,9 +1,16 @@
 name: tests
 
+# The push filter named only `main`. That branch exists, but it only ever
+# receives merge commits from a PR — all the work, and everything the crons
+# publish from, happens on claude/loop-product-spec-y45pgi, which is the
+# default branch. So a push never ran the suite: of the last 30 runs, every
+# one was a pull_request event and 19 of those sat at `action_required`
+# waiting for approval instead of executing.
 on:
   push:
-    branches: [main]
+    branches: [main, claude/loop-product-spec-y45pgi]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   pytest:

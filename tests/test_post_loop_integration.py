@@ -9,11 +9,15 @@ from services.errors import PartialThreadError
 
 @pytest.fixture(autouse=True)
 def _deterministic_x_link(monkeypatch):
-    """Pin the legacy link-carrying X path so link-presence assertions stay
-    deterministic (the shipped default is now link-free; that default is
-    asserted explicitly in test_loop1_x_default_is_link_free below)."""
+    """Pin the link-carrying path on both platforms so link-presence assertions
+    stay deterministic. Both now flip a coin per post in production; with the
+    A/B off, both arms collapse to 'link'. The X default is asserted explicitly
+    in test_loop1_x_default_is_link_free, the Threads coin in the two
+    threads_link_ab tests below."""
     monkeypatch.setattr(_settings, "X_LINK_AB", False)
     monkeypatch.setattr(_settings, "X_INCLUDE_CTA", True)
+    monkeypatch.setattr(_settings, "THREADS_LINK_AB", False)
+    monkeypatch.setattr(_settings, "THREADS_INCLUDE_CTA", True)
     # Most tests exercise the numbered essay drafts; keep them postable here.
     # The frameworks-only pivot is asserted explicitly below.
     monkeypatch.setattr(_settings, "POST_FRAMEWORKS_ONLY", False)
@@ -38,7 +42,7 @@ def test_loop1_frameworks_only_skips_numbered_essays(monkeypatch):
 
 def test_loop1_x_default_is_link_free(monkeypatch):
     """With shipped defaults (X_INCLUDE_CTA=False) the X post carries no URL;
-    Threads keeps the article CTA."""
+    Threads keeps the article CTA (its own coin is pinned off by the fixture)."""
     monkeypatch.setattr(_settings, "X_INCLUDE_CTA", False)
     notion = FakeNotion([_dual_draft()])
     twitter, threads = FakeTwitter(), FakeThreads()
@@ -215,8 +219,53 @@ def test_loop1_x_link_ab_no_link_arm_strips_and_tags(monkeypatch):
     xrow = next(r for r in notion.performance if r["platform"] == "X")
     assert xrow["tags"]["x_link_arm"] == "no_link"
     assert xrow["tags"]["has_link"] is False
-    # Threads is never in the A/B — keeps its link.
+    # The Threads coin is a separate one — pinned off by the fixture here, so
+    # this post keeps its link and the X arm is read on its own.
     assert "substack" in threads.threads[0][0]
+
+
+def test_loop1_threads_link_ab_no_link_arm_strips_and_tags(monkeypatch):
+    monkeypatch.setattr(_settings, "THREADS_LINK_AB", True)
+    monkeypatch.setattr(post_loop.random, "random", lambda: 0.1)  # < 0.5 → no_link
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                  notion=notion, twitter=twitter, threads=threads)
+    assert all("substack" not in p for p in threads.threads[0])
+    row = next(r for r in notion.performance if r["platform"] == "Threads")
+    assert row["tags"]["threads_link_arm"] == "no_link"
+    assert row["tags"]["has_link"] is False
+    # The X row must not pick up the Threads key, or the two experiments pool.
+    xrow = next(r for r in notion.performance if r["platform"] == "X")
+    assert "threads_link_arm" not in xrow["tags"]
+
+
+def test_loop1_threads_link_ab_link_arm_keeps_and_tags(monkeypatch):
+    monkeypatch.setattr(_settings, "THREADS_LINK_AB", True)
+    monkeypatch.setattr(post_loop.random, "random", lambda: 0.9)  # >= 0.5 → link
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                  notion=notion, twitter=twitter, threads=threads)
+    assert "substack" in threads.threads[0][0]
+    row = next(r for r in notion.performance if r["platform"] == "Threads")
+    assert row["tags"]["threads_link_arm"] == "link"
+    assert row["tags"]["has_link"] is True
+
+
+def test_loop1_threads_include_cta_off_takes_every_post_link_free(monkeypatch):
+    """The blunt switch still exists: one env var, every Threads post link-free.
+    It ends the measurement rather than making it, so the arm it records is
+    'no_link' for all of them — which is what makes the staleness visible."""
+    monkeypatch.setattr(_settings, "THREADS_INCLUDE_CTA", False)
+    monkeypatch.setattr(_settings, "THREADS_LINK_AB", True)
+    notion = FakeNotion([_dual_draft()])
+    twitter, threads = FakeTwitter(), FakeThreads()
+    post_loop.run(dry_run=False, slot="12:30", assume_yes=True,
+                  notion=notion, twitter=twitter, threads=threads)
+    assert all("substack" not in p for p in threads.threads[0])
+    row = next(r for r in notion.performance if r["platform"] == "Threads")
+    assert row["tags"]["threads_link_arm"] == "no_link"
 
 
 def test_loop1_x_link_ab_link_arm_keeps_and_tags(monkeypatch):

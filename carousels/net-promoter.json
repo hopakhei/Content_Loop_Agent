@@ -1,0 +1,92 @@
+{
+  "issue": "net-promoter",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "chain",
+  "caption": "滿分十分你給了七分，以為是稱讚。在 Bain 的算法裡，七分和零分算同一邊。\n\n2003 年，Bain 顧問 Fred Reichheld 花兩年測試幾十條問題，找出最能預測客戶會回頭的一條：「你有多大可能把我們推薦給朋友？」九到十分算推薦者，零到六分全算批評者，中間的被動層直接不計。這套 NPS 後來成了訂閱制和消費品公司的標準指標——也成了最常被灌水的指標。\n\n對投資者的用處：管理層在法說會引用 NPS 時，追問樣本怎麼抽、分數有沒有跟著留存率一起動。分數上升、留存沒動，多半是問卷技巧。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #消費股 #品牌 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 20",
+      "head": "你給七分，\n它算零分",
+      "sub": "Bain 2003 年的淨推薦值：\n一條問題，量出客人會不會回來。",
+      "image": "backgrounds/net-promoter-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "兩年，\n選出一條問題",
+      "body": "2003 年，Bain 顧問 Fred Reichheld 在《哈佛商業評論》發表研究：測試幾十條問題後，最能預測客戶會回頭、會帶人來的一條是——你有多大可能把我們推薦給朋友？",
+      "image": "backgrounds/net-promoter-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 計分",
+      "head": "嚴苛的\n三段計分",
+      "body": "九到十分是推薦者，七到八分是被動，零到六分全算批評者。NPS＝推薦者比例減批評者比例。七分在別的問卷算及格，在這裡直接不計——給七分的客人，行為上照樣流失。",
+      "image": "backgrounds/net-promoter-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 為什麼",
+      "head": "滿意是感想，\n推薦是行為",
+      "body": "想一下你怎麼推薦餐廳：真心喜歡的那間，不等人問你就講；失望的那間，你會主動勸人別去。推薦押上自己的信用，所以它比滿意度誠實。",
+      "image": "backgrounds/net-promoter-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 內圈",
+      "head": "三天內，\n回電批評者",
+      "body": "分數只是入口。前線團隊在一到三天內聯絡每個低分客人，聽完整件事，能解決的當場解決。速度本身就是訊息——你的抱怨有人當一回事。",
+      "image": "backgrounds/net-promoter-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 外圈",
+      "head": "把根因\n逐季修掉",
+      "body": "跨部門團隊把抱怨歸類，找出流程和產品的結構性問題，每季挑幾個修掉。只發問卷、不修根因，NPS 就淪為一個虛榮指標——這是多數公司做 NPS 失敗的原因。",
+      "image": "backgrounds/net-promoter-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 經濟帳",
+      "head": "推薦者，\n獲客成本零",
+      "body": "推薦者留得久、買得多，還免費幫你拉新客；批評者流失之外，還在外面勸退別人。NPS 要跟留存率、客戶終身價值掛在一起看，這個分數才跟錢有關係。",
+      "image": "backgrounds/net-promoter-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "法說會引用，\n追問三件事",
+      "body": "管理層引用 NPS 時追問：量的是整體關係還是單次交易？樣本怎麼抽？分數有沒有跟著留存率一起動？分數上升、留存沒動，多半是問卷技巧。",
+      "image": "backgrounds/net-promoter-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱",
+      "head": "獎金一綁，\n分數就假",
+      "body": "把 NPS 綁進前線獎金，店員會求客人給十分——分數照升，流失照舊。Reichheld 的規矩是獎勵改善行為，少獎勵分數本身。跨市場比較也要校準，有些地方的人天生不給滿分。",
+      "image": "backgrounds/net-promoter-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這條問題",
+      "body": "拿你最近消費的一個品牌問自己：你會推薦給朋友嗎？再拿手上的消費股問一次。兩個答案，都比多數研究報告誠實。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 20",
+      "image": "backgrounds/net-promoter-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

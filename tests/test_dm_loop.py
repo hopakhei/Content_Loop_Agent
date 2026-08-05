@@ -9,6 +9,15 @@ from loops import dm_loop
 NOW = datetime(2026, 7, 17, 12, 0, tzinfo=timezone.utc)
 
 
+@pytest.fixture(autouse=True)
+def _isolate_comment_log(tmp_path, monkeypatch):
+    """Keep fixture comments out of research/audience/ig_comments.jsonl.
+
+    That file is meant to hold what real readers wrote; a test that appends to
+    it is manufacturing the evidence the research loop later reads back."""
+    monkeypatch.setattr(dm_loop, "COMMENT_LOG", str(tmp_path / "ig_comments.jsonl"))
+
+
 def _iso(hours_ago=1.0):
     return (NOW - timedelta(hours=hours_ago)).strftime("%Y-%m-%dT%H:%M:%S+0000")
 

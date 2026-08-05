@@ -1,0 +1,92 @@
+{
+  "issue": "cage-distance",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "scatter-groups",
+  "caption": "一個市場人口十四億，不代表你該先去。距離有四種，公里只是其中一種。\n\n2001 年，哈佛教授 Pankaj Ghemawat 在《哈佛商業評論》發表〈Distance Still Matters〉：文化、行政、地理、經濟，四種距離都在對出海的公司收費，而每個行業怕的距離不一樣——媒體怕文化，銀行怕行政，生鮮怕地理，平價消費怕經濟。先按行業配權重，再決定去哪、怎麼去。「大」和「先去」是兩回事。\n\n對投資者的用處：把管理層的出海簡報翻譯成四種距離，再問一句——為距離編的預算在哪裡？答得出數字的，才是想清楚了的。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十七篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #全球化 #國際化 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 27",
+      "head": "距離有四種，\n公里只是一種",
+      "sub": "你出國最不習慣的那些事，\n就是企業出海的四種距離。",
+      "image": "backgrounds/cage-distance-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "世界是平的？\n他不同意",
+      "body": "1990 年代末人人喊全球化，哈佛教授 Pankaj Ghemawat 在 2001 年《哈佛商業評論》反駁：距離仍然重要，企業出海的失敗，多數是把距離算少了。他把距離拆成四種：CAGE。",
+      "image": "backgrounds/cage-distance-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 四種距離",
+      "head": "文化、行政、\n地理、經濟",
+      "body": "出國最不習慣的，很少是飛了多遠：插頭形狀、排隊方式、找零習慣、看不懂的收據。語言宗教是文化，法規關稅是行政，時區物流是地理，所得結構是經濟——四種距離都在收費。",
+      "image": "backgrounds/cage-distance-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 加權",
+      "head": "每個行業，\n怕的不一樣",
+      "body": "媒體食品最怕文化，銀行醫療最怕行政，生鮮重工最怕地理，平價消費最怕經濟。先按行業配權重再打分——同一張地圖，軟體公司和水泥公司看到的遠近完全不同。",
+      "image": "backgrounds/cage-distance-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 進場姿勢",
+      "head": "距離種類，\n決定花錢處",
+      "body": "行政距離高：合資或本地夥伴。文化距離高：本地團隊、在地化產品。地理距離高：區域樞紐。經濟距離高：重做價格帶。分數先排順序，再定姿勢。",
+      "image": "backgrounds/cage-distance-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 案例",
+      "head": "印度很大，\n先去加拿大",
+      "body": "美國品牌選市場：印度人口是加拿大的三十幾倍，CAGE 算完先去加拿大——語言法規時區全近，九個月獲利；印度每種距離都在收費，適應成本用年計。「大」和「先去」是兩回事。",
+      "image": "backgrounds/cage-distance-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "出海簡報，\n翻譯成距離",
+      "body": "管理層講出海，把簡報翻成 CAGE：四種距離各多遠？合規、在地化、物流的預算在哪？大型零售商在德國、韓國的失敗，輸在行政和文化距離——當年簡報上只畫了市場規模。",
+      "image": "backgrounds/cage-distance-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 陷阱一",
+      "head": "國家平均，\n會騙人",
+      "body": "「距離遠」的國家裡，一線城市可能近得多。評估要下沉到城市和客群層級——全國平均會把最好的機會和最大的風險一起抹平。",
+      "image": "backgrounds/cage-distance-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 陷阱二",
+      "head": "距離，\n會自己動",
+      "body": "貿易協定、資料法規、航線，每一項變動都在改寫分數。一次打分用三年，是最常見的錯——這張表要半年重打一次。",
+      "image": "backgrounds/cage-distance-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏四種距離",
+      "body": "下次聽到持股宣布出海，問一條：它為距離編了多少預算？答得出數字的，才是想清楚了的。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 27",
+      "image": "backgrounds/cage-distance-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

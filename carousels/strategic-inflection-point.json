@@ -1,0 +1,92 @@
+{
+  "issue": "strategic-inflection-point",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "curve-down",
+  "caption": "你追劇的方式十年換了三次：租片、有線、串流。每一次換之前，都有一段時間所有人都覺得沒事。\n\n1985 年，Intel 靠記憶體起家的那門生意正被日本廠商用成本重寫。Andy Grove 問 Gordon Moore：如果我們被換掉，新來的執行長會做什麼？Moore 說他會退出記憶體。Grove 的回答是：那我們為什麼不自己走出這道門，再走回來，自己動手。1996 年他把這件事寫成《Only the Paranoid Survive》，給那一刻起了名字——策略轉折點：某一股外力發生十倍級的變化，讓過去管用的做法直接失效。\n\n對投資者的用處：財務數字是落後指標，等到營收反映出來，重新定價通常已經走完一大段。要早一點看到，得盯領先訊號：標準定案、平台改規則、法規進入實施、人才開始往對面走。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十六篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #科技股 #產業分析 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 16",
+      "head": "轉彎的時候，\n財報最後知道",
+      "sub": "你追劇的方式十年換了三次，\nAndy Grove 替這一刻起了名字。",
+      "image": "backgrounds/strategic-inflection-point-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1985 年，\nIntel 的那個問題",
+      "body": "Intel 靠記憶體起家，1985 年那門生意正被日本廠商用成本重寫。Andy Grove 問 Gordon Moore 一句：如果我們兩個被換掉，新來的執行長第一件事會做什麼？Moore 的答案是，他會退出記憶體。",
+      "image": "backgrounds/strategic-inflection-point-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 起源",
+      "head": "走出門，\n再走回來",
+      "body": "Grove 接著說：那我們為什麼不自己走出這道門，再走回來，自己動手。Intel 就此離開記憶體，轉向微處理器。1996 年他把這件事寫成《Only the Paranoid Survive》。",
+      "image": "backgrounds/strategic-inflection-point-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 定義",
+      "head": "十倍級的\n外力",
+      "body": "策略轉折點的定義是：某一股外部力量發生十倍級的變化，讓過去管用的成功方程式失效。它的特徵是不留緩衝——舊方法不會慢慢變差，它會在某個時點直接不成立。",
+      "image": "backgrounds/strategic-inflection-point-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 觸發",
+      "head": "五種會\n觸發的力量",
+      "body": "你追劇的方式十年換了三次：租片、有線、串流。轉彎的力量有五種——新技術架構、平台換規則、法規重設、利潤池往上下游移動、資本讓新進者一次到位。",
+      "image": "backgrounds/strategic-inflection-point-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 時間差",
+      "head": "領先訊號，\n落後症狀",
+      "body": "營收和毛利是落後指標。領先訊號另有其物：新的一群客戶開始用替代品、標準制定拍板、平台政策改動、第三方效能標竿越過某條線、人才流向反轉、供應商換設備、法規諮詢進入實施階段。",
+      "image": "backgrounds/strategic-inflection-point-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 難處",
+      "head": "事前，它跟\n雜訊長得一樣",
+      "body": "Grove 自己也承認，轉折點在事前很吵。每一年都有人喊狼來了，會成真的那一次在當下分辨不出來。他給的辦法是聽兩種人——最前線的業務，和最挑剔的客戶——因為他們比損益表早幾季知道。",
+      "image": "backgrounds/strategic-inflection-point-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "最貴的\n那一種錯誤",
+      "body": "這個框架處理的是持有成本最高的一種錯誤：拿著一間各項數字都還漂亮的公司，穿過一次轉折。股價圖上那些「業績很好然後一路向下」的公司，管理層多半沒有突然變笨，他們的行業在某一年換了地基。",
+      "image": "backgrounds/strategic-inflection-point-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "每間持股，\n一份訊號清單",
+      "body": "我持有的每一間公司都配一份清單，上面不寫季度數字，只寫三到五個一旦發生就代表地基在動的訊號：某個標準定案、某個平台改規則、某條法規進入實施、某類人才開始往對面走。數字我照看，只是我不指望它提前示警。",
+      "image": "backgrounds/strategic-inflection-point-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這個轉折點",
+      "body": "替手上每一檔持股寫三個訊號：一旦出現，就代表這門生意的地基在動，而財報還要一年才會說。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 16",
+      "image": "backgrounds/strategic-inflection-point-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "issue": "technology-adoption-curve",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "s-curve",
+  "caption": "一間高成長公司的增長突然卡住，管理層說是執行問題。\n\n1962 年，社會學家 Everett Rogers 把採用新東西的人分成五群：創新者、早期採用者、早期大眾、晚期大眾、落後者。1991 年 Geoffrey Moore 在《跨越鴻溝》裡加了一件事——早期採用者和早期大眾之間有一道裂縫。前者為願景付錢，後者為風險可控的回報付錢，而贏得前一群的做法會趕走後一群。\n\n對投資者的用處：同樣是增長 40%，新客戶來自創新實驗室的預算，跟來自營運部門的預算，是兩回事。前者的續約率會在第二年掉下來。留存率、擴張率和參考客戶名單，比成長率本身更早說話。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十五篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #成長股 #SaaS #科技股 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 15",
+      "head": "增長卡住的\n那一年",
+      "sub": "採用曲線中間，\n有一道沒人畫出的裂縫。",
+      "image": "backgrounds/technology-adoption-curve-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "1962 年，\n五群人",
+      "body": "社會學家 Everett Rogers 在《創新的擴散》裡把採用新事物的人分成五群：創新者約 2.5%，早期採用者 13.5%，早期大眾 34%，晚期大眾 34%，落後者 16%。分群的依據是心理，跟年齡和產業沒有關係。",
+      "image": "backgrounds/technology-adoption-curve-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 前一群",
+      "head": "早期採用者\n買的是願景",
+      "body": "這群人是願景型的贊助者，願意冒可算計的風險換取領先。他們忍受不完整的產品，願意陪供應商一起改，要的是能講出來的轉型故事和高層等級的關注。他們給錢的理由，寫在未來式裡。",
+      "image": "backgrounds/technology-adoption-curve-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 後一群",
+      "head": "早期大眾\n買的是安心",
+      "body": "務實派要的是可靠度、回報、能不能接上現有系統、供應商會不會倒。他們要整套方案——整合、服務、訓練、服務水準協議——還要同行的推薦。他們給錢的理由，寫在別人的成功案例裡。",
+      "image": "backgrounds/technology-adoption-curve-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 鴻溝",
+      "head": "中間\n那道裂縫",
+      "body": "1991 年，Geoffrey Moore 在《跨越鴻溝》裡指出這兩群人之間有一道斷層。前一群買完了，後一群還沒開始，中間出現一段沒有人接手的空白。很多高科技產品就死在這一段，而財務數字要一年後才反映出來。",
+      "image": "backgrounds/technology-adoption-curve-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 為什麼難",
+      "head": "贏前一群，\n輸後一群",
+      "body": "客製化、講革命、跟著大客戶的想法改產品，這些在早期是優勢。到了要賣給務實買家的時候，同一批做法變成「這家供應商還沒定型」的證據。做得越徹底，跨過去越難。",
+      "image": "backgrounds/technology-adoption-curve-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 怎麼跨",
+      "head": "先拿下\n一個窄市場",
+      "body": "Moore 的做法是選一個窄的灘頭：一個垂直應用、一種具體場景，把整套東西做完整。拿下四五個能講出數字的標竿客戶，讓同行互相推薦，訊息從「這會改變一切」換成「六十天上線，處理時間縮短四成」。",
+      "image": "backgrounds/technology-adoption-curve-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 之後",
+      "head": "龍捲風，\n然後是主街",
+      "body": "跨過去之後還有兩段。保齡球道：一個垂直市場接一個倒下，每個都要微調整套方案。龍捲風：標準浮現、需求爆發，這時比的是產能和通路。之後是主街期，成長放慢，利潤池從產品本身移到服務、資料和整合上。",
+      "image": "backgrounds/technology-adoption-curve-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "看客戶是誰，\n不看成長率",
+      "body": "一間快速成長的公司增長慢下來，我會先去看它最近一百個客戶是哪一群人。來自創新實驗室的預算和來自營運部門的預算，續約率完全不同。答案如果是「早期採用者都收完了」，換誰去跑業務都一樣。",
+      "image": "backgrounds/technology-adoption-curve-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這條曲線",
+      "body": "下次看到一家高成長公司減速，先問它的新客戶換了哪一群人，再問業務團隊發生什麼事。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 15",
+      "image": "backgrounds/technology-adoption-curve-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

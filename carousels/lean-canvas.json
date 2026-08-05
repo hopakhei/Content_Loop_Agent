@@ -1,0 +1,92 @@
+{
+  "issue": "lean-canvas",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "grid2x2",
+  "caption": "你大概坐過這種週末飯局：朋友講創業點子，二十分鐘全在講功能。一份商業計劃書五十頁，值錢的假設也只有兩三個。2010 年的 Lean Canvas，把它們逼到同一頁上。\n\nAsh Maurya 把 Osterwalder 的商業模式圖改造成新創版：九個格子，先填客群和問題，最後才輪到解決方案。九格裡最誠實的是「不公平優勢」——你憑什麼別人抄不走？多數團隊這一格是空的；而填得太快的，通常把先做先贏當成了護城河。\n\n對投資者的用處：大公司發表新業務時，拿這張圖過一次——九格裡幾格已驗證、幾格還是假設，比整份新聞稿誠實。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第二十五篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #商業模式 #新創 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 25",
+      "head": "一頁紙，\n拆一門生意",
+      "sub": "朋友週末飯局講的創業點子，\n九個格子就問得出破綻。",
+      "image": "backgrounds/lean-canvas-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "2010 年，\n換掉四格",
+      "body": "Ash Maurya 把 Osterwalder 的商業模式圖改造成新創版：移走夥伴、資源、活動，換上問題、解決方案、關鍵指標、不公平優勢。2012 年寫成《Running Lean》，成為加速器的標準工具。",
+      "image": "backgrounds/lean-canvas-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 順序",
+      "head": "先問題，\n後方案",
+      "body": "填法有講究：先客群和問題，最後才是解決方案和優勢。順序本身就是提醒——先確認問題存在，再談你要做什麼。反過來填的人，通常已經愛上自己的方案。",
+      "image": "backgrounds/lean-canvas-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 問題格",
+      "head": "最強對手，\n叫做忍耐",
+      "body": "你大概坐過這種週末飯局：朋友講創業點子，二十分鐘全在講功能。問題格逼你先答一句——目標客戶今天怎麼解決？Excel、人手、外包、忍耐？答不出來，代表那個問題還沒被驗證過。",
+      "image": "backgrounds/lean-canvas-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 最誠實的格",
+      "head": "你憑什麼，\n抄不走",
+      "body": "不公平優勢：專有數據、網絡效應、轉換成本、獨家通路。多數新創這格是空的——照實留白，寫下怎麼建立。填得太快的團隊，把「先做先贏」當成了護城河。",
+      "image": "backgrounds/lean-canvas-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 活文件",
+      "head": "圖不更新，\n就是在演",
+      "body": "每格標「假設」或「已驗證」，高風險格子配實驗和門檻：落地頁測價、十個客戶的手工試點。兩三週更新一次，圖在變代表在學習；三個月沒動，代表在演戲。",
+      "image": "backgrounds/lean-canvas-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 投資角度",
+      "head": "九格裡，\n幾格是實的",
+      "body": "大公司發表新業務，這張圖常常只有兩格是實的——產品做得出來、市場很大，中間七格全是假設。訂價測過嗎？通路算過獲客成本嗎？一頁過一次，比新聞稿快。",
+      "image": "backgrounds/lean-canvas-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 邊界",
+      "head": "這張紙，\n管不了大公司",
+      "body": "Lean Canvas 是搜尋工具，適用在找模式的階段。生意跑通後，營運細節要回到更完整的框架去管。拿它管成熟公司，太粗；拿五十頁計劃書管新創，太慢。",
+      "image": "backgrounds/lean-canvas-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 用法",
+      "head": "縮不回一頁，\n就還沒想清楚",
+      "body": "看任何新業務，先逼它縮回一頁。縮不回去，想法還沒清楚；縮回去了，九格裡的空白就是待辦清單——每格空白，配一個實驗。",
+      "image": "backgrounds/lean-canvas-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這九格",
+      "body": "拿你持股最近發表的新業務畫一次：九個格子，標出哪些已驗證、哪些還是假設。假設佔多數時，先別在估值裡付錢。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 25",
+      "image": "backgrounds/lean-canvas-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

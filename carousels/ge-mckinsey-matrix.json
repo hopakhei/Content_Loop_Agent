@@ -1,0 +1,92 @@
+{
+  "issue": "ge-mckinsey-matrix",
+  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
+  "motif": "grid2x2",
+  "caption": "一間公司說某條業務線是未來，資本卻沒有跟過去。\n\n1970 年代初，GE 手上有幾十條業務線在跟總部要錢，波士頓矩陣的兩個單一指標撐不起這種規模的分配決定。麥肯錫替它做了一張九宮格：一條軸是行業吸引力，一條軸是競爭強度，每條軸由六到十二個加權因素合成，九格對應加碼、選擇性投入、收割退出三種待遇。\n\n對投資者的用處：多元化公司每年都在做這個練習，只是它不會把那張表印出來給你看，印出來的是資本開支、併購金額和關廠公告。連續三年被稱為策略重點、卻連續三年拿不到錢的那條線，公司自己已經給了答案。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十三篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #資本配置 #財報 #stockmarket",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 13",
+      "head": "說是未來，\n卻拿不到錢",
+      "sub": "麥肯錫 1970 年替 GE 畫的\n那張九宮格。",
+      "image": "backgrounds/ge-mckinsey-matrix-01.jpg",
+      "image_dim": 0.45,
+      "image_blur": 2
+    },
+    {
+      "kicker": "01 · 起源",
+      "head": "GE 的\n四十條業務線",
+      "body": "1970 年代初，GE 從發電機做到塑膠再做到家電，幾十條業務線同時跟總部要錢。當時波士頓矩陣已經流行，GE 嫌它太粗：市場成長率和相對市佔率兩個單一指標，撐不起一年幾十億美元的分配決定。",
+      "image": "backgrounds/ge-mckinsey-matrix-02.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "02 · 兩條軸",
+      "head": "行業好不好，\n自己強不強",
+      "body": "麥肯錫給 GE 的答案只有兩個問題。這條業務線所在的行業，未來五年結構上好不好賺？這條業務線在那個行業裡，相對於對手站得穩不穩？前者是行業吸引力，後者是競爭強度。",
+      "image": "backgrounds/ge-mckinsey-matrix-03.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "03 · 兩條軸",
+      "head": "每條軸，\n十個因素加權",
+      "body": "行業吸引力那條軸看市場規模與成長、毛利結構、景氣循環、法規、資本密集度、上下游議價能力。競爭強度那條軸看相對市佔、成本位置、品牌、通路、專利、資料與人才。每項給一到五分，權重加起來一百。",
+      "image": "backgrounds/ge-mckinsey-matrix-04.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "04 · 九格",
+      "head": "九個格子，\n三種待遇",
+      "body": "兩個分數把業務線放進九格之一。右上角是投資區，加碼、擴產、併購；中間是選擇性投入，哪裡回報看得見才給錢，同時管好現金；左下角是收割或退出，把資本擠出來，不再追加。",
+      "image": "backgrounds/ge-mckinsey-matrix-05.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "05 · 陷阱",
+      "head": "把成長\n當成吸引力",
+      "body": "這張表最常被用錯的地方，是拿成長率當行業吸引力。一個每年成長兩成、毛利很薄、又要不斷投錢建產能的行業，在完整的評分裡分數很低。看到「這個市場每年成長 20%」就興奮之前，先問這兩成有沒有人賺得到。",
+      "image": "backgrounds/ge-mckinsey-matrix-06.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "06 · 弱點",
+      "head": "分數，\n是人給的",
+      "body": "權重和評分都出自人手，老闆的心頭好會拿到虛高的競爭強度分，沉沒成本會變成留下來的理由。顧問做這件事會用外部標竿定分數，再跑一次敏感度分析：某個權重改兩分，結論會不會翻盤。",
+      "image": "backgrounds/ge-mckinsey-matrix-07.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "07 · 投資角度",
+      "head": "資本開支\n不會說謊",
+      "body": "投資者不用自己畫這張表。多元化公司每年都在做這個練習，只是不會把結果印出來給你看——印出來的是資本開支、併購金額和關廠公告。錢流去哪裡，就是管理層真的把哪一格填在哪裡。",
+      "image": "backgrounds/ge-mckinsey-matrix-08.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kicker": "08 · 我的用法",
+      "head": "形容詞一欄，\n錢一欄",
+      "body": "我看多元化公司的年報，會把管理層形容每條業務線的字眼抄一欄，把過去三年投在那條線上的錢抄另一欄，兩欄並排。連續三年被稱為策略重點、卻連續三年拿不到錢的那條線，公司自己早就把它放在左下角了。",
+      "image": "backgrounds/ge-mckinsey-matrix-09.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    },
+    {
+      "kind": "cta",
+      "bookmark": false,
+      "head": "收藏這張九宮格",
+      "body": "下次讀多元化公司的年報，把願景那幾頁和資本開支那幾頁並排看：兩邊指向同一條業務線，故事才算數。",
+      "follow": "想看真實案例，留言「案例」",
+      "link": "@90s.pm.investing · 策略框架 13",
+      "image": "backgrounds/ge-mckinsey-matrix-10.jpg",
+      "image_dim": 0.62,
+      "image_blur": 5
+    }
+  ]
+}

@@ -23,6 +23,12 @@ from services.instagram import InstagramService
 from services.notion import NotionService
 
 STATE_FILE = "state/ig_dm_state.json"
+# Readers describing, in their own words, what they wanted from a post — the
+# best available source of hypotheses, and until now read once for a keyword
+# match and thrown away. Appended here so research/observations.md has
+# something to draw on that is not our own metrics. Committed by the workflow
+# alongside the state file.
+COMMENT_LOG = "research/audience/ig_comments.jsonl"
 # Private replies are only accepted within 7 days of the comment; leave margin.
 REPLY_WINDOW_HOURS = 7 * 24 - 2
 # Keep handled ids this long before trimming (well past the reply window).
@@ -35,8 +41,15 @@ def run(
     notion: Optional[NotionService] = None,
     ig: Optional[InstagramService] = None,
     state_file: str = STATE_FILE,
+    comment_log: Optional[str] = None,
     now: Optional[datetime] = None,
 ) -> dict:
+    # Resolved here rather than bound as a default argument so a test can
+    # redirect COMMENT_LOG. Bound as a default, every test run appended its
+    # fixture comments to the real research log — 45 fabricated rows reached
+    # the repository that way, in a file whose only purpose is to hold
+    # audience evidence that did not come from us.
+    comment_log = COMMENT_LOG if comment_log is None else comment_log
     log = logger or logging.getLogger("loop.igdm")
     if ig is None:
         if not settings.IG_ACCESS_TOKEN:
@@ -66,6 +79,7 @@ def run(
              len(media), settings.IG_DM_KEYWORD, settings.IG_DM_ALL, dry_run)
 
     sent = matched = seen = 0
+    captured: list[dict] = []
     for m in media:
         try:
             comments = ig.get_comments(m["id"])
@@ -80,6 +94,16 @@ def run(
             if (c.get("username") or "") == me:
                 handled[cid] = now.isoformat()          # our own first comment
                 continue
+            # Capture before the keyword gate: the comments that do NOT ask for
+            # the link are the ones worth reading, and they were exactly the
+            # ones being discarded.
+            captured.append({
+                "id": cid,
+                "media_id": m["id"],
+                "at": c.get("timestamp"),
+                "text": c.get("text") or "",
+                "matched": _matches(c.get("text") or ""),
+            })
             if not _matches(c.get("text") or ""):
                 handled[cid] = now.isoformat()          # seen, not a trigger
                 continue
@@ -105,8 +129,27 @@ def run(
 
     if not dry_run:
         _save_state(state_file, state, now)
-    log.info("comment-to-DM done | new comments=%d | matched=%d | sent=%d", seen, matched, sent)
-    return {"sent": sent, "matched": matched, "seen": seen}
+        _append_comments(comment_log, captured, log)
+    log.info("comment-to-DM done | new comments=%d | matched=%d | sent=%d | logged=%d",
+             seen, matched, sent, len(captured))
+    return {"sent": sent, "matched": matched, "seen": seen, "captured": len(captured)}
+
+
+def _append_comments(path: str, rows: list[dict], log) -> None:
+    """Append-only JSONL. Never rewritten: a log that gets tidied stops being
+    evidence of what readers actually said."""
+    if not rows:
+        return
+    try:
+        p = Path(path)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        with p.open("a", encoding="utf-8") as fh:
+            for row in rows:
+                fh.write(json.dumps(row, ensure_ascii=False) + "\n")
+        log.info("Logged %d comment(s) → %s", len(rows), path)
+    except OSError as exc:
+        # Never fail a DM run over the research log.
+        log.warning("Could not write the comment log: %s", exc)
 
 
 def _matches(text: str) -> bool:
