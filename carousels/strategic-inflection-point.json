@@ -2,13 +2,13 @@
   "issue": "strategic-inflection-point",
   "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
   "motif": "curve-down",
-  "caption": "公司的財報是最後一個知道行業已經轉彎的人。\n\n1985 年，Intel 靠記憶體起家的那門生意正被日本廠商用成本重寫。Andy Grove 問 Gordon Moore：如果我們被換掉，新來的執行長會做什麼？Moore 說他會退出記憶體。Grove 的回答是：那我們為什麼不自己走出這道門，再走回來，自己動手。1996 年他把這件事寫成《Only the Paranoid Survive》，給那一刻起了名字——策略轉折點：某一股外力發生十倍級的變化，讓過去管用的做法直接失效。\n\n對投資者的用處：財務數字是落後指標，等到營收反映出來，重新定價通常已經走完一大段。要早一點看到，得盯領先訊號：標準定案、平台改規則、法規進入實施、人才開始往對面走。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十六篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #科技股 #產業分析 #stockmarket",
+  "caption": "你追劇的方式十年換了三次：租片、有線、串流。每一次換之前，都有一段時間所有人都覺得沒事。\n\n1985 年，Intel 靠記憶體起家的那門生意正被日本廠商用成本重寫。Andy Grove 問 Gordon Moore：如果我們被換掉，新來的執行長會做什麼？Moore 說他會退出記憶體。Grove 的回答是：那我們為什麼不自己走出這道門，再走回來，自己動手。1996 年他把這件事寫成《Only the Paranoid Survive》，給那一刻起了名字——策略轉折點：某一股外力發生十倍級的變化，讓過去管用的做法直接失效。\n\n對投資者的用處：財務數字是落後指標，等到營收反映出來，重新定價通常已經走完一大段。要早一點看到，得盯領先訊號：標準定案、平台改規則、法規進入實施、人才開始往對面走。\n\n（90s.pm.investing × McKinsey、BCG、Bain 策略框架系列 · 第十六篇。把頂級顧問在用的思考工具，逐個拆給投資者。）\n\n想知道怎樣用這些策略框架去拆真實公司，留言「案例」，我把整個系列 DM 給你。\n\n#投資 #價值投資 #科技股 #產業分析 #stockmarket",
   "slides": [
     {
       "kind": "cover",
       "kicker": "90s.pm.investing × McKinsey BCG Bain 策略框架 16",
       "head": "轉彎的時候，\n財報最後知道",
-      "sub": "Intel 的 Andy Grove\n替這一刻起了名字。",
+      "sub": "你追劇的方式十年換了三次，\nAndy Grove 替這一刻起了名字。",
       "image": "backgrounds/strategic-inflection-point-01.jpg",
       "image_dim": 0.45,
       "image_blur": 2
@@ -40,7 +40,7 @@
     {
       "kicker": "04 · 觸發",
       "head": "五種會\n觸發的力量",
-      "body": "技術 S 曲線上出現新架構、平台或守門人換了規則、法規重設、價值鏈上的利潤池往上下游移動、資本大量湧入讓新進者一次到位。雲端取代地端、串流取代有線電視、電動車對燃油車，都屬於這一類。",
+      "body": "你追劇的方式十年換了三次：租片、有線、串流。轉彎的力量有五種——新技術架構、平台換規則、法規重設、利潤池往上下游移動、資本讓新進者一次到位。",
       "image": "backgrounds/strategic-inflection-point-05.jpg",
       "image_dim": 0.62,
       "image_blur": 5

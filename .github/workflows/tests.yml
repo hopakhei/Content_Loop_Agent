@@ -1,9 +1,15 @@
 name: tests
 
+# The push filter used to name `main`, which this repository does not have —
+# the default branch is claude/loop-product-spec-y45pgi, and it is what the
+# crons publish from. So no push ever ran the suite; the only runs were
+# pull_request events sitting at `action_required`. Every "CI is green" for
+# weeks meant "nothing ran".
 on:
   push:
-    branches: [main]
+    branches: [main, claude/loop-product-spec-y45pgi]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   pytest:

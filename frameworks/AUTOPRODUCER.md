@@ -119,6 +119,17 @@ And every unit needs at least one sentence, with the reader as the subject,
 saying what they can actually do next — which stock, which page, which question.
 "投資者可以用它來分析公司" is not that sentence.
 
+**The argument itself has to travel through an everyday scene.** Not as a
+garnish — one segment where the mechanism is carried by something the reader
+lives through: the gym that changed its sign but not its trainers (7S), cooking
+versus ordering delivery (make-or-buy), the coat that takes the most wardrobe
+space and gets worn three times a year (core vs non-core). The vocabulary this
+is graded against is `research/scorers.py: LIFE_NOUNS`. Do not pad a noun in to
+pass the check — a scene that is not doing work reads worse than none.
+
+The same applies to the carousel (one slide with kicker `NN · 生活版`) and to
+the caption.
+
 This applies to **both** H-002 arms. Arm A opens on the reader's own holding;
 arm B opens on a scene the reader lives in — not on a scene from 1937.
 
@@ -151,6 +162,7 @@ The DM loop watches 全文/框架/案例; 案例 is the one this series uses.
 
 ```
 python scripts/next_frameworks.py
+python scripts/audit_grounding.py --check
 python -m pytest -q
 python -c "
 from services.imagecard import load_carousel_spec, render_carousel

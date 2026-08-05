@@ -133,6 +133,13 @@ de-AI 掃描（renhua + content-anti-ai）、同埋背景相嘅亮度閘。寫�
   有來頭」。全套規矩同新手迷思架見 x-post skill 鐵律零點六。
 - **「投資角度」唔可以拖到尾**：讀者掃到第七張先知同自己有咩關係，已經走咗一半。
   收尾嗰張除外，成輯要有至少一張喺前半段就用「你」講清楚佢可以攞去做乜。
+- **每輯要有一張「生活版」**：kicker 寫「NN · 生活版」，用讀者過得到嘅日常
+  承載成個機制（健身房換招牌冇換教練、兩間超市嘅數位化、衣櫃最佔位嗰件）。
+  Caption 都要落到同一個場景或者用「你」開口。
+  `python scripts/audit_grounding.py --check` 會睇封面、成輯 slide 同 caption，
+  未出街嘅唔合格就 CI 紅。改咗張 slide 講緊乜，記住同步改
+  `assets/background_queries.json` 嗰句 query，同埋刪走 `backgrounds/<slug>-NN.jpg`
+  等 fetcher 重抓 —— 唔刪嘅話張舊相會繼續配住新文字。
 - **標題鏈原則**：每張 slide 的大題必須獨立講出該段的中心思想；
   把十個標題連起來讀，要已經是一個完整的故事。寫完 spec 後先淨讀標題鏈
   自我檢查，講不通就重排。讀者是先掃標題才決定讀 body 的。

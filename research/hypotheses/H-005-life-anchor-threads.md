@@ -1,6 +1,7 @@
 ---
 id: H-005
-status: open
+status: abandoned
+created_closed: 2026-08-05
 source: intuition
 created: 2026-08-01
 claim: >
@@ -82,3 +83,31 @@ and verified free of every LIFE_NOUN, so the `no` arm is clean rather than
 accidental. Scorer-checked before commit: all twelve land in their intended
 arm under either H-002 hook, so the two experiments stay independent in this
 corpus. Both treatments follow the H-002 rule — equally well made.
+
+## Closed — 2026-08-05 — abandoned, decided editorially before it was measured
+
+The owner watched the milkshake post (`jobs-to-be-done`) land and made life
+anchoring a standing rule for every post on every platform. That settles the
+question as a product decision, and it ends this card, because the `no` arm is
+now something the style rule forbids anybody to write. An experiment whose
+control is banned is not an experiment.
+
+Abandoned, not supported. Nothing here was measured:
+
+- The milkshake post went out 2026-08-04 05:30 UTC. Its impressions were still
+  blank in Post Performance when this card was closed — metrics need 24h plus
+  the next nightly LEARN. The decision rests on what the owner saw in the app,
+  which is real evidence and is not evidence this repo holds.
+- The retro corpus never had enough to say anything: at close, six of thirty
+  frameworks carried any life scene at all, and only one of those had a
+  measured Threads row.
+
+What the rule replaced the experiment with is `scripts/audit_grounding.py`,
+which grades every unit, carousel and caption on all three channels and fails
+the build on anything unpublished that opens away from the reader. A style rule
+nobody checks is a style rule that decays; that script is the part of this card
+that survives.
+
+**If the direction is ever worth measuring again**, it cannot be done by writing
+some posts flat — the rule forbids it. It would have to be a comparison of
+*where* the scene sits (opening vs middle), which is a different card.
