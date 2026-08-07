@@ -26,6 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write            # commit the refreshed shortlist
+      actions: read              # job_health.py reads this repo's run history
+      # Naming any permission drops every unnamed one to none, so `actions`
+      # has to be spelled out — without it the run listing 403s and the health
+      # check reports "unmeasured" forever while looking like it works.
     env:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       NOTION_ARTICLE_LIBRARY_DB: "2089131e-0973-4b7d-8f10-3c39cef7a63f"
@@ -60,3 +64,14 @@ jobs:
       # the failure notice is only useful if it points at a current file.
       - name: Check the runway
         run: python scripts/runway.py --check
+
+      # Whether the jobs ran at all, which nothing else watches: a scheduled run
+      # GitHub never creates leaves no entry and no log, so this is the only
+      # place it becomes visible. `always()` because the two checks answer
+      # different questions — an empty queue must not hide a dead cron, and a
+      # dead cron is usually why the queue emptied.
+      - name: Check that the scheduled jobs are still running
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/job_health.py --check
