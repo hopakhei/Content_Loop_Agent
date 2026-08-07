@@ -14,8 +14,20 @@ import job_health as jh  # noqa: E402
 
 
 def test_floor_is_half_the_expected_count():
-    assert jh.floor_for(48) == 24
+    assert jh.floor_for(24) == 12
     assert jh.floor_for(2) == 1
+
+
+def test_the_dm_loops_normal_delivery_does_not_fire():
+    """Measured 2026-08-04..08-06: 26 runs, then 21 on the day of the runner
+    shortage, against a cron asking for 48. Both are the schedule working as
+    well as it ever does, and an alarm on either would fire most days."""
+    assert not jh.short({"instagram-dm.yml": {"runs": 26, "failed": 0}})
+    assert not jh.short({"instagram-dm.yml": {"runs": 21, "failed": 7}})
+
+
+def test_delivery_collapsing_does_fire():
+    assert jh.short({"instagram-dm.yml": {"runs": 8, "failed": 0}})
 
 
 def test_a_daily_job_that_did_not_run_is_always_short():
@@ -25,16 +37,9 @@ def test_a_daily_job_that_did_not_run_is_always_short():
     assert jh.short({"post.yml": {"runs": 0, "failed": 0}})
 
 
-def test_routine_dropping_does_not_fire():
-    """GitHub drops scheduled runs constantly. An alarm at the full count would
-    fire most days and get muted."""
-    assert not jh.short({w: {"runs": jh.EXPECTED_PER_DAY[w], "failed": 0}
-                         for w in jh.EXPECTED_PER_DAY})
-    assert not jh.short({"instagram-dm.yml": {"runs": 30, "failed": 0}})
-
-
-def test_half_the_dm_loop_missing_fires():
-    assert jh.short({"instagram-dm.yml": {"runs": 12, "failed": 0}})
+def test_every_workflow_at_its_expected_count_is_healthy():
+    assert not jh.short({w: {"runs": n, "failed": 0}
+                         for w, n in jh.EXPECTED_PER_DAY.items()})
 
 
 def test_a_workflow_that_ran_but_failed_every_time_fires():
@@ -42,12 +47,6 @@ def test_a_workflow_that_ran_but_failed_every_time_fires():
     would call it healthy."""
     problems = jh.short({"learn.yml": {"runs": 1, "failed": 1}})
     assert problems and "failed" in problems[0]
-
-
-def test_partial_failure_does_not_fire():
-    """Seven bad runs out of fifty is the 2026-08-06 shortage, which cleared on
-    its own. Firing on that would report an outage GitHub already fixed."""
-    assert not jh.short({"instagram-dm.yml": {"runs": 41, "failed": 7}})
 
 
 def test_an_unreadable_workflow_is_never_reported_as_short():
