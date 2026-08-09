@@ -13,10 +13,11 @@ of 東西 and 19 of 這件事, the two vague-referent bans, against a single 其
 A rule enforced by whoever remembers it is enforced on the memorable clauses.
 
     python scripts/audit_style.py            # full table
-    python scripts/audit_style.py --check    # exit 1 on anything unpublished
+    python scripts/audit_style.py --check    # exit 1 on any unit
 
-Like the grounding audit, `--check` grades only what has not gone out. Posts
-already published are reported and never fail the build.
+Unlike the grounding audit, this one has no grandfather clause: a unit file is
+always editable, and it doubles as the specification the auto-producer copies
+when AUTOPRODUCER.md tells it to read two shipped units and match them.
 """
 from __future__ import annotations
 
@@ -125,18 +126,16 @@ def render(rows: list[dict], posted: set[str]) -> str:
         n_bans = sum(n for _, n in r["bans"])
         flag = "" if r["ok"] else "  <-"
         out.append(f"{r['slug']:30}{r['segments']:>5}{n_bans:>6}  {state}{flag}")
-    live = [r for r in rows if r["slug"] not in posted]
     out += ["",
-            f"{sum(1 for r in rows if r['ok'])}/{len(rows)} clean.",
-            f"Still fixable and failing: {sum(1 for r in live if not r['ok'])} "
-            f"of {len(live)}."]
+            f"{sum(1 for r in rows if r['ok'])}/{len(rows)} clean. "
+            "The state column is context, not an exemption — every unit is graded."]
     return "\n".join(out)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true",
-                    help="exit 1 when an unpublished unit breaks shape or the ban list")
+                    help="exit 1 when any unit breaks the shape or the ban list")
     args = ap.parse_args()
 
     rows = [audit(s) for s in framework_slugs()]
@@ -145,10 +144,16 @@ def main() -> None:
     if not args.check:
         return
 
-    bad = [r for r in rows if r["slug"] not in posted and not r["ok"]]
+    # Every unit, published or not. The grandfather clause came out once the
+    # whole corpus passed: unlike the grounding check, whose remaining failures
+    # are carousels that already dripped and can never be fixed, a unit file is
+    # always editable. And these files are the specification — AUTOPRODUCER.md
+    # points the hands-off Routine at shipped units and says "match them", so a
+    # published unit that breaks the shape teaches the next batch to break it.
+    bad = [r for r in rows if not r["ok"]]
     if not bad:
         return
-    print("\nNOT CLEAN (still publishable):")
+    print("\nNOT CLEAN:")
     for r in bad:
         print(f"  {r['slug']}")
         for p in problems(r):

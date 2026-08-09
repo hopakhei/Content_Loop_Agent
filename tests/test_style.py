@@ -13,18 +13,20 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 import audit_style as ast_  # noqa: E402
 
 
-def test_everything_still_publishable_is_clean():
+def test_every_unit_is_clean():
+    """No grandfather clause here, unlike the grounding check. A unit file is
+    always editable, and AUTOPRODUCER.md points the hands-off Routine at
+    shipped units and tells it to match them — so a published unit that breaks
+    the shape teaches the next batch to break it."""
     rows = [ast_.audit(s) for s in ast_.framework_slugs()]
-    posted = ast_.posted_slugs()
-    bad = {r["slug"]: ast_.problems(r) for r in rows
-           if r["slug"] not in posted and not r["ok"]}
-    assert not bad, f"unpublished units breaking shape or the ban list: {bad}"
+    bad = {r["slug"]: ast_.problems(r) for r in rows if not r["ok"]}
+    assert not bad, f"units breaking shape or the ban list: {bad}"
 
 
 def test_the_posted_ledger_is_not_empty():
-    """Every check that grandfathers published content depends on this file.
-    Empty means either a first run or a bad Notion read, and in the second case
-    the style check silently starts demanding edits to posts already read."""
+    """The grounding check grandfathers published carousels on this file, and
+    the style report labels rows with it. Empty means a first run or a bad
+    Notion read; the second case would quietly relabel the whole corpus."""
     assert len(ast_.posted_slugs()) >= 20
 
 
