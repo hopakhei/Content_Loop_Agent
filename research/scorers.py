@@ -138,15 +138,26 @@ def threads_link_arm(row: dict) -> Optional[str]:
 
 
 # Scenes from ordinary life, as opposed to boardrooms and balance sheets. The
-# list is the operational definition of "貼地" for H-005: a post is life-anchored
-# when its text puts the reader somewhere they actually stand in a normal week.
-# Editing this list after H-005 goes live would move posts between arms
-# retroactively — treat it as frozen while the card is in `testing`.
+# list is the operational definition of "貼地": a post is anchored when its text
+# puts the reader somewhere they actually stand in a normal week.
+#
+# It was frozen while H-005 was live, because editing it would have moved posts
+# between arms retroactively. H-005 closed on 2026-08-05, so the list is now
+# editable — and the second group below is the first edit, prompted by a piece
+# that failed for the right reason. MECE was anchored on packing a suitcase;
+# the owner's verdict was that sorting objects into bags has nothing to do with
+# decomposing a quantity so the parts sum to the whole, and he was right. The
+# replacement anchors on the reader's own airline miles, which turned out to be
+# worth more than the airline — a real case that is also in the reader's wallet.
+# So the vocabulary has to cover the things a consumer holds, not only the
+# places they stand.
 LIFE_NOUNS = (
     "奶昔", "早餐", "咖啡", "通勤", "排隊", "餐廳", "茶餐廳", "超市", "便利商店",
     "外送", "菜市場", "夜市", "衣櫃", "行李", "房租", "水電", "手機", "追劇",
     "健身房", "捷運", "公車", "計程車", "巷口", "樓下", "週末", "下班", "加班",
     "薪水", "帳單", "團購", "網購", "遊戲", "理髮", "洗衣",
+    # things the reader owns or carries, rather than places they go
+    "信用卡", "里程", "機票", "飛機", "訂閱", "會員", "保費", "貸款",
 )
 
 
