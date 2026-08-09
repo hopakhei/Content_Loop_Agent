@@ -6,6 +6,11 @@ about the framework. The batch drifted to nine segments — origin, mechanism,
 mechanism, scene, error, approach, investor angle, caveat, close — nine
 subjects with no spine, which reads as a list even when every line is true.
 
+**Plain language.** 鐵律零點七 sets the bar: explain it the way you would to a
+six-year-old. Consultant shorthand with a plain equivalent is banned outright;
+the terms the series actually teaches are not, because those have to be glossed
+rather than avoided, and no checker can tell the difference.
+
 **The de-AI list.** `.claude/skills/renhua/SKILL.md` bans a specific set of
 phrases. The de-AI pass has been catching the loud half (真正, 其實, 先別) and
 missing the common half: at the time this was written the corpus held 33 uses
@@ -62,6 +67,32 @@ BANS: list[tuple[str, re.Pattern]] = [
     ("含糊指代「這件事」", re.compile(r"這件事")),
 ]
 
+# Consultant and finance shorthand with a plain equivalent, banned outright.
+#
+# The standard is the owner's, verbatim: explain it the way you would to a
+# six-year-old. Every term here has a plain replacement listed in 鐵律零點七,
+# and none of them is the subject of a framework — so there is never a reason
+# to spend the reader's attention on decoding one.
+#
+# Terms the series actually teaches (護城河, 毛利率, 損益表, 議價能力, 本益比,
+# 客戶終身價值) are deliberately NOT here. They cannot be banned; the rule for
+# them is to gloss them in plain words on first use, and no checker can verify
+# that. This list covers only the part a machine can be trusted with.
+JARGON: list[tuple[str, re.Pattern]] = [
+    ("顧問行話「基點」", re.compile(r"基點")),
+    ("顧問行話「ROIC / 投入資本報酬」", re.compile(r"ROIC|投入資本報酬")),
+    ("顧問行話「EBITDA」", re.compile(r"EBITDA")),
+    ("顧問行話「綜效」", re.compile(r"綜效")),
+    ("顧問行話「資產減損」", re.compile(r"資產減損")),
+    ("顧問行話「資本密集度」", re.compile(r"資本密集")),
+    ("顧問行話「現金轉換循環」", re.compile(r"現金轉換循環")),
+    ("顧問行話「營運資金是負數」", re.compile(r"營運資金是負")),
+    ("顧問行話「對沖」", re.compile(r"對沖")),
+    ("顧問行話「敏感度分析」", re.compile(r"敏感度分析")),
+    ("顧問行話「decision-grade」", re.compile(r"decision-grade")),
+    ("顧問行話「開刀 / 第一刀」", re.compile(r"開刀|第一刀")),
+]
+
 
 def framework_slugs() -> list[str]:
     return sorted(p.stem for p in UNITS.glob("*.md") if not p.stem.isdigit())
@@ -85,7 +116,7 @@ def audit(slug: str) -> dict:
     text = " ".join(list(unit.hooks.values()) + [body])
 
     bans = []
-    for label, rx in BANS:
+    for label, rx in BANS + JARGON:
         found = rx.findall(text)
         if found:
             bans.append((label, len(found)))

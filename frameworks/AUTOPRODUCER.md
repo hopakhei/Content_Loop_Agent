@@ -135,6 +135,23 @@ pass the check — a scene that is not doing work reads worse than none.
 The same applies to the carousel (one slide with kicker `NN · 生活版`) and to
 the caption.
 
+**And it has to be understandable by a six-year-old.** That is the owner's
+standard, and it outranks completeness. MECE was rewritten three times before
+it passed: packing a suitcase did not carry the mechanism; United's $21.9bn
+MileagePlus valuation was real but needed three layers of background; what
+worked was the reader's own bank app at month end, two thousand over, sorting
+spending into categories that overlap and leave gaps. Same mechanism, no
+finance vocabulary.
+
+Test it by reading the paragraph aloud and asking whether somebody who has
+never bought a share would follow it. "It should be clear enough" is not the
+standard — the person writing always thinks it is clear.
+
+Consultant shorthand with a plain equivalent (基點, ROIC, EBITDA, 綜效, 對沖,
+敏感度分析, 開刀…) fails the build; see 鐵律零點七 for the replacement table.
+Terms the series actually teaches (護城河, 毛利率, 損益表) are allowed but must
+be glossed in plain words the first time they appear.
+
 This applies to **both** H-002 arms. Arm A opens on the reader's own holding;
 arm B opens on a scene the reader lives in — not on a scene from 1937.
 
