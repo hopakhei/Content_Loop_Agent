@@ -53,6 +53,11 @@ that started all of this.
 Read two shipped units first — `units/value-disciplines.md` and
 `units/profit-formula.md` — and match them. The shape that matters:
 
+- **Five body segments, not nine.** One story with a spine: the reader's
+  situation, how the framework works, the turn where intuition is wrong, what
+  they can do with it, your judgement. The full teaching goes in the Substack
+  piece. 鐵律二點六 in the x-post skill has the table; `scripts/audit_style.py`
+  fails the build on a sixth segment.
 - A comment header (the parser ignores everything above the first `---`).
 - `【N】【Thread】【X + Threads】` where **N is the framework's position in the
   series**. Count the non-numeric files in `units/` and continue from there.
@@ -163,6 +168,7 @@ The DM loop watches 全文/框架/案例; 案例 is the one this series uses.
 ```
 python scripts/next_frameworks.py
 python scripts/audit_grounding.py --check
+python scripts/audit_style.py --check
 python -m pytest -q
 python -c "
 from services.imagecard import load_carousel_spec, render_carousel

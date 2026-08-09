@@ -37,6 +37,14 @@ from core.parsing import parse_units                   # noqa: E402
 
 UNITS = ROOT / "units"
 LEDGER = ROOT / "state" / "inserted_units.txt"
+POSTED = ROOT / "state" / "posted_units.txt"
+
+POSTED_HEADER = """\
+# Framework slugs whose Thread draft has already posted. Written by
+# scripts/resync_drafts.py from Notion on every generate-pending run, so the
+# offline checks can tell "still fixable" from "the audience already read it".
+# Hand edits get overwritten; change Notion, not this file.
+"""
 
 # Draft titles are "#<slug>-<NN> <Content Type>" (loops/generate_loop.py). The
 # slug match is greedy so the split lands on the LAST hyphen: slugs contain both
@@ -68,6 +76,27 @@ def drift(draft, hooks: dict, post_body: str) -> list[str]:
     if post_body.strip() != (draft.post_body or "").strip():
         out.append("Post Body")
     return out
+
+
+def posted_slugs() -> set[str]:
+    """Framework slugs already published, read off the committed ledger."""
+    if not POSTED.exists():
+        return set()
+    return {ln.strip() for ln in POSTED.read_text("utf-8").splitlines()
+            if ln.strip() and not ln.lstrip().startswith("#")}
+
+
+def _write_posted(slugs: list[str], log: logging.Logger) -> None:
+    """Rewrite the posted ledger, but never shrink it on a bad read.
+
+    `no_live_draft` is derived from a Notion query. If that query returns
+    partial results the list looks shorter, and a plain overwrite would mark
+    published units as unpublished — which is how a check starts demanding
+    edits to posts the audience read weeks ago.
+    """
+    merged = sorted(posted_slugs() | set(slugs))
+    POSTED.write_text(POSTED_HEADER + "\n".join(merged) + "\n", encoding="utf-8")
+    log.info("posted ledger: %d slugs", len(merged))
 
 
 def run(dry_run: bool = False, log: logging.Logger | None = None) -> dict:
@@ -109,6 +138,14 @@ def run(dry_run: bool = False, log: logging.Logger | None = None) -> dict:
 
     log.info("resync: %d updated, %d already in sync, %d with no un-posted draft.",
              len(updated), len(in_sync), len(no_live_draft))
+
+    # Commit which slugs have gone out. The style and grounding checks run
+    # offline with no Notion token, and without this they cannot tell content
+    # that can still be fixed from content the audience already read — which is
+    # the difference between an alarm worth having and one that can never be
+    # silenced. This job already holds the answer; writing it down is free.
+    if not dry_run:
+        _write_posted(sorted(no_live_draft), log)
     # A ledger entry whose file has vanished is a real inconsistency, not a
     # no-op: something can post from Notion that no longer exists in git, and
     # nothing else in the pipeline checks for it.
