@@ -28,3 +28,7 @@ net-promoter
 profit-formula
 shared-value
 stress-testing
+business-model-canvas
+ecosystem-roles-map
+organizational-health-index
+rapid-decision-rights
