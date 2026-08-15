@@ -263,6 +263,11 @@ BOOK_CONTENTS: dict[str, list[str]] = {
 # framework slug -> units/<handle>.md, for the ones already published. The unit
 # handle is the short public one; the framework slug is the book's full name.
 UNIT_SLUGS = {
+    # batch 31-34
+    "rapid-decision-rights-framework": "rapid-decision-rights",
+    "business-model-canvas": "business-model-canvas",
+    "organizational-health-index": "organizational-health-index",
+    "ecosystem-roles-map": "ecosystem-roles-map",
     "porters-generic-strategies": "porter",
     "porters-five-forces": "five-forces",
     "bcg-growth-share-matrix": "bcg-matrix",

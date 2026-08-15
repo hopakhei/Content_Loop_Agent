@@ -64,7 +64,7 @@ growth-flywheel-framework,Growth Flywheel Framework,"Growth, Innovation & Disrup
 network-effects-map,Network Effects Map,"Growth, Innovation & Disruption",brief,backlog,,none,4
 mvp-learning-loop,MVP Learning Loop,"Growth, Innovation & Disruption",brief,backlog,,author,3
 design-thinking-double-diamond,Design Thinking Double Diamond,"Growth, Innovation & Disruption",brief,backlog,,dated,3
-business-model-canvas,Business Model Canvas,Business Model & Value Proposition,brief,backlog,,author,7
+business-model-canvas,Business Model Canvas,Business Model & Value Proposition,brief,published,business-model-canvas,author,7
 lean-canvas,Lean Canvas,Business Model & Value Proposition,brief,published,lean-canvas,author,8
 value-proposition-canvas,Value Proposition Canvas,Business Model & Value Proposition,brief,backlog,,author,3
 operating-model-canvas,Operating Model Canvas,Business Model & Value Proposition,brief,backlog,,dated,3
@@ -81,7 +81,7 @@ capability-map,Capability Map,"Capabilities, Organization & Operating Model",bri
 capability-maturity-model,Capability Maturity Model,"Capabilities, Organization & Operating Model",brief,backlog,,none,0
 span-of-control-layering-analysis,Span of Control & Layering Analysis,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
 raci-matrix,RACI Matrix,"Capabilities, Organization & Operating Model",brief,backlog,,none,0
-organizational-health-index,Organizational Health Index,"Capabilities, Organization & Operating Model",brief,backlog,,firm,0
+organizational-health-index,Organizational Health Index,"Capabilities, Organization & Operating Model",brief,published,organizational-health-index,firm,0
 agile-operating-model,Agile Operating Model,"Capabilities, Organization & Operating Model",brief,backlog,,dated,2
 shared-services-vs-business-partnering-model,Shared Services vs Business Partnering Model,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
 centers-of-excellence-design-framework,Centers of Excellence Design Framework,"Capabilities, Organization & Operating Model",brief,backlog,,none,1
@@ -89,7 +89,7 @@ strategic-alignment-model,Strategic Alignment Model,"Capabilities, Organization 
 digital-maturity-model,Digital Maturity Model,"Digital, Data, Platforms & Ecosystems",brief,published,digital-maturity,author,5
 digital-transformation-roadmap,Digital Transformation Roadmap,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,1
 platform-strategy-framework,Platform Strategy Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,6
-ecosystem-roles-map,Ecosystem Roles Map,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,8
+ecosystem-roles-map,Ecosystem Roles Map,"Digital, Data, Platforms & Ecosystems",brief,published,ecosystem-roles-map,none,8
 api-economy-framework,API Economy Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,5
 north-star-metric-framework,North Star Metric Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,4
 data-monetization-framework,Data Monetization Framework,"Digital, Data, Platforms & Ecosystems",brief,backlog,,none,6
@@ -139,7 +139,7 @@ uppsala-internationalization-model,Uppsala Internationalization Model,Internatio
 market-entry-mode-choice-framework,Market Entry Mode Choice Framework,International & Global Strategy,brief,backlog,,none,5
 global-integration-local-responsiveness-grid,Global Integration-Local Responsiveness Grid,International & Global Strategy,brief,backlog,,author,2
 global-value-chain-configuration-framework,Global Value Chain Configuration Framework,International & Global Strategy,brief,backlog,,none,0
-rapid-decision-rights-framework,RAPID Decision-rights Framework,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,firm,1
+rapid-decision-rights-framework,RAPID Decision-rights Framework,"Strategy Process, Problem Solving & Decision-Making",brief,published,rapid-decision-rights,firm,1
 influence-map,Influence Map,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,0
 kotters-eight-steps-for-change,Kotter's Eight Steps for Change,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,2
 rogers-diffusion-of-innovations-curve,Rogers Diffusion of Innovations Curve,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,2

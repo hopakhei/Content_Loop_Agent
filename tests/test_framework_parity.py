@@ -124,7 +124,9 @@ def test_every_framework_hook_carries_an_authority_signal():
                "狩野", "Maurya", "Coase", "Ghemawat", "MIT", "聯準會",
                # Rogers wrote Diffusion of Innovations (1962); the adoption
                # curve is his, and Moore's crossing-the-chasm sits on top of it.
-               "Rogers", "Moore")
+               "Rogers", "Moore",
+               # batch 31-34
+               "Osterwalder", "Pigneur")
     bare = []
     for path in sorted((BASE / "units").glob("*.md")):
         slug = path.stem

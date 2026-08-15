@@ -5,3 +5,7 @@ cage-distance
 shared-value
 stress-testing
 core-vs-non-core
+rapid-decision-rights
+business-model-canvas
+organizational-health-index
+ecosystem-roles-map
