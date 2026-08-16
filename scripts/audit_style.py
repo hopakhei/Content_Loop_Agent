@@ -17,6 +17,15 @@ missing the common half: at the time this was written the corpus held 33 uses
 of 東西 and 19 of 這件事, the two vague-referent bans, against a single 其實.
 A rule enforced by whoever remembers it is enforced on the memorable clauses.
 
+**Tics, not words.** The owner read the batch and said the AI flavour was still
+heavy. Every unit passed the ban list, so the problem was a level up: the same
+*move*, repeated. Measured 2026-08-16 across 34 units — 149 em-dashes (median 4
+a post, worst 9), 126 three-item enumerations (worst 10), and 31 of 34 posts
+ending on the identical "下一個框架是 X：Y". None of that is catchable one
+sentence at a time, which is why it survived every previous pass. Two of the
+three are per-unit caps; the closing is a corpus-level count, because a single
+post ending that way is a style and thirty-one is a template.
+
     python scripts/audit_style.py            # full table
     python scripts/audit_style.py --check    # exit 1 on any unit
 
@@ -27,6 +36,7 @@ when AUTOPRODUCER.md tells it to read two shipped units and match them.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -38,6 +48,8 @@ if str(ROOT) not in sys.path:
 from core.parsing import parse_units          # noqa: E402
 
 UNITS = ROOT / "units"
+CAROUSELS = ROOT / "carousels"
+QUEUE = ROOT / "queue" / "carousel_queue.txt"
 POSTED = ROOT / "state" / "posted_units.txt"
 
 # One story, five beats: the reader's situation, the framework, the turn, what
@@ -50,6 +62,39 @@ MAX_SEGMENTS = 5
 MIN_SEGMENT_CHARS = 110
 # Threads breaks at 500. Past roughly this, a segment is two segments.
 MAX_SEGMENT_CHARS = 260
+
+# The em-dash pivot: a judgement, then —— , then a dramatic elaboration. One a
+# post is punctuation; four is a habit the reader hears. Both public de-AI
+# skills flag it independently (shyuan/writing-humanizer 模式 13,
+# op7418/Humanizer-zh #13), and it was the single densest tic in the corpus.
+MAX_EM_DASH = 2
+
+# Rhetorical triads — "X、Y、Z" as a rhythm rather than as a real list. The
+# cap is deliberately not a ban: a framework with five parts gets to name five
+# parts, so upstream's "rewrite every triad as two or four items" would cut
+# into the subject matter. Four separate enumerations in an 850-character post
+# is already more than any of them is earning.
+MAX_TRIADS = 4
+_TRIAD = re.compile(r"[^，。、！？\n]{2,10}、[^，。、！？\n]{2,10}、[^，。、！？\n]{2,10}")
+# The series' own name. It is three proper nouns in a fixed order, not a
+# rhetorical triad, and it appears in most units by design — counting it would
+# push units over the cap for saying what the channel is called.
+_TRIAD_EXEMPT = "McKinsey、BCG、Bain"
+
+# Corpus-level. Handing off to the next framework is a real series device and
+# it stays; what does not stay is every post making the handoff with the same
+# sentence. The ceiling is roughly six in ten, which leaves the device intact
+# and forces the rest to close on a fact, a judgement, or something the reader
+# can do tonight.
+CLOSING_TIC = re.compile(r"下一個框架")
+MAX_CLOSING_TIC = 20
+
+# Instagram was never graded by this script, and it turned out to be where the
+# tic was densest: 236 em-dashes across the deck files against 149 in the
+# units, plus jargon (對沖, 敏感度分析) that the unit ban list would have
+# rejected outright. A deck plus its caption runs roughly three times the text
+# of a unit, so the cap is scaled rather than copied.
+MAX_EM_DASH_CAROUSEL = 4
 
 # The renhua ban list, in the Traditional forms this channel publishes in.
 # Each entry is (label, pattern). Kept as data so the report can name the rule
@@ -122,15 +167,71 @@ def audit(slug: str) -> dict:
             bans.append((label, len(found)))
 
     lens = [len(s) for s in segs]
+    dashes = text.count("——")
+    triads = len(_TRIAD.findall(text.replace(_TRIAD_EXEMPT, "本系列")))
     return {
         "slug": slug,
         "segments": len(segs),
         "too_long": [i + 1 for i, n in enumerate(lens) if n > MAX_SEGMENT_CHARS],
         "too_short": [i + 1 for i, n in enumerate(lens) if n < MIN_SEGMENT_CHARS],
         "bans": bans,
+        "dashes": dashes,
+        "triads": triads,
+        "closing_tic": bool(CLOSING_TIC.search(segs[-1] if segs else "")),
         "ok": (len(segs) <= MAX_SEGMENTS and not bans
+               and dashes <= MAX_EM_DASH and triads <= MAX_TRIADS
                and all(MIN_SEGMENT_CHARS <= n <= MAX_SEGMENT_CHARS for n in lens)),
     }
+
+
+def queued() -> list[str]:
+    """Carousels a reader has not seen yet. Same source of truth the grounding
+    audit uses, and the same reason: a deck that already dripped cannot be
+    fixed, so failing the build over it would train everyone to ignore the
+    alarm. The file still gets graded and printed — it just does not gate."""
+    if not QUEUE.exists():
+        return []
+    return [ln.strip() for ln in QUEUE.read_text("utf-8").splitlines()
+            if ln.strip() and not ln.lstrip().startswith("#")]
+
+
+def carousel_text(slug: str) -> str:
+    """Everything a reader actually reads: the caption plus every slide's
+    kicker, head, subtitle and body."""
+    path = CAROUSELS / f"{slug}.json"
+    if not path.exists():
+        return ""
+    spec = json.loads(path.read_text("utf-8"))
+    parts = [spec.get("caption", "")]
+    for slide in spec.get("slides", []):
+        parts += [str(slide.get(k, "")) for k in ("kicker", "head", "sub", "body")]
+    return "\n".join(p for p in parts if p)
+
+
+def audit_carousel(slug: str) -> dict:
+    text = carousel_text(slug)
+    bans = []
+    for label, rx in BANS + JARGON:
+        found = rx.findall(text)
+        if found:
+            bans.append((label, len(found)))
+    dashes = text.count("——")
+    return {
+        "slug": slug,
+        "exists": bool(text),
+        "dashes": dashes,
+        "bans": bans,
+        "ok": not bans and dashes <= MAX_EM_DASH_CAROUSEL,
+    }
+
+
+def carousel_problems(row: dict) -> list[str]:
+    out = []
+    if row["dashes"] > MAX_EM_DASH_CAROUSEL:
+        out.append(f"破折號 —— ×{row['dashes']} (max {MAX_EM_DASH_CAROUSEL})")
+    for label, n in row["bans"]:
+        out.append(f"{label} ×{n}")
+    return out
 
 
 def problems(row: dict) -> list[str]:
@@ -143,23 +244,37 @@ def problems(row: dict) -> list[str]:
     if row["too_short"]:
         out.append(f"segment(s) {row['too_short']} under {MIN_SEGMENT_CHARS} chars "
                    "— a segment that short is a bullet")
+    if row["dashes"] > MAX_EM_DASH:
+        out.append(f"破折號 —— ×{row['dashes']} (max {MAX_EM_DASH}) — the pivot "
+                   "move; swap for a comma, a full stop, or two sentences")
+    if row["triads"] > MAX_TRIADS:
+        out.append(f"三項並列 X、Y、Z ×{row['triads']} (max {MAX_TRIADS}) — "
+                   "keep the ones that are a real list, cut the ones that are rhythm")
     for label, n in row["bans"]:
         out.append(f"{label} ×{n}")
     return out
 
 
+def closing_tic_count(rows: list[dict]) -> int:
+    return sum(1 for r in rows if r["closing_tic"])
+
+
 def render(rows: list[dict], posted: set[str]) -> str:
     out = ["Style audit — story shape and the de-AI list", "",
-           f"{'framework':30}{'segs':>5}{'bans':>6}  state"]
-    out.append("-" * 60)
+           f"{'framework':30}{'segs':>5}{'bans':>6}{'——':>5}{'X、Y、Z':>8}  state"]
+    out.append("-" * 72)
     for r in rows:
         state = "published" if r["slug"] in posted else "still fixable"
         n_bans = sum(n for _, n in r["bans"])
         flag = "" if r["ok"] else "  <-"
-        out.append(f"{r['slug']:30}{r['segments']:>5}{n_bans:>6}  {state}{flag}")
+        out.append(f"{r['slug']:30}{r['segments']:>5}{n_bans:>6}"
+                   f"{r['dashes']:>5}{r['triads']:>8}  {state}{flag}")
+    tic = closing_tic_count(rows)
     out += ["",
             f"{sum(1 for r in rows if r['ok'])}/{len(rows)} clean. "
-            "The state column is context, not an exemption — every unit is graded."]
+            "The state column is context, not an exemption — every unit is graded.",
+            f"Closing handoff「下一個框架」: {tic}/{len(rows)} "
+            f"(max {MAX_CLOSING_TIC}) — a corpus-level tic, invisible one post at a time."]
     return "\n".join(out)
 
 
@@ -172,6 +287,14 @@ def main() -> None:
     rows = [audit(s) for s in framework_slugs()]
     posted = posted_slugs()
     print(render(rows, posted))
+
+    pending = set(queued())
+    decks = [audit_carousel(s) for s in framework_slugs()]
+    decks = [d for d in decks if d["exists"]]
+    bad_decks = [d for d in decks if not d["ok"]]
+    print(f"\nInstagram decks: {sum(1 for d in decks if d['ok'])}/{len(decks)} clean "
+          f"({sum(1 for d in bad_decks if d['slug'] in pending)} of them still in the "
+          "drip queue and therefore fixable).")
     if not args.check:
         return
 
@@ -182,15 +305,36 @@ def main() -> None:
     # points the hands-off Routine at shipped units and says "match them", so a
     # published unit that breaks the shape teaches the next batch to break it.
     bad = [r for r in rows if not r["ok"]]
-    if not bad:
+    tic = closing_tic_count(rows)
+    bad_queued = [d for d in bad_decks if d["slug"] in pending]
+    if not bad and not bad_queued and tic <= MAX_CLOSING_TIC:
         return
-    print("\nNOT CLEAN:")
-    for r in bad:
-        print(f"  {r['slug']}")
-        for p in problems(r):
-            print(f"    - {p}")
+    if bad_queued:
+        print("\nDECKS NOT CLEAN (still in the queue, so still fixable):")
+        for d in bad_queued:
+            print(f"  carousels/{d['slug']}.json")
+            for p in carousel_problems(d):
+                print(f"    - {p}")
+    if bad:
+        print("\nNOT CLEAN:")
+        for r in bad:
+            print(f"  {r['slug']}")
+            for p in problems(r):
+                print(f"    - {p}")
+    if tic > MAX_CLOSING_TIC:
+        print(f"\nCORPUS-LEVEL: {tic} of {len(rows)} units close on 「下一個框架」 "
+              f"(max {MAX_CLOSING_TIC}).")
+        print("  Every one of them reads fine alone. Read five in a row and it is a "
+              "template.\n  Keep the handoff where it earns its place — move it into "
+              "the middle of the\n  last segment, or close on a fact, a judgement, or "
+              "something the reader can do\n  tonight, and let the next framework be a "
+              "surprise.")
+        for r in rows:
+            if r["closing_tic"]:
+                print(f"    - {r['slug']}")
     print("\nShape: 鐵律二點六 in .claude/skills/x-post/SKILL.md. "
-          "Phrases: .claude/skills/renhua/SKILL.md.")
+          "Phrases: .claude/skills/renhua/SKILL.md. "
+          "Tics: 篇級 in .claude/skills/content-anti-ai/SKILL.md.")
     sys.exit(1)
 
 

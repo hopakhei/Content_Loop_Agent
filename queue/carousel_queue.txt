@@ -1,12 +1,10 @@
 # Carousel drip queue — one carousels/<id>.json per line, published top-first,
 # one per day by carousel-drip.yml. Lines starting with # are comments.
 # Only put reviewed/approved specs here; an empty queue publishes nothing.
-mece-principle
-mckinsey-7s
-digital-maturity
-lean-canvas
-make-buy
-cage-distance
 shared-value
 stress-testing
 core-vs-non-core
+rapid-decision-rights
+business-model-canvas
+organizational-health-index
+ecosystem-roles-map
