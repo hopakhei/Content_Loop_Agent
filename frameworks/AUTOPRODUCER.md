@@ -162,6 +162,26 @@ The skills in `.claude/skills/` are the voice: `x-post` for the thread,
 and `renhua` for the de-AI pass. Run the de-AI pass — nobody reviews this
 before it publishes.
 
+**Read 篇級 in `content-anti-ai` before you write, not after.** The word-level
+and sentence-level lists were passing on every unit while the owner still read
+the batch as heavy AI. What he was hearing was one move repeated: 149 em-dashes
+across 34 posts, 126 three-item enumerations, and 31 of 34 posts closing on the
+same sentence. Those are now capped, and the caps are per unit *and* per deck:
+
+| | cap | where |
+|---|---|---|
+| `——` | 2 per unit, 4 per carousel | statement, dash, dramatic elaboration — that move |
+| `X、Y、Z` | 4 per unit | real lists are fine;湊三 to sound complete is not |
+| 「下一個框架」 | 20 of 34 units | keep the handoff, vary the sentence |
+
+Writing a fifth em-dash is not a style disagreement the checker will lose — it
+exits 1. If the handoff cap is already spent, close on a fact, a judgement, or
+something the reader can do tonight, and let the next framework be a surprise.
+
+`scripts/audit_style.py` now grades the Instagram deck and its caption too, not
+just the unit. Decks that already dripped are grandfathered; anything still in
+`queue/carousel_queue.txt` has to pass, jargon list included.
+
 Two rules that override anything a prompt might say:
 
 - **Traditional Chinese, readable in Taiwan. No Cantonese or HK-specific
