@@ -39,13 +39,23 @@ import argparse
 import json
 import re
 import sys
+from difflib import SequenceMatcher
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from core.composition import compose_posts    # noqa: E402
+from core.models import Draft                 # noqa: E402
 from core.parsing import parse_units          # noqa: E402
+
+_SENTENCE = re.compile(r"(?<=[。！？])")
+_PLAIN = re.compile(r"[，。、；：！？「」『』（）\s]+")
+
+
+def _plain(text: str) -> str:
+    return _PLAIN.sub("", text)
 
 UNITS = ROOT / "units"
 CAROUSELS = ROOT / "carousels"
@@ -95,6 +105,17 @@ MAX_CLOSING_TIC = 20
 # rejected outright. A deck plus its caption runs roughly three times the text
 # of a unit, so the cap is scaled rather than copied.
 MAX_EM_DASH_CAROUSEL = 4
+
+# The reader sees hook + body, so a body that opens by restating its hook prints
+# the same sentence twice. `core.composition` removes a clean restatement before
+# posting, but it can only remove what it can recognise: a *reworded* echo
+# (「你挑一支牙膏」 against 「你在超市挑一支牙膏」) slips past and ships.
+#
+# This grades what the reader actually gets — hook composed onto body, for every
+# arm — because that is the only place the fault is visible. The way to pass is
+# to write the body's opening as the hook verbatim: the composer then strips it
+# cleanly for arm B, and arms A and C still get the scene 鐵律零點六 asks for.
+MAX_OPENING_ECHO = 0.6
 
 # The renhua ban list, in the Traditional forms this channel publishes in.
 # Each entry is (label, pattern). Kept as data so the report can name the rule
@@ -154,6 +175,29 @@ def segments(body: str) -> list[str]:
     return [s.strip() for s in body.split("\n---\n") if s.strip()]
 
 
+def opening_echo(unit) -> list[tuple[str, float]]:
+    """Per hook arm, how much the composed post's first body sentence still
+    repeats the hook above it. Runs the real composer, so it measures the page
+    the reader gets rather than the file on disk."""
+    draft = Draft(id="audit", title="audit", content_type="Thread",
+                  post_body=unit.post_body, hooks=unit.hooks)
+    out = []
+    for key, hook in (unit.hooks or {}).items():
+        if not hook or not hook.strip():
+            continue
+        posts = compose_posts(draft, hook, None)
+        if not posts or "\n\n" not in posts[0]:
+            continue
+        head, rest = posts[0].split("\n\n", 1)
+        first = next((s for s in _SENTENCE.split(rest) if s.strip()), "")
+        if not first:
+            continue
+        ratio = SequenceMatcher(None, _plain(head), _plain(first)).ratio()
+        if ratio > MAX_OPENING_ECHO:
+            out.append((key, round(ratio, 2)))
+    return out
+
+
 def audit(slug: str) -> dict:
     unit = parse_units((UNITS / f"{slug}.md").read_text("utf-8"))[0]
     body = unit.post_body.replace("{CTA_URL}", "").strip()
@@ -167,6 +211,7 @@ def audit(slug: str) -> dict:
             bans.append((label, len(found)))
 
     lens = [len(s) for s in segs]
+    echo = opening_echo(unit)
     dashes = text.count("——")
     triads = len(_TRIAD.findall(text.replace(_TRIAD_EXEMPT, "本系列")))
     return {
@@ -178,7 +223,8 @@ def audit(slug: str) -> dict:
         "dashes": dashes,
         "triads": triads,
         "closing_tic": bool(CLOSING_TIC.search(segs[-1] if segs else "")),
-        "ok": (len(segs) <= MAX_SEGMENTS and not bans
+        "echo": echo,
+        "ok": (len(segs) <= MAX_SEGMENTS and not bans and not echo
                and dashes <= MAX_EM_DASH and triads <= MAX_TRIADS
                and all(MIN_SEGMENT_CHARS <= n <= MAX_SEGMENT_CHARS for n in lens)),
     }
@@ -247,6 +293,10 @@ def problems(row: dict) -> list[str]:
     if row["dashes"] > MAX_EM_DASH:
         out.append(f"破折號 —— ×{row['dashes']} (max {MAX_EM_DASH}) — the pivot "
                    "move; swap for a comma, a full stop, or two sentences")
+    for key, ratio in row["echo"]:
+        out.append(f"Hook {key} 之後第一句重複咗個 hook（{ratio:.2f}）— the reader gets "
+                   "the same sentence twice; write the body's opening as the hook "
+                   "verbatim so the composer can strip it")
     if row["triads"] > MAX_TRIADS:
         out.append(f"三項並列 X、Y、Z ×{row['triads']} (max {MAX_TRIADS}) — "
                    "keep the ones that are a real list, cut the ones that are rhythm")
