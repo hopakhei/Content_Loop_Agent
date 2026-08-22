@@ -155,6 +155,16 @@ be glossed in plain words the first time they appear.
 This applies to **both** H-002 arms. Arm A opens on the reader's own holding;
 arm B opens on a scene the reader lives in — not on a scene from 1937.
 
+**And because arm B is a scene, it will be the same scene the body opens on.
+Write the body's opening sentence as Hook B's text, character for character.**
+The reader is shown hook-above-body, so the collision prints one sentence
+twice; `compose_posts` strips the body's copy for arm B, but only when it can
+recognise it. A rewording cannot be recognised — 「你挑一支牙膏」 against
+「你在超市挑一支牙膏」 shipped as a duplicate for weeks. Copy the hook verbatim
+and put any extra detail in the *next* sentence; arms A and C still get their
+scene, and `scripts/audit_style.py --check` composes all three arms and fails
+the build if what the reader sees repeats itself.
+
 ## Voice and accuracy
 
 The skills in `.claude/skills/` are the voice: `x-post` for the thread,

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import random
 import re
+from difflib import SequenceMatcher
 from typing import Optional
 
 from core.models import Draft, Rules
@@ -112,6 +113,110 @@ def _bare_cta(segment: str, cta_url: str) -> str:
     return "\n".join(lines)
 
 
+# Two ways a body opening can be the hook again, because they fail differently.
+#
+# _ECHO_RATIO catches "these two say the same thing": the accumulated opening
+# and the hook are near-identical overall. It is what handles a hook that spans
+# two of the body's sentences.
+#
+# _ECHO_COVERAGE catches "this sentence is already inside the hook": the hook
+# says more afterwards, so the overall similarity is capped and never reaches
+# _ECHO_RATIO, but the reader still gets the sentence twice. Only runs of
+# _ECHO_MIN_RUN characters or longer count toward it — in Chinese, scattered
+# single-character hits on 的/你/是 are noise, not repetition.
+#
+# _ECHO_MIN_SENTENCE is the floor that stops the coverage rule firing on a
+# short sentence. 「它靠什麼賺錢？」 is six characters, five of which appear in a
+# Hook A that is otherwise about something else — enough to score 0.83 and eat
+# the reader-life scene 鐵律零點六 requires. A sentence has to be long enough
+# for the overlap to mean something.
+_ECHO_RATIO = 0.75
+_ECHO_COVERAGE = 0.8
+_ECHO_MIN_RUN = 4
+_ECHO_MIN_SENTENCE = 12
+_ECHO_OVERSHOOT = 1.15
+# Only the opening of a segment can echo a hook. Past three sentences the body
+# has moved on, and a stray match would eat real content.
+_ECHO_MAX_SENTENCES = 3
+_SENTENCE_END = re.compile(r"(?<=[。！？])")
+_PUNCT = re.compile(r"[，。、；：！？「」『』（）\s,.;:!?\"'()]+")
+
+
+def _norm(text: str) -> str:
+    """Punctuation-free form for comparison.
+
+    The old guard compared raw strings with `startswith`, so a hook and a body
+    opening that differed by a single comma — 「月底結帳時，未必」 against
+    「月底結帳時未必」 — read as different text and the post went out with its
+    first sentence printed twice. Comparing on letters only is what makes the
+    check survive the copy-editing that always happens to one copy and not the
+    other."""
+    return _PUNCT.sub("", text)
+
+
+def _covered_by(sentence: str, head: str) -> float:
+    """Fraction of `sentence` that already appears verbatim inside `head`,
+    counting only runs of `_ECHO_MIN_RUN` characters or more."""
+    if not sentence:
+        return 0.0
+    matched = sum(
+        b.size for b in SequenceMatcher(None, sentence, head).get_matching_blocks()
+        if b.size >= _ECHO_MIN_RUN
+    )
+    return matched / len(sentence)
+
+
+def _merge_hook(segment: str, hook: str) -> str:
+    """Return the first post's text: `hook` above `segment`, minus the repeat.
+
+    Three shapes, because a body opening can relate to its hook three ways:
+
+    1. The body already opens with the hook. Post the body alone — it is the
+       hook plus whatever it goes on to say.
+    2. The body's first sentence contains the hook and adds to it
+       (「…但你講不出它替你做過什麼；也有幾筆你嫌貴，卻怎樣都捨不得停。」). Post the
+       body alone for the same reason; prepending would print the shared half
+       twice, and dropping the sentence would lose the half only it has.
+    3. The body restates the hook and then moves on. Drop the restatement —
+       one, two or three sentences, since Hook B is often the body's first two
+       — and put the hook on top.
+
+    A hook that opens somewhere else entirely matches none of these and leaves
+    the body untouched, which is what keeps arm A and arm C's everyday scene.
+    """
+    head = _norm(hook)
+    if not head or not segment.strip():
+        return f"{hook}\n\n{segment}".strip() if segment.strip() else hook
+
+    sentences = [s for s in _SENTENCE_END.split(segment) if s.strip()]
+    if _norm(segment).startswith(head):
+        return segment
+    if sentences and _covered_by(head, _norm(sentences[0])) >= _ECHO_COVERAGE:
+        return segment
+
+    drop, acc = 0, ""
+    for k, sentence in enumerate(sentences[:_ECHO_MAX_SENTENCES], start=1):
+        one = _norm(sentence)
+        acc += one
+        # Once the accumulation runs past the hook, the restatement rule is
+        # done: a matching prefix keeps the ratio high no matter what follows,
+        # which would let it swallow the rest of the body one sentence at a
+        # time. Past that point only outright containment can drop a sentence.
+        restated = (len(acc) <= len(head) * _ECHO_OVERSHOOT
+                    and SequenceMatcher(None, acc, head).ratio() >= _ECHO_RATIO)
+        contained = (len(one) >= _ECHO_MIN_SENTENCE
+                     and _covered_by(one, head) >= _ECHO_COVERAGE)
+        if not (restated or contained):
+            # Stop at the first sentence that is not an echo. Carrying on would
+            # let a later match delete this one, which is how a body that opens
+            # on the reader's own week loses the scene it needs.
+            break
+        drop = k
+
+    rest = "".join(sentences[drop:]).strip() if drop else segment
+    return f"{hook}\n\n{rest}" if rest else hook
+
+
 def compose_posts(
     draft: Draft,
     hook_text: Optional[str],
@@ -142,16 +247,10 @@ def compose_posts(
     if cta_url:
         segments = [_bare_cta(s, cta_url) for s in segments]
 
-    # 2. Prepend the chosen hook to the first post/tweet — unless the body
-    # already opens with that exact hook (some drafts lead with Hook A's text;
-    # prepending it again would post the same sentence twice).
+    # 2. Prepend the chosen hook to the first post/tweet, dropping whatever the
+    # body opens with if it is the same thing said again.
     if hook_text and hook_text.strip():
-        head = hook_text.strip()
-        first = segments[0].strip()
-        if first.startswith(head):
-            segments[0] = first
-        else:
-            segments[0] = f"{head}\n\n{first}" if first else head
+        segments[0] = _merge_hook(segments[0].strip(), hook_text.strip())
 
     return [s.strip() for s in segments if s.strip()]
 
