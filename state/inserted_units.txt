@@ -32,3 +32,11 @@ business-model-canvas
 ecosystem-roles-map
 organizational-health-index
 rapid-decision-rights
+aaa-global-strategy
+adjacency-expansion
+collective-impact
+customer-lifetime-value
+decision-quality-chain
+house-of-quality
+real-options-valuation
+seven-degrees-of-freedom
