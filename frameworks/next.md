@@ -14,18 +14,18 @@ A ✅ in the last column means `frameworks/factsheets/<slug>.md` exists, so a se
 
 | # | Framework | Category | Score | Why | Fact sheet |
 |---|---|---|---|---|---|
-| 1 | Competitor Response Profile | Industry & Market Structure | 0.35 | named author or institution; 9 investing terms in source; 4 already ahead of it in this category | — |
-| 2 | Global Integration-Local Responsiveness Grid | International & Global Strategy | 0.3 | named author or institution; 2 investing terms in source; 2 already ahead of it in this category | — |
-| 3 | B2B2C Value Chain Mapping | Business Model & Value Proposition | 0.15 | named author or institution; 5 investing terms in source; 3 already ahead of it in this category | — |
-| 4 | Strategic Alignment Model | Capabilities, Organization & Operating Model | -0.05 | named author or institution; 1 investing term in source; 2 already ahead of it in this category | — |
-| 5 | Scenario Planning | Risk, Uncertainty & Scenarios | -0.15 | dated origin only; 5 investing terms in source; 2 already ahead of it in this category | — |
-| 6 | Triple Bottom Line | Social Impact, ESG & Public Value | -0.15 | dated origin only; 5 investing terms in source; 2 already ahead of it in this category | — |
-| 7 | Data Monetization Framework | Digital, Data, Platforms & Ecosystems | -0.3 | 6 investing terms in source; 2 already ahead of it in this category | — |
-| 8 | Service Blueprinting | Operations, Supply Chain & Efficiency | -0.4 | named author or institution; 2 already ahead of it in this category | — |
-| 9 | SBU Segmentation Framework | Corporate & Portfolio Strategy | -0.55 | originated by one of the three firms; 7 investing terms in source; 5 already ahead of it in this category | — |
-| 10 | Management Flight Simulators | Strategy Process, Problem Solving & Decision-Making | -0.55 | named author or institution; 3 investing terms in source; 3 already ahead of it in this category | — |
-| 11 | Business Model Patterns Library | Business Model & Value Proposition | -1.05 | named author or institution; 5 investing terms in source; 4 already ahead of it in this category | — |
-| 12 | Share of Wallet Framework | Customer, Marketing & Brand | -1.15 | 7 investing terms in source; 3 already ahead of it in this category | — |
+| 1 | Competitor Response Profile | Industry & Market Structure | 0.35 | named author or institution; 9 investing terms in source; 4 already ahead of it in this category | ✅ |
+| 2 | Global Integration-Local Responsiveness Grid | International & Global Strategy | 0.3 | named author or institution; 2 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 3 | B2B2C Value Chain Mapping | Business Model & Value Proposition | 0.15 | named author or institution; 5 investing terms in source; 3 already ahead of it in this category | ✅ |
+| 4 | Strategic Alignment Model | Capabilities, Organization & Operating Model | -0.05 | named author or institution; 1 investing term in source; 2 already ahead of it in this category | ✅ |
+| 5 | Scenario Planning | Risk, Uncertainty & Scenarios | -0.15 | dated origin only; 5 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 6 | Triple Bottom Line | Social Impact, ESG & Public Value | -0.15 | dated origin only; 5 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 7 | Data Monetization Framework | Digital, Data, Platforms & Ecosystems | -0.3 | 6 investing terms in source; 2 already ahead of it in this category | ✅ |
+| 8 | Service Blueprinting | Operations, Supply Chain & Efficiency | -0.4 | named author or institution; 2 already ahead of it in this category | ✅ |
+| 9 | SBU Segmentation Framework | Corporate & Portfolio Strategy | -0.55 | originated by one of the three firms; 7 investing terms in source; 5 already ahead of it in this category | ✅ |
+| 10 | Management Flight Simulators | Strategy Process, Problem Solving & Decision-Making | -0.55 | named author or institution; 3 investing terms in source; 3 already ahead of it in this category | ✅ |
+| 11 | Business Model Patterns Library | Business Model & Value Proposition | -1.05 | named author or institution; 5 investing terms in source; 4 already ahead of it in this category | ✅ |
+| 12 | Share of Wallet Framework | Customer, Marketing & Brand | -1.15 | 7 investing terms in source; 3 already ahead of it in this category | ✅ |
 
 ## Category balance
 
