@@ -62,13 +62,36 @@ EXPECTED_PER_DAY = {
 # level where something is actually wrong rather than merely late.
 FLOOR_FRACTION = 0.5
 
-WINDOW_HOURS = 24
+# Two days, not one, because the window's own edges move.
+#
+# This check runs from runway.yml, whose 02:00 cron has been delivered anywhere
+# from 02:26 to 03:55 — and it measures jobs whose delivery drifts just as much
+# (fetch-backgrounds asks for 02:40 and has landed between 02:57 and 03:52).
+# A 24-hour window anchored on one drifting time, measuring another, only works
+# while the two drift together. On 2026-08-27 they did not: the check ran at
+# 03:55 and fetch-backgrounds ran at 04:27, so a job that was working was
+# reported dead. Across the preceding 24 days the median slack was 28 minutes
+# and the tightest 16, so that morning was the band being normal, not extreme.
+#
+# At 48 hours a daily job holds two runs and needs both to go missing before it
+# is called dead, which is the same 50% slack the DM loop already gets and which
+# a daily job could never have at 24 hours — half of one rounds up to one, so
+# every publishing job was one dropped cron away from a false alarm. The cost is
+# a day of detection lag on a job that has genuinely stopped. That is the right
+# trade for this repo: runway sat red for eleven days without being read, and an
+# alarm nobody believes is worth less than an alarm that arrives a day late.
+WINDOW_HOURS = 48
 
 
-def floor_for(expected: int) -> int:
-    """The smallest run count that is not a problem. Never below 1: a daily job
-    that did not run at all is the case this exists to catch."""
-    return max(1, math.floor(expected * FLOOR_FRACTION))
+def expected_in_window(per_day: int) -> int:
+    """The daily intent scaled to the window actually measured."""
+    return round(per_day * WINDOW_HOURS / 24)
+
+
+def floor_for(per_day: int) -> int:
+    """The smallest run count that is not a problem. Never below 1: a job that
+    did not run once across the whole window is the case this exists to catch."""
+    return max(1, math.floor(expected_in_window(per_day) * FLOOR_FRACTION))
 
 
 def _get(url: str, token: str) -> dict:
@@ -123,7 +146,7 @@ def short(c: dict) -> list[str]:
         fl = floor_for(expected)
         if n < fl:
             out.append(f"{wf}: {n} scheduled runs in {WINDOW_HOURS}h, expected "
-                       f"about {expected} (floor {fl})")
+                       f"about {expected_in_window(expected)} (floor {fl})")
         elif row.get("failed") and row["failed"] == n:
             out.append(f"{wf}: all {n} scheduled runs in {WINDOW_HOURS}h failed")
     return out
@@ -137,9 +160,11 @@ def render(c: dict) -> str:
         n, bad = row.get("runs"), row.get("failed")
         n_txt = "n/a" if n is None else str(n)
         bad_txt = "-" if bad is None else str(bad)
-        lines.append(f"  {wf:26}{n_txt:>5}{expected:>10}{floor_for(expected):>7}{bad_txt:>6}")
+        lines.append(f"  {wf:26}{n_txt:>5}{expected_in_window(expected):>10}"
+                     f"{floor_for(expected):>7}{bad_txt:>6}")
     lines.append(f"  Floor is {int(FLOOR_FRACTION * 100)}% of expected — GitHub drops "
                  "scheduled runs routinely, and a daily nag gets muted.")
+    lines.append("  Expected counts are for the whole window, not per day.")
     return "\n".join(lines)
 
 
