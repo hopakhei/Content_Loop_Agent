@@ -132,6 +132,23 @@ def counts(token: str, now: datetime | None = None) -> dict:
     return out
 
 
+# The workflow this check runs inside.
+#
+# Its run count still matters — if runway.yml stops firing, nothing here runs at
+# all and the silence should be reported the moment it starts again. Its
+# conclusions do not: this check is the last step of that workflow, so it is
+# usually the reason runway.yml is red. Judging it on that turns any alarm into
+# tomorrow's alarm and the day after's, with the monitor's own output as its
+# input — a check that cannot go green until it has already been green.
+#
+# Nothing caught this before because the in-flight run rescued it by accident:
+# a scheduled run counts itself, is not yet concluded, and so is not a failure,
+# which is why the row read "ran 1, bad 0" on the mornings it was failing. That
+# is not a rule, it is a coincidence of timing, and it disappears the moment the
+# check is run any other way.
+SELF = "runway.yml"
+
+
 def short(c: dict) -> list[str]:
     """Workflows below their floor, or where everything that ran came back bad.
 
@@ -147,6 +164,8 @@ def short(c: dict) -> list[str]:
         if n < fl:
             out.append(f"{wf}: {n} scheduled runs in {WINDOW_HOURS}h, expected "
                        f"about {expected_in_window(expected)} (floor {fl})")
+        elif wf == SELF:
+            continue
         elif row.get("failed") and row["failed"] == n:
             out.append(f"{wf}: all {n} scheduled runs in {WINDOW_HOURS}h failed")
     return out

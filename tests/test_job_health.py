@@ -64,6 +64,18 @@ def test_a_workflow_that_ran_but_failed_every_time_fires():
     assert problems and "failed" in problems[0]
 
 
+def test_the_check_does_not_judge_itself_on_its_own_verdicts():
+    """This check is the last step of runway.yml, so a red runway.yml is
+    usually this check having fired. Counting that as evidence of an outage
+    feeds the monitor its own output and it can never go green again."""
+    assert not jh.short({jh.SELF: {"runs": 2, "failed": 2}})
+
+
+def test_the_check_still_notices_when_it_stops_running_at_all():
+    """The exemption is for conclusions, not for absence."""
+    assert jh.short({jh.SELF: {"runs": 0, "failed": 0}})
+
+
 def test_an_unreadable_workflow_is_never_reported_as_short():
     """Same rule as the runway check: unmeasured is not zero. A token that
     cannot read Actions must not invent an outage."""
