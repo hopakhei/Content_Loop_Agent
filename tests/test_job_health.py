@@ -13,32 +13,47 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 import job_health as jh  # noqa: E402
 
 
-def test_floor_is_half_the_expected_count():
-    assert jh.floor_for(24) == 12
-    assert jh.floor_for(2) == 1
+def test_floor_is_half_of_what_the_window_should_hold():
+    """The table states a daily rate; the floor is against the window."""
+    assert jh.expected_in_window(24) == 48
+    assert jh.floor_for(24) == 24
+    assert jh.floor_for(2) == 2
 
 
 def test_the_dm_loops_normal_delivery_does_not_fire():
-    """Measured 2026-08-04..08-06: 26 runs, then 21 on the day of the runner
-    shortage, against a cron asking for 48. Both are the schedule working as
-    well as it ever does, and an alarm on either would fire most days."""
-    assert not jh.short({"instagram-dm.yml": {"runs": 26, "failed": 0}})
-    assert not jh.short({"instagram-dm.yml": {"runs": 21, "failed": 7}})
+    """Measured 2026-08-04..08-06: 26 runs a day, then 21 on the day of the
+    runner shortage, against a cron asking for 48. Both are the schedule working
+    as well as it ever does, and an alarm on either would fire most days."""
+    assert not jh.short({"instagram-dm.yml": {"runs": 52, "failed": 0}})
+    assert not jh.short({"instagram-dm.yml": {"runs": 47, "failed": 7}})
 
 
 def test_delivery_collapsing_does_fire():
-    assert jh.short({"instagram-dm.yml": {"runs": 8, "failed": 0}})
+    assert jh.short({"instagram-dm.yml": {"runs": 16, "failed": 0}})
 
 
-def test_a_daily_job_that_did_not_run_is_always_short():
-    """Half of one rounds to zero, and zero would make every daily workflow
-    unfailable — which is the whole set of publishing jobs."""
+def test_a_daily_job_that_ran_once_in_the_window_is_not_short():
+    """The regression this window exists for. On 2026-08-27 the check ran at
+    03:55 and fetch-backgrounds ran at 04:27 — inside the same morning, but on
+    opposite sides of a 24-hour edge. It counted zero and reported a working job
+    dead. Two days of room means one late or dropped run is survivable."""
     assert jh.floor_for(1) == 1
+    assert not jh.short({"fetch-backgrounds.yml": {"runs": 1, "failed": 0}})
+
+
+def test_a_daily_job_that_did_not_run_at_all_is_still_short():
+    """The slack is one missed day, not an exemption."""
     assert jh.short({"post.yml": {"runs": 0, "failed": 0}})
 
 
+def test_one_bad_day_out_of_two_is_not_an_outage():
+    """A daily publisher that failed yesterday and worked today has recovered.
+    Firing on that is how the alarm became wallpaper."""
+    assert not jh.short({"carousel-drip.yml": {"runs": 2, "failed": 1}})
+
+
 def test_every_workflow_at_its_expected_count_is_healthy():
-    assert not jh.short({w: {"runs": n, "failed": 0}
+    assert not jh.short({w: {"runs": jh.expected_in_window(n), "failed": 0}
                          for w, n in jh.EXPECTED_PER_DAY.items()})
 
 
@@ -47,6 +62,18 @@ def test_a_workflow_that_ran_but_failed_every_time_fires():
     would call it healthy."""
     problems = jh.short({"learn.yml": {"runs": 1, "failed": 1}})
     assert problems and "failed" in problems[0]
+
+
+def test_the_check_does_not_judge_itself_on_its_own_verdicts():
+    """This check is the last step of runway.yml, so a red runway.yml is
+    usually this check having fired. Counting that as evidence of an outage
+    feeds the monitor its own output and it can never go green again."""
+    assert not jh.short({jh.SELF: {"runs": 2, "failed": 2}})
+
+
+def test_the_check_still_notices_when_it_stops_running_at_all():
+    """The exemption is for conclusions, not for absence."""
+    assert jh.short({jh.SELF: {"runs": 0, "failed": 0}})
 
 
 def test_an_unreadable_workflow_is_never_reported_as_short():

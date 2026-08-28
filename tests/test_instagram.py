@@ -116,6 +116,64 @@ def test_publish_retries_client_error(monkeypatch):
     assert svc.session.pub_tries == 2
 
 
+def test_carousel_item_waits_out_a_cdn_miss(monkeypatch):
+    """The real 2026-08-26 drip failure.
+
+    carousel-drip.yml commits the rendered cards and asks IG to fetch them from
+    raw.githubusercontent.com in the same second. When the CDN has not served
+    the new path yet, IG answers 400 with subcode 2207052 — and container
+    creation, which does not set retry_client_errors, used to give up on that
+    first response. Every card was valid; the same URLs returned 200 minutes
+    later.
+    """
+    monkeypatch.setattr(ig_module, "PUBLISH_RETRY_DELAYS", (0.0, 0.0))
+    monkeypatch.setattr(ig_module, "MEDIA_FETCH_RETRY_DELAYS", (0.0, 0.0, 0.0, 0.0))
+    monkeypatch.setattr(ig_module, "CONTAINER_READY_DELAYS", (0.0,))
+
+    body = ('{"error":{"message":"Only photo or video can be accepted as media '
+            'type.","code":9004,"error_subcode":2207052}}')
+
+    class ColdCdn(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.item_tries = 0
+
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/media") and data and data.get("is_carousel_item"):
+                self.item_tries += 1
+                if self.item_tries <= 2:
+                    return _Resp(body, status_code=400)
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = _svc(ColdCdn())
+    assert svc.publish_carousel(["https://host/1.png", "https://host/2.png"], "x")
+    assert svc.session.item_tries == 4      # 2 misses on the first card, then both
+
+
+def test_carousel_item_still_fails_fast_on_a_real_400(monkeypatch):
+    """Only the media-download subcode buys retries. A bad-parameter 400 must
+    not sleep through the CDN schedule before reporting itself."""
+    monkeypatch.setattr(ig_module, "PUBLISH_RETRY_DELAYS", (0.0, 0.0))
+    monkeypatch.setattr(ig_module, "CONTAINER_READY_DELAYS", (0.0,))
+
+    class Rejects(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.item_tries = 0
+
+        def post(self, url, data=None, timeout=None):
+            if url.endswith("/media") and data and data.get("is_carousel_item"):
+                self.item_tries += 1
+                return _Resp('{"error":{"message":"Invalid aspect ratio",'
+                             '"code":100}}', status_code=400)
+            return super().post(url, data=data, timeout=timeout)
+
+    svc = _svc(Rejects())
+    with pytest.raises(RuntimeError, match="create carousel item"):
+        svc.publish_carousel(["https://host/1.png", "https://host/2.png"], "x")
+    assert svc.session.item_tries == 1
+
+
 def test_dry_run_never_touches_network():
     svc = InstagramService(dry_run=True, access_token="", user_id="")
     mid = svc.publish_image("https://host/c.png", "x")

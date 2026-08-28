@@ -126,7 +126,18 @@ def test_every_framework_hook_carries_an_authority_signal():
                # curve is his, and Moore's crossing-the-chasm sits on top of it.
                "Rogers", "Moore",
                # batch 31-34
-               "Osterwalder", "Pigneur")
+               "Osterwalder", "Pigneur",
+               # batch 35-38: Ghemawat (AAA) is already above from CAGE.
+               # Kania and Kramer wrote Collective Impact for FSG; Hauser and
+               # Clausing brought QFD's house of quality to HBR; Myers named
+               # real options.
+               "Kania", "Kramer", "Hauser", "Clausing", "Myers",
+               # Zook did the adjacency research while a partner at Bain, which
+               # is what the hook says — the matrix itself is not Bain's, so it
+               # is his name doing the work. Howard founded decision analysis at
+               # Stanford. CLV has no inventor at all: dated provenance, so its
+               # hook leans on 顧問, already above.
+               "Zook", "Howard", "史丹佛")
     bare = []
     for path in sorted((BASE / "units").glob("*.md")):
         slug = path.stem

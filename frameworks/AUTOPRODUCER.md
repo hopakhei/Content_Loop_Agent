@@ -50,14 +50,37 @@ that started all of this.
 
 ## The unit file
 
-Read two shipped units first — `units/value-disciplines.md` and
-`units/profit-formula.md` — and match them. The shape that matters:
+Read two exemplars first — `units/collective-impact.md` and
+`units/seven-degrees-of-freedom.md` — and match them.
 
-- **Five body segments, not nine.** One story with a spine: the reader's
-  situation, how the framework works, the turn where intuition is wrong, what
-  they can do with it, your judgement. The full teaching goes in the Substack
-  piece. 鐵律二點六 in the x-post skill has the table; `scripts/audit_style.py`
-  fails the build on a sixth segment.
+**Match those two specifically, not "a unit that shipped".** Most of the corpus
+predates the 2026-08-27 rules and is being rewritten in batches; copying a
+random published unit will reproduce the five-segment shape and the run-on
+lists that the reader complained about. The two named here are written to the
+current rules. When they change, this line changes with them.
+
+The shape that matters:
+
+- **Four body segments, not five and not nine.** One story with a spine: the
+  reader's situation and where the framework came from, how it works, what they
+  can do with it, your judgement. The full teaching goes in the Substack piece.
+  鐵律二點六 in the x-post skill has the table; `scripts/audit_style.py` fails
+  the build on a fifth segment.
+- **No pitfall segment.** The old third beat — the turn, where intuition is
+  wrong — kept collapsing into a list of ways to misuse the framework, and the
+  reader said plainly that those were the least useful part of the post. The
+  turn is still worth one sentence at the end of segment 2; it is not worth a
+  segment.
+- **Announce a count, then number it.** 「五個條件」 followed by five conditions
+  dissolved into prose is a promise the reader cannot collect on — one came back
+  having reconstructed the wrong five. Three or more items go on their own lines
+  as `1.` `2.` `3.`. This is the only place bullets are allowed. Use `：` inside
+  those lines, not `——`, which burns the em-dash budget.
+- **Name the authority at the end of segment 1**, following the table in 鐵律
+  三點零. Firm-tier frameworks name the firm; consulting-canon frameworks name
+  the author and let the firms be heavy users; everything else names author,
+  year and publication and does **not** reach for McKinsey/BCG/Bain. Check the
+  `provenance` column in `frameworks/index.csv` before writing that sentence.
 - A comment header (the parser ignores everything above the first `---`).
 - `【N】【Thread】【X + Threads】` where **N is the framework's position in the
   series**. Count the non-numeric files in `units/` and continue from there.

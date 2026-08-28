@@ -24,6 +24,21 @@ except ImportError:  # pragma: no cover - surfaced at runtime
 API_BASE = "https://graph.instagram.com/v21.0"
 MAX_CAPTION_LEN = 2200
 PUBLISH_RETRY_DELAYS = (2.0, 5.0)
+# IG answers "I could not fetch your image URL" with a 400, which the generic
+# client-error rule treats as permanent — so container creation gave up on the
+# first try. It is not permanent. carousel-drip.yml commits the rendered cards
+# and asks IG to fetch them from raw.githubusercontent.com in the same second,
+# and the CDN has not always served the new path by then. That is what killed
+# the 2026-08-26 drip: every card was valid and the same URLs returned 200 a
+# few minutes later.
+#
+# Subcode 2207052 is that case and only that case, so a genuine bad-parameter
+# 400 (wrong aspect ratio, bad token, malformed call) still fails on the first
+# attempt instead of sleeping through four retries first.
+MEDIA_FETCH_SUBCODE = "2207052"
+# Longer than PUBLISH_RETRY_DELAYS because this waits on a CDN rather than on
+# IG: the failed run burned 37 seconds and the object was reachable after.
+MEDIA_FETCH_RETRY_DELAYS = (5.0, 15.0, 30.0, 45.0)
 # IG media containers take a moment to finish processing before they publish.
 CONTAINER_READY_DELAYS = (1.0, 2.0, 3.0, 5.0, 8.0)
 # Media-insight metric sets, tried in order — IG rejects the whole call if any
@@ -339,23 +354,38 @@ class InstagramService:
         also 4xx when `retry_client_errors`) with backoff. Error messages carry
         the response body for diagnosis."""
         last_detail = None
-        for attempt, delay in enumerate((0.0,) + tuple(PUBLISH_RETRY_DELAYS)):
-            more = attempt < len(PUBLISH_RETRY_DELAYS)
-            if delay:
-                time.sleep(delay)
+        delays = list(PUBLISH_RETRY_DELAYS)
+        waiting_on_cdn = False
+        attempt = 0
+        while True:
+            if attempt:
+                time.sleep(delays[attempt - 1])
             try:
                 r = self.session.post(url, data=data, timeout=30)
             except Exception as exc:  # network error
-                if not more:
+                if attempt >= len(delays):
                     raise
                 self.log.warning("IG %s network error (attempt %d): %s — retrying.", what, attempt + 1, exc)
+                attempt += 1
                 continue
             status = getattr(r, "status_code", 200)
             if status < 400:
                 return r
             last_detail = f"{status} {_body_snippet(r)}".strip()
-            if more and (status >= 500 or retry_client_errors):
+            # A 400 that means "I could not download your URL" is the one client
+            # error worth waiting on, and it needs a CDN-sized wait rather than
+            # the publish-sized one. Escalate the schedule once, the first time
+            # it is seen, so the attempts already spent do not shorten it.
+            fetch_failed = status == 400 and MEDIA_FETCH_SUBCODE in (last_detail or "")
+            if fetch_failed and not waiting_on_cdn:
+                waiting_on_cdn = True
+                delays = list(MEDIA_FETCH_RETRY_DELAYS)
+                attempt = 0
+                self.log.warning("IG %s could not fetch the image URL — the cards were "
+                                 "pushed seconds ago, so waiting for the CDN.", what)
+            if attempt < len(delays) and (status >= 500 or retry_client_errors or fetch_failed):
                 self.log.warning("IG %s returned %s (attempt %d) — retrying.", what, last_detail, attempt + 1)
+                attempt += 1
                 continue
             break
         raise RuntimeError(f"IG {what} failed: {last_detail}")

@@ -38,7 +38,7 @@ parenting-advantage-framework,Parenting Advantage Framework,Corporate & Portfoli
 corporate-scope-matrix,Corporate Scope Matrix,Corporate & Portfolio Strategy,brief,backlog,,author,4
 role-of-the-center-corporate-parenting-styles,Role of the Center / Corporate Parenting Styles,Corporate & Portfolio Strategy,brief,backlog,,dated,2
 make-buy-ally-vertical-integration-framework,Make-Buy-Ally / Vertical Integration Framework,Corporate & Portfolio Strategy,brief,backlog,,dated,4
-adjacency-expansion-matrix,Adjacency Expansion Matrix,Corporate & Portfolio Strategy,brief,backlog,,firm,8
+adjacency-expansion-matrix,Adjacency Expansion Matrix,Corporate & Portfolio Strategy,brief,published,adjacency-expansion,firm,8
 mckinsey-three-horizons-of-growth,McKinsey Three Horizons of Growth,Corporate & Portfolio Strategy,brief,backlog,,firm,5
 corporate-value-creation-logic,Corporate Value Creation Logic,Corporate & Portfolio Strategy,brief,backlog,,none,7
 sbu-segmentation-framework,SBU Segmentation Framework,Corporate & Portfolio Strategy,brief,backlog,,firm,7
@@ -49,7 +49,7 @@ core-vs-non-core-portfolio-framework,Core vs Non-core Portfolio Framework,Corpor
 restructuring-portfolio-pruning-framework,Restructuring / Portfolio Pruning Framework,Corporate & Portfolio Strategy,brief,backlog,,none,9
 ansoff-product-market-growth-matrix,Ansoff Product-Market Growth Matrix,"Growth, Innovation & Disruption",brief,published,ansoff-matrix,firm,7
 innovation-ambition-matrix,Innovation Ambition Matrix,"Growth, Innovation & Disruption",brief,backlog,,author,6
-mckinsey-seven-degrees-of-freedom-for-growth,McKinsey Seven Degrees of Freedom for Growth,"Growth, Innovation & Disruption",brief,backlog,,firm,7
+mckinsey-seven-degrees-of-freedom-for-growth,McKinsey Seven Degrees of Freedom for Growth,"Growth, Innovation & Disruption",brief,published,seven-degrees-of-freedom,firm,7
 jobs-to-be-done-framework,Jobs to Be Done Framework,"Growth, Innovation & Disruption",brief,published,jobs-to-be-done,author,3
 disruptive-innovation-theory,Disruptive Innovation Theory,"Growth, Innovation & Disruption",brief,published,disruptive-innovation,author,5
 blue-ocean-strategy-canvas,Blue Ocean Strategy Canvas,"Growth, Innovation & Disruption",brief,published,blue-ocean,author,3
@@ -102,7 +102,7 @@ stp-framework,STP Framework,"Customer, Marketing & Brand",brief,backlog,,dated,5
 7ps-marketing-mix,7Ps Marketing Mix,"Customer, Marketing & Brand",brief,backlog,,dated,5
 customer-journey-mapping,Customer Journey Mapping,"Customer, Marketing & Brand",brief,backlog,,dated,4
 customer-lifecycle-framework,Customer Lifecycle Framework,"Customer, Marketing & Brand",brief,backlog,,none,6
-customer-lifetime-value-model,Customer Lifetime Value Model,"Customer, Marketing & Brand",brief,backlog,,none,9
+customer-lifetime-value-model,Customer Lifetime Value Model,"Customer, Marketing & Brand",brief,published,customer-lifetime-value,none,9
 share-of-wallet-framework,Share of Wallet Framework,"Customer, Marketing & Brand",brief,backlog,,none,7
 net-promoter-system,Net Promoter System,"Customer, Marketing & Brand",brief,published,net-promoter,firm,2
 rfm-segmentation,RFM Segmentation,"Customer, Marketing & Brand",brief,backlog,,none,3
@@ -115,7 +115,7 @@ service-blueprinting,Service Blueprinting,"Operations, Supply Chain & Efficiency
 theory-of-constraints,Theory of Constraints,"Operations, Supply Chain & Efficiency",book-toc,backlog,,,0
 lean-value-stream-mapping,Lean Value Stream Mapping,"Operations, Supply Chain & Efficiency",brief,backlog,,dated,0
 six-sigma-dmaic,Six Sigma DMAIC,"Operations, Supply Chain & Efficiency",brief,backlog,,none,1
-lean-six-sigma-house-of-quality,Lean Six Sigma House of Quality,"Operations, Supply Chain & Efficiency",brief,backlog,,author,1
+lean-six-sigma-house-of-quality,Lean Six Sigma House of Quality,"Operations, Supply Chain & Efficiency",brief,published,house-of-quality,author,1
 scor-model,SCOR Model,"Operations, Supply Chain & Efficiency",brief,backlog,,dated,0
 capacity-planning-framework,Capacity Planning Framework,"Operations, Supply Chain & Efficiency",brief,backlog,,none,1
 just-in-time-system,Just-in-Time System,"Operations, Supply Chain & Efficiency",brief,backlog,,none,0
@@ -128,12 +128,12 @@ scenario-planning,Scenario Planning,"Risk, Uncertainty & Scenarios",brief,backlo
 risk-heat-map,Risk Heat Map,"Risk, Uncertainty & Scenarios",brief,backlog,,none,2
 risk-adjusted-return-on-capital,Risk-Adjusted Return on Capital,"Risk, Uncertainty & Scenarios",brief,backlog,,none,3
 strategic-flexibility-matrix,Strategic Flexibility Matrix,"Risk, Uncertainty & Scenarios",brief,backlog,,none,3
-real-options-valuation,Real Options Valuation,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,5
+real-options-valuation,Real Options Valuation,"Risk, Uncertainty & Scenarios",brief,published,real-options-valuation,dated,5
 decision-tree-analysis,Decision Tree Analysis,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,2
 black-swan-barbell-strategy,Black Swan / Barbell Strategy,"Risk, Uncertainty & Scenarios",brief,backlog,,dated,4
 stress-testing-framework,Stress Testing Framework,"Risk, Uncertainty & Scenarios",brief,published,stress-testing,dated,6
 cage-distance-framework,CAGE Distance Framework,International & Global Strategy,brief,published,cage-distance,author,3
-aaa-global-strategy-framework,AAA Global Strategy Framework,International & Global Strategy,brief,backlog,,author,2
+aaa-global-strategy-framework,AAA Global Strategy Framework,International & Global Strategy,brief,published,aaa-global-strategy,author,2
 oli-eclectic-paradigm,OLI / Eclectic Paradigm,International & Global Strategy,brief,backlog,,none,3
 uppsala-internationalization-model,Uppsala Internationalization Model,International & Global Strategy,brief,backlog,,dated,2
 market-entry-mode-choice-framework,Market Entry Mode Choice Framework,International & Global Strategy,brief,backlog,,none,5
@@ -148,7 +148,7 @@ hypothesis-driven-problem-solving,Hypothesis-driven Problem Solving,"Strategy Pr
 mece-principle,MECE Principle,"Strategy Process, Problem Solving & Decision-Making",brief,published,mece-principle,firm,4
 stakeholder-mapping,Stakeholder Mapping,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,dated,0
 rasci-framework,RASCI Framework,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,0
-decision-quality-chain,Decision Quality Chain,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,3
+decision-quality-chain,Decision Quality Chain,"Strategy Process, Problem Solving & Decision-Making",brief,published,decision-quality-chain,author,3
 adkar-change-management-model,ADKAR Change Management Model,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,dated,2
 strategic-planning-rhythm,Strategic Planning Rhythm,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
 hoshin-kanri,Hoshin Kanri,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
@@ -160,7 +160,7 @@ esg-materiality-matrix,ESG Materiality Matrix,"Social Impact, ESG & Public Value
 theory-of-change,Theory of Change,"Social Impact, ESG & Public Value",brief,backlog,,none,3
 logical-framework-approach,Logical Framework Approach,"Social Impact, ESG & Public Value",brief,backlog,,dated,1
 social-return-on-investment,Social Return on Investment,"Social Impact, ESG & Public Value",brief,backlog,,dated,1
-collective-impact-framework,Collective Impact Framework,"Social Impact, ESG & Public Value",brief,backlog,,author,2
+collective-impact-framework,Collective Impact Framework,"Social Impact, ESG & Public Value",brief,published,collective-impact,author,2
 sustainable-development-goals-mapping,Sustainable Development Goals Mapping,"Social Impact, ESG & Public Value",brief,backlog,,dated,0
 impact-management-project-dimensions,Impact Management Project Dimensions,"Social Impact, ESG & Public Value",brief,backlog,,dated,3
 stakeholder-capitalism-framework,Stakeholder Capitalism Framework,"Social Impact, ESG & Public Value",brief,backlog,,dated,2

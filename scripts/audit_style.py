@@ -39,6 +39,7 @@ import argparse
 import json
 import re
 import sys
+from collections import Counter
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -62,10 +63,18 @@ CAROUSELS = ROOT / "carousels"
 QUEUE = ROOT / "queue" / "carousel_queue.txt"
 POSTED = ROOT / "state" / "posted_units.txt"
 
-# One story, five beats: the reader's situation, the framework, the turn, what
-# to do with it, the judgement. More than this and the piece stops having a
-# spine — every extra segment is another subject competing for the same reader.
-MAX_SEGMENTS = 5
+# One story, four beats: the reader's situation, the framework, what to do with
+# it, the judgement. More than this and the piece stops having a spine — every
+# extra segment is another subject competing for the same reader.
+#
+# This was five until 2026-08-27. The fifth was "the turn" — the counter-
+# intuitive beat — and in practice it kept collapsing into a list of ways the
+# framework goes wrong. Read back, that beat was the least useful part of every
+# post: the reader has not used the framework yet, so failure modes are a
+# warning about a mistake they are not in a position to make. The turn itself
+# still earns a sentence, inside beat 2 or 3; what is gone is giving it a
+# segment of its own and filling that segment with pitfalls.
+MAX_SEGMENTS = 4
 
 # A segment short enough to be a bullet is a bullet. The floor is what stops
 # somebody satisfying MAX_SEGMENTS by merging nine stubs into five.
@@ -84,12 +93,58 @@ MAX_EM_DASH = 2
 # parts, so upstream's "rewrite every triad as two or four items" would cut
 # into the subject matter. Four separate enumerations in an 850-character post
 # is already more than any of them is earning.
-MAX_TRIADS = 4
+#
+# Lowered from four to two on 2026-08-27. Four per unit passed every unit and
+# still left 146 triads across 45 units, which is what a reader actually meets:
+# nobody reads one post, they read the feed. Two is the level where a triad is
+# the subject having three parts rather than the sentence having a rhythm.
+MAX_TRIADS = 2
 _TRIAD = re.compile(r"[^，。、！？\n]{2,10}、[^，。、！？\n]{2,10}、[^，。、！？\n]{2,10}")
 # The series' own name. It is three proper nouns in a fixed order, not a
 # rhetorical triad, and it appears in most units by design — counting it would
 # push units over the cap for saying what the channel is called.
 _TRIAD_EXEMPT = "McKinsey、BCG、Bain"
+
+# 排比 — the other half of the rhythm problem, and the half the triad cap never
+# saw. A triad is three items joined by 、 inside one clause; this is three whole
+# clauses built to the same length and shape, which is the figure that makes a
+# paragraph sound recited rather than said:
+#
+#   指標各報各的，年年都是好消息；行動變成人人做同一件事；溝通剩下一年一次論壇。
+#
+# Measured 2026-08-27: 53 of these across 45 units, in 39 of them. One a post is
+# a writer leaning on a cadence for effect; two is the cadence writing the post.
+MAX_PARALLEL_RUNS = 1
+_PARALLEL_MIN_CLAUSES = 3
+_PARALLEL_HEAD_MIN = 2    # 「指標…指標…指標」
+_PARALLEL_HEAD_MAX = 5    # 「每個人都…每個人都…每個人都」
+
+# The same figure in interrogative form: 有沒有 A？有沒有 B？有沒有 C？ It reads as
+# a checklist the writer is performing rather than a question the reader has.
+MAX_QUESTION_RUNS = 1
+_QUESTION_RUN = re.compile(r"(?:[^。！？\n]{4,30}？){3,}")
+
+# A set the text announces by number has to be countable by the reader.
+#
+# 2026-08-27, from the reader: 「他們歸納出五個條件」 followed by five conditions
+# dissolved into flowing prose, and the reader could not tell which five they
+# were — they came back with a mis-reconstructed list. Five of the six units
+# that announce a numbered set had no ordinals at all in the sentences that
+# followed. Prose is the right default for everything else in these posts; a
+# numbered set is the one place it costs the reader the thing they came for.
+_ANNOUNCE = re.compile(r"(一|二|兩|三|四|五|六|七|八|九|十)個"
+                       r"(條件|要素|步驟|問題|指標|階段|層|支柱|面向|部分|部份|"
+                       r"象限|類|種|軸|格|欄|環節|角度|維度)")
+_ORDINAL = re.compile(r"(?:^|\n)\s*(?:[1-9１-９][.、)）]|第[一二三四五六七八九十]+[個條步層類])")
+_CN_NUM = {"一": 1, "二": 2, "兩": 2, "三": 3, "四": 4, "五": 5,
+           "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
+
+# Absolutes. The reader flagged 「致命」 by name; it is the tell of a writer
+# reaching for stakes the analysis has not earned, and it travels with a small
+# family of the same move. A framework being skipped is not fatal, and saying so
+# costs the credibility of every real warning in the corpus.
+_ABSOLUTES = re.compile(r"(最?致命|一定散|必死|毀掉|災難性?|崩潰|絕對不?|唯一"
+                        r"|徹底改變|顛覆性?)")
 
 # Corpus-level. Handing off to the next framework is a real series device and
 # it stays; what does not stay is every post making the handoff with the same
@@ -198,6 +253,51 @@ def opening_echo(unit) -> list[tuple[str, float]]:
     return out
 
 
+def parallel_runs(text: str) -> list[str]:
+    """Sentences where three or more clauses open with the same words.
+
+    First attempt graded clause lengths instead, on the theory that what makes
+    the figure audible is the clauses landing on the same beat. It flagged
+    「你熟悉的那間便利商店，開到別的國家之後，架上一半的商品你認不出來」 — one
+    subject moving through time, which is just a sentence. Even length is a
+    property of plenty of ordinary prose, and a style gate that blocks the build
+    on ordinary prose teaches people to write around the gate.
+
+    A repeated opening is the half that is unambiguous, so it is the half that
+    is enforced. The other half — three clauses built to the same shape with no
+    repeated word — is real, and it is in the skill as a rule for whoever is
+    writing, where a judgement call belongs.
+    """
+    out = []
+    for sentence in re.split(r"[。！？\n]", text):
+        clauses = [c.strip() for c in re.split(r"[；，]", sentence) if c.strip()]
+        if len(clauses) < _PARALLEL_MIN_CLAUSES:
+            continue
+        for width in range(_PARALLEL_HEAD_MAX, _PARALLEL_HEAD_MIN - 1, -1):
+            heads = [c[:width] for c in clauses if len(c) > width]
+            if len(heads) < _PARALLEL_MIN_CLAUSES:
+                continue
+            if max(Counter(heads).values()) >= _PARALLEL_MIN_CLAUSES:
+                out.append(sentence.strip())
+                break
+    return out
+
+
+def unnumbered_sets(segs: list[str]) -> list[str]:
+    """Segments that promise N of something and then do not number them."""
+    out = []
+    for seg in segs:
+        m = _ANNOUNCE.search(seg)
+        if not m:
+            continue
+        want = _CN_NUM.get(m.group(1), 0)
+        if want < 3:            # "兩個問題" reads fine as a sentence
+            continue
+        if len(_ORDINAL.findall(seg)) < want:
+            out.append(f"{m.group(0)}：{len(_ORDINAL.findall(seg))}/{want} 有編號")
+    return out
+
+
 def audit(slug: str) -> dict:
     unit = parse_units((UNITS / f"{slug}.md").read_text("utf-8"))[0]
     body = unit.post_body.replace("{CTA_URL}", "").strip()
@@ -214,6 +314,13 @@ def audit(slug: str) -> dict:
     echo = opening_echo(unit)
     dashes = text.count("——")
     triads = len(_TRIAD.findall(text.replace(_TRIAD_EXEMPT, "本系列")))
+    # 鐵律零點六 puts Hook B verbatim at the top of the body, so anything in
+    # that sentence appears in `text` twice and would be counted twice. The
+    # reader meets it once.
+    parallels = list(dict.fromkeys(parallel_runs(text)))
+    qruns = list(dict.fromkeys(_QUESTION_RUN.findall(text)))
+    unnumbered = list(dict.fromkeys(unnumbered_sets(segs)))
+    absolutes = _ABSOLUTES.findall(text)
     return {
         "slug": slug,
         "segments": len(segs),
@@ -222,10 +329,17 @@ def audit(slug: str) -> dict:
         "bans": bans,
         "dashes": dashes,
         "triads": triads,
+        "parallels": parallels,
+        "qruns": qruns,
+        "unnumbered": unnumbered,
+        "absolutes": absolutes,
         "closing_tic": bool(CLOSING_TIC.search(segs[-1] if segs else "")),
         "echo": echo,
         "ok": (len(segs) <= MAX_SEGMENTS and not bans and not echo
                and dashes <= MAX_EM_DASH and triads <= MAX_TRIADS
+               and len(parallels) <= MAX_PARALLEL_RUNS
+               and len(qruns) <= MAX_QUESTION_RUNS
+               and not unnumbered and not absolutes
                and all(MIN_SEGMENT_CHARS <= n <= MAX_SEGMENT_CHARS for n in lens)),
     }
 
@@ -262,12 +376,14 @@ def audit_carousel(slug: str) -> dict:
         if found:
             bans.append((label, len(found)))
     dashes = text.count("——")
+    absolutes = _ABSOLUTES.findall(text)
     return {
         "slug": slug,
         "exists": bool(text),
         "dashes": dashes,
         "bans": bans,
-        "ok": not bans and dashes <= MAX_EM_DASH_CAROUSEL,
+        "absolutes": absolutes,
+        "ok": not bans and not absolutes and dashes <= MAX_EM_DASH_CAROUSEL,
     }
 
 
@@ -275,6 +391,9 @@ def carousel_problems(row: dict) -> list[str]:
     out = []
     if row["dashes"] > MAX_EM_DASH_CAROUSEL:
         out.append(f"破折號 —— ×{row['dashes']} (max {MAX_EM_DASH_CAROUSEL})")
+    if row.get("absolutes"):
+        seen = ", ".join(sorted(set(row["absolutes"])))
+        out.append(f"絕對化用語 ×{len(row['absolutes'])}（{seen}）")
     for label, n in row["bans"]:
         out.append(f"{label} ×{n}")
     return out
@@ -300,6 +419,22 @@ def problems(row: dict) -> list[str]:
     if row["triads"] > MAX_TRIADS:
         out.append(f"三項並列 X、Y、Z ×{row['triads']} (max {MAX_TRIADS}) — "
                    "keep the ones that are a real list, cut the ones that are rhythm")
+    if len(row["parallels"]) > MAX_PARALLEL_RUNS:
+        out.append(f"排比 ×{len(row['parallels'])} (max {MAX_PARALLEL_RUNS}) — three "
+                   "clauses cut to the same length read as recited; vary the "
+                   "lengths or make it two clauses")
+        for s in row["parallels"][:3]:
+            out.append(f"    「{s[:48]}」")
+    if len(row["qruns"]) > MAX_QUESTION_RUNS:
+        out.append(f"連問 ×{len(row['qruns'])} (max {MAX_QUESTION_RUNS}) — a run of "
+                   "three questions is a checklist being performed; ask the one "
+                   "that matters")
+    for u in row["unnumbered"]:
+        out.append(f"講咗個數但冇編號 — {u}；讀者數唔到就等於冇講。用 1. 2. 3. 逐行列")
+    if row["absolutes"]:
+        seen = ", ".join(sorted(set(row["absolutes"])))
+        out.append(f"絕對化用語 ×{len(row['absolutes'])}（{seen}）— stakes the analysis "
+                   "has not earned; say what actually happens instead")
     for label, n in row["bans"]:
         out.append(f"{label} ×{n}")
     return out
@@ -311,18 +446,24 @@ def closing_tic_count(rows: list[dict]) -> int:
 
 def render(rows: list[dict], posted: set[str]) -> str:
     out = ["Style audit — story shape and the de-AI list", "",
-           f"{'framework':30}{'segs':>5}{'bans':>6}{'——':>5}{'X、Y、Z':>8}  state"]
+           f"{'framework':30}{'segs':>5}{'bans':>6}{'——':>5}{'X、Y、Z':>8}"
+           f"{'排比':>5}{'冇編號':>7}  state"]
     out.append("-" * 72)
     for r in rows:
         state = "published" if r["slug"] in posted else "still fixable"
         n_bans = sum(n for _, n in r["bans"])
         flag = "" if r["ok"] else "  <-"
         out.append(f"{r['slug']:30}{r['segments']:>5}{n_bans:>6}"
-                   f"{r['dashes']:>5}{r['triads']:>8}  {state}{flag}")
+                   f"{r['dashes']:>5}{r['triads']:>8}{len(r['parallels']):>5}"
+                   f"{len(r['unnumbered']):>7}  {state}{flag}")
     tic = closing_tic_count(rows)
+    unposted_ok = sum(1 for r in rows if r["ok"] and r["slug"] not in posted)
+    unposted = sum(1 for r in rows if r["slug"] not in posted)
     out += ["",
-            f"{sum(1 for r in rows if r['ok'])}/{len(rows)} clean. "
-            "The state column is context, not an exemption — every unit is graded.",
+            f"{sum(1 for r in rows if r['ok'])}/{len(rows)} clean overall; "
+            f"{unposted_ok}/{unposted} of the units nobody has read yet.",
+            "Published units are graded and listed, but only the unread ones fail "
+            "the build.",
             f"Closing handoff「下一個框架」: {tic}/{len(rows)} "
             f"(max {MAX_CLOSING_TIC}) — a corpus-level tic, invisible one post at a time."]
     return "\n".join(out)
@@ -348,13 +489,42 @@ def main() -> None:
     if not args.check:
         return
 
-    # Every unit, published or not. The grandfather clause came out once the
-    # whole corpus passed: unlike the grounding check, whose remaining failures
-    # are carousels that already dripped and can never be fixed, a unit file is
-    # always editable. And these files are the specification — AUTOPRODUCER.md
-    # points the hands-off Routine at shipped units and says "match them", so a
-    # published unit that breaks the shape teaches the next batch to break it.
-    bad = [r for r in rows if not r["ok"]]
+    # Published units are reported but do not fail the build.
+    #
+    # This clause was removed once, for a good reason: unit files are always
+    # editable, and they are the specification the hands-off Routine copies, so
+    # a published unit breaking the shape teaches the next batch to break it.
+    # That reason is answered better by naming exemplars than by the gate —
+    # AUTOPRODUCER.md now points at specific units written to the current shape
+    # instead of at "the ones that shipped", so the corpus is no longer the spec.
+    #
+    # What forced the change is the size of the 2026-08-27 rules. Dropping the
+    # fifth segment failed all 42 units at once, and a gate that can only be
+    # cleared by rewriting 42 posts in one commit does not get cleared — it gets
+    # switched off, which costs more than it protects. Everything still to be
+    # read is held to the new shape; everything already read is printed as debt
+    # with a count, so it stays visible rather than quietly forgiven.
+    # Three buckets, split on how much can still be changed.
+    #
+    # Blocking is everything committed to ship: still in the drip queue, so the
+    # next few days of Instagram come out of it. Those are worth stopping a
+    # build over because stopping the build is what fixes them.
+    #
+    # The other two are printed with names and counts and do not block. Already
+    # published cannot be unread. Written but not yet queued is the backlog —
+    # real work, but a build that has been red since the rules changed stops
+    # being read, which is how the corpus drifted in the first place.
+    bad = [r for r in rows if not r["ok"] and r["slug"] in pending]
+    debt_published = [r for r in rows if not r["ok"] and r["slug"] in posted]
+    debt_backlog = [r for r in rows if not r["ok"] and r["slug"] not in posted
+                    and r["slug"] not in pending]
+    for label, group in (("PUBLISHED", debt_published), ("NOT YET QUEUED", debt_backlog)):
+        if not group:
+            continue
+        print(f"\n{label} AND NOT CLEAN — {len(group)} units, not blocking:")
+        for r in group:
+            head = [p for p in problems(r) if not p.startswith("    ")][:2]
+            print(f"    {r['slug']}: {'; '.join(head)}")
     tic = closing_tic_count(rows)
     bad_queued = [d for d in bad_decks if d["slug"] in pending]
     if not bad and not bad_queued and tic <= MAX_CLOSING_TIC:
