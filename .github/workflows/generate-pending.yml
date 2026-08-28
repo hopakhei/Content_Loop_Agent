@@ -86,16 +86,28 @@ jobs:
             exit 0
           fi
           python scripts/resync_drafts.py
-      - name: Commit ledger
-        if: ${{ github.event.inputs.dry_run != 'true' && env.did_insert == '1' }}
+      # Both ledgers, and not gated on did_insert.
+      #
+      # This staged only inserted_units.txt, and only when an insert had
+      # happened. resync_drafts.py writes state/posted_units.txt on every run,
+      # so that file was produced inside the runner and thrown away with it —
+      # committed once on 2026-08-09 when it was created, and never again.
+      # Nineteen days of publishing never reached it.
+      #
+      # It is read by audit_style.py and audit_grounding.py to tell "still
+      # fixable" from "the audience already read it", so a frozen ledger makes
+      # both checks grade published posts as though they could still be edited.
+      # Nothing failed, which is why it went unnoticed for so long.
+      - name: Commit ledgers
+        if: ${{ github.event.inputs.dry_run != 'true' }}
         run: |
           git config user.name "loop-bot"
           git config user.email "noreply@anthropic.com"
-          git add state/inserted_units.txt
+          git add state/inserted_units.txt state/posted_units.txt
           if git diff --cached --quiet; then
-            echo "Ledger unchanged."
+            echo "Ledgers unchanged."
           else
-            git commit -m "chore(units): mark framework units inserted $(date -u +%F)"
+            git commit -m "chore(units): update insert and posted ledgers $(date -u +%F)"
             for i in 1 2 3 4; do git push && break || { git fetch origin ${{ github.ref_name }} && git rebase origin/${{ github.ref_name }} && sleep $((2 ** i)); }; done
           fi
       - name: Upload run log
