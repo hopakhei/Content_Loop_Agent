@@ -3,6 +3,7 @@
 # offline checks can tell "still fixable" from "the audience already read it".
 # Hand edits get overwritten; change Notion, not this file.
 aaa-global-strategy
+adjacency-expansion
 ansoff-matrix
 bcg-advantage-matrix
 bcg-matrix
