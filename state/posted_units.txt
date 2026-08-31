@@ -13,6 +13,7 @@ business-model-canvas
 cage-distance
 collective-impact
 core-vs-non-core
+customer-lifetime-value
 digital-maturity
 disruptive-innovation
 ecosystem-roles-map
