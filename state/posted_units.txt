@@ -14,6 +14,7 @@ cage-distance
 collective-impact
 core-vs-non-core
 customer-lifetime-value
+decision-quality-chain
 digital-maturity
 disruptive-innovation
 ecosystem-roles-map
