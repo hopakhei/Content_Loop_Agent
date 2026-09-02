@@ -36,6 +36,7 @@ profit-formula
 rapid-decision-rights
 real-options-valuation
 relative-cost-positioning
+seven-degrees-of-freedom
 shared-value
 strategic-group-mapping
 strategic-inflection-point
