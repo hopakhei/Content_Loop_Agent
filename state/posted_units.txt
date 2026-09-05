@@ -2,24 +2,45 @@
 # scripts/resync_drafts.py from Notion on every generate-pending run, so the
 # offline checks can tell "still fixable" from "the audience already read it".
 # Hand edits get overwritten; change Notion, not this file.
+aaa-global-strategy
+adjacency-expansion
 ansoff-matrix
 bcg-advantage-matrix
 bcg-matrix
 blue-ocean
 bowmans-strategy-clock
+business-model-canvas
+cage-distance
+collective-impact
+core-vs-non-core
+customer-lifetime-value
+decision-quality-chain
+digital-maturity
 disruptive-innovation
+ecosystem-roles-map
 experience-curve
 five-forces
 ge-mckinsey-matrix
+house-of-quality
 jobs-to-be-done
 kano-model
 key-success-factors
+lean-canvas
+make-buy
+mckinsey-7s
+mece-principle
 net-promoter
+organizational-health-index
 porter
 profit-formula
+rapid-decision-rights
+real-options-valuation
 relative-cost-positioning
+seven-degrees-of-freedom
+shared-value
 strategic-group-mapping
 strategic-inflection-point
+stress-testing
 technology-adoption-curve
 value-chain
 value-disciplines
