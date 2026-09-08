@@ -199,8 +199,15 @@ def test_ranking_never_reads_the_gitignored_briefs(monkeypatch):
     monkeypatch.setattr(Path, "read_text", guarded)
     shortlist = next_frameworks.build()["shortlist"]
     assert len(shortlist) == next_frameworks.SHORTLIST
-    assert any(r["score"] > 0 for r in shortlist), (
-        "every score is zero — the ledger is missing its distilled columns")
+    # Not "> 0". The fault this guards is a ranker that read nothing and scored
+    # everything the same, and zero is what that looks like. A negative score is
+    # a real reading: picks are charged against their own category, so once the
+    # uncrowded categories have shipped, the whole remaining field sits below
+    # zero and stays correctly ordered. Batch 43-50 took the last positive
+    # scores with it, and the old assertion failed on a shortlist that was
+    # working exactly as designed.
+    assert len({r["score"] for r in shortlist}) > 1, (
+        "every score is identical — the ledger is missing its distilled columns")
 
 
 def test_index_builder_refuses_to_run_without_the_briefs(tmp_path, monkeypatch):

@@ -137,7 +137,18 @@ def test_every_framework_hook_carries_an_authority_signal():
                # is his name doing the work. Howard founded decision analysis at
                # Stanford. CLV has no inventor at all: dated provenance, so its
                # hook leans on 顧問, already above.
-               "Zook", "Howard", "史丹佛")
+               "Zook", "Howard", "史丹佛",
+               # batch 43-50. Porter (competitor response profile) and Henderson
+               # are already above — the latter by coincidence: Bruce Henderson
+               # founded BCG, John Henderson co-wrote the strategic alignment
+               # model, and the string serves both. Prahalad and Doz wrote the
+               # IR grid; Elkington proposed and later recalled the triple
+               # bottom line; Shostack published the service blueprint in HBR;
+               # Wack ran scenario planning at Shell. The two with no inventor
+               # at all — B2B2C value chain mapping and data monetization —
+               # lean on 顧問, already above, because naming anyone would be
+               # inventing a provenance.
+               "Prahalad", "Doz", "Elkington", "Shostack", "Wack", "殼牌")
     bare = []
     for path in sorted((BASE / "units").glob("*.md")):
         slug = path.stem
