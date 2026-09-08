@@ -40,3 +40,11 @@ decision-quality-chain
 house-of-quality
 real-options-valuation
 seven-degrees-of-freedom
+b2b2c-value-chain-mapping
+competitor-response-profile
+data-monetization-framework
+global-integration-local-responsiveness-grid
+scenario-planning
+service-blueprinting
+strategic-alignment-model
+triple-bottom-line
