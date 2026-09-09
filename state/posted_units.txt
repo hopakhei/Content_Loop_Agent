@@ -22,6 +22,7 @@ ecosystem-roles-map
 experience-curve
 five-forces
 ge-mckinsey-matrix
+global-integration-local-responsiveness-grid
 house-of-quality
 jobs-to-be-done
 kano-model
