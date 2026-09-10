@@ -5,6 +5,7 @@
 aaa-global-strategy
 adjacency-expansion
 ansoff-matrix
+b2b2c-value-chain-mapping
 bcg-advantage-matrix
 bcg-matrix
 blue-ocean
