@@ -41,6 +41,7 @@ real-options-valuation
 relative-cost-positioning
 seven-degrees-of-freedom
 shared-value
+strategic-alignment-model
 strategic-group-mapping
 strategic-inflection-point
 stress-testing
