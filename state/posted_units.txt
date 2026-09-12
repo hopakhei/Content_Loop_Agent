@@ -39,6 +39,7 @@ profit-formula
 rapid-decision-rights
 real-options-valuation
 relative-cost-positioning
+scenario-planning
 seven-degrees-of-freedom
 shared-value
 strategic-alignment-model
