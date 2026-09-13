@@ -47,5 +47,6 @@ strategic-group-mapping
 strategic-inflection-point
 stress-testing
 technology-adoption-curve
+triple-bottom-line
 value-chain
 value-disciplines
