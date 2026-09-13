@@ -3,3 +3,7 @@
 # Only put reviewed/approved specs here; an empty queue publishes nothing.
 data-monetization-framework
 service-blueprinting
+sbu-segmentation-framework
+management-flight-simulators
+business-model-patterns-library
+share-of-wallet-framework
