@@ -16,6 +16,7 @@ collective-impact
 competitor-response-profile
 core-vs-non-core
 customer-lifetime-value
+data-monetization-framework
 decision-quality-chain
 digital-maturity
 disruptive-innovation
