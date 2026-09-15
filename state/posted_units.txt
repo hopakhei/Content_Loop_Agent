@@ -41,6 +41,7 @@ rapid-decision-rights
 real-options-valuation
 relative-cost-positioning
 scenario-planning
+service-blueprinting
 seven-degrees-of-freedom
 shared-value
 strategic-alignment-model
