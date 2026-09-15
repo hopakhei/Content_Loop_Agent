@@ -2,7 +2,7 @@
  "issue": "share-of-wallet-framework",
  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
  "motif": "five-arrows",
- "caption": "你一個月花在咖啡上的錢，有多少真的進了你最常掛在嘴邊那一家？大概三成。剩下的在便利商店、在公司樓下、在順路的那一間——而那七成，就是這個指標要問的。\n\n想看完整版（連同案例和陷阱）：留言「案例」，我 DM 給你。\n\n全文：{CTA_URL}\n\n#投資 #策略 #財經 #stockmarket",
+ "caption": "你一個月花在咖啡上的錢，有多少真的進了你最常掛在嘴邊那一家？大概三成。剩下的在便利商店、在公司樓下、在順路的那一間——而那七成，就是這個指標要問的。\n\n全文：{CTA_URL}\n\n#投資 #策略 #財經 #stockmarket",
  "slides": [
   {
    "kind": "cover",
@@ -54,7 +54,7 @@
    "kind": "cta",
    "kicker": "",
    "head": "收藏這一頁",
-   "sub": "策略框架系列，一週一個。\n留言「案例」拿完整版。"
+   "sub": "策略框架系列，一週一個。"
   }
  ]
 }

@@ -2,7 +2,7 @@
  "issue": "business-model-patterns-library",
  "cta_url": "https://90spminvesting.substack.com/?r=25kdss",
  "motif": "chain",
- "caption": "你手機裡的訂閱，和家裡那台印表機的墨盒，背後都是用了幾十年的老套路。聖加侖大學在 2014 年把這些套路整理成一本目錄，一共五十五個——多數所謂的新模式，是其中兩三個拼起來。\n\n想看完整版（連同案例和陷阱）：留言「案例」，我 DM 給你。\n\n全文：{CTA_URL}\n\n#投資 #策略 #財經 #stockmarket",
+ "caption": "你手機裡的訂閱，和家裡那台印表機的墨盒，背後都是用了幾十年的老套路。聖加侖大學在 2014 年把這些套路整理成一本目錄，一共五十五個——多數所謂的新模式，是其中兩三個拼起來。\n\n全文：{CTA_URL}\n\n#投資 #策略 #財經 #stockmarket",
  "slides": [
   {
    "kind": "cover",
@@ -54,7 +54,7 @@
    "kind": "cta",
    "kicker": "",
    "head": "收藏這一頁",
-   "sub": "策略框架系列，一週一個。\n留言「案例」拿完整版。"
+   "sub": "策略框架系列，一週一個。"
   }
  ]
 }
