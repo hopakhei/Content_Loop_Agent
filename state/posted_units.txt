@@ -31,6 +31,7 @@ kano-model
 key-success-factors
 lean-canvas
 make-buy
+management-flight-simulators
 mckinsey-7s
 mece-principle
 net-promoter
