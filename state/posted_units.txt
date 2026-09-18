@@ -11,6 +11,7 @@ bcg-matrix
 blue-ocean
 bowmans-strategy-clock
 business-model-canvas
+business-model-patterns-library
 cage-distance
 collective-impact
 competitor-response-profile
