@@ -20,16 +20,27 @@ def test_floor_is_half_of_what_the_window_should_hold():
     assert jh.floor_for(2) == 2
 
 
-def test_the_dm_loops_normal_delivery_does_not_fire():
-    """Measured 2026-08-04..08-06: 26 runs a day, then 21 on the day of the
-    runner shortage, against a cron asking for 48. Both are the schedule working
-    as well as it ever does, and an alarm on either would fire most days."""
-    assert not jh.short({"instagram-dm.yml": {"runs": 52, "failed": 0}})
-    assert not jh.short({"instagram-dm.yml": {"runs": 47, "failed": 7}})
+def test_a_half_hourly_loops_normal_delivery_does_not_fire(monkeypatch):
+    """Measured on the DM loop 2026-08-04..08-06, while it was live: 26 runs a
+    day, then 21 on the day of the runner shortage, against a cron asking for
+    48. Both are the schedule working as well as it ever does, and an alarm on
+    either would fire most days. The loop is paused now, so the row is patched
+    in — the arithmetic is what is under test, and it is the same arithmetic
+    any half-hourly job will need when one comes back."""
+    monkeypatch.setitem(jh.EXPECTED_PER_DAY, "half-hourly.yml", 24)
+    assert not jh.short({"half-hourly.yml": {"runs": 52, "failed": 0}})
+    assert not jh.short({"half-hourly.yml": {"runs": 47, "failed": 7}})
 
 
-def test_delivery_collapsing_does_fire():
-    assert jh.short({"instagram-dm.yml": {"runs": 16, "failed": 0}})
+def test_delivery_collapsing_does_fire(monkeypatch):
+    monkeypatch.setitem(jh.EXPECTED_PER_DAY, "half-hourly.yml", 24)
+    assert jh.short({"half-hourly.yml": {"runs": 16, "failed": 0}})
+
+
+def test_a_paused_workflow_is_not_in_the_table():
+    """instagram-dm.yml lost its schedule on 2026-09-15. A row for it here would
+    report the pause as an outage every morning."""
+    assert "instagram-dm.yml" not in jh.EXPECTED_PER_DAY
 
 
 def test_a_daily_job_that_ran_once_in_the_window_is_not_short():
