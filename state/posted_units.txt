@@ -46,6 +46,7 @@ sbu-segmentation-framework
 scenario-planning
 service-blueprinting
 seven-degrees-of-freedom
+share-of-wallet-framework
 shared-value
 strategic-alignment-model
 strategic-group-mapping
