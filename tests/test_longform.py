@@ -83,6 +83,30 @@ def test_a_comma_inside_a_url_is_not_a_cut_point():
                if "example.com" in p)
 
 
+def test_the_authors_own_breaks_win():
+    """A draft written as numbered posts already has its cuts decided. The
+    packer must not merge two of them into one post or split one into two."""
+    text = "第一段。\n\n---\n\n第二段。\n\n---\n\n第三段。"
+    assert lf.segment(text, 500) == ["第一段。", "第二段。", "第三段。"]
+    assert lf.flatten(text) == "第一段。\n\n第二段。\n\n第三段。"
+    lf.verify_verbatim(lf.flatten(text), lf.segment(text, 500))
+
+
+def test_an_oversized_authored_block_stops_the_run():
+    """Silently re-cutting it would publish a break the writer did not choose,
+    and the fix is a decision about the writing."""
+    text = "短。\n\n---\n\n" + "長" * 600
+    with pytest.raises(ValueError, match="block 2 of 2 is 600 characters"):
+        lf.segment(text, lf.THREADS_LIMIT)
+
+
+def test_authored_breaks_become_blank_lines_on_x():
+    """The breaks are Threads-shaped. On X the piece fits one post, so they
+    cost nothing — chaining them would spend a write credit per block."""
+    text = "第一段。\n\n---\n\n第二段。"
+    assert lf.plan(text, ["X"])["X"] == ["第一段。\n\n第二段。"]
+
+
 def test_paragraphs_stay_whole_when_they_fit():
     text = "第一段。\n\n第二段。\n\n第三段。"
     assert lf.segment(text, 500) == ["第一段。\n\n第二段。\n\n第三段。"]

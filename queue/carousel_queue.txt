@@ -1,7 +1,7 @@
 # Carousel drip queue — one carousels/<id>.json per line, published top-first,
 # one per day by carousel-drip.yml. Lines starting with # are comments.
 # Only put reviewed/approved specs here; an empty queue publishes nothing.
-scenario-planning
-triple-bottom-line
-data-monetization-framework
-service-blueprinting
+sbu-segmentation-framework
+management-flight-simulators
+business-model-patterns-library
+share-of-wallet-framework

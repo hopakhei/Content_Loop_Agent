@@ -47,6 +47,12 @@ _URL = re.compile(r"https?://\S+")
 # must not land is the bottom of a post — the reader gets a title with nothing
 # under it and the section it names starts in the next reply.
 _HEADING = re.compile(r"^[一二三四五六七八九十]+、")
+# A line of three or more dashes is the author saying "the post ends here".
+# Same marker core/composition.py already uses to split a thread, so a draft
+# written for one path reads the same in the other. When a file carries these,
+# the automatic packer stands down entirely — the writer has done the cutting,
+# and the only job left is to check that each block fits.
+_EXPLICIT = re.compile(r"^[ \t]*[-–—_]{3,}[ \t]*$", re.M)
 
 
 def paragraphs(text: str) -> list[str]:
@@ -119,12 +125,38 @@ def sections(text: str) -> list[list[str]]:
     return out
 
 
+def explicit_blocks(text: str) -> list[str] | None:
+    """The author's own post breaks, or None when the file has none."""
+    if not _EXPLICIT.search(text):
+        return None
+    return [b.strip() for b in _EXPLICIT.split(text) if b.strip()]
+
+
+def flatten(text: str) -> str:
+    """The article without its break markers — what the reader ends up with."""
+    blocks = explicit_blocks(text)
+    return "\n\n".join(blocks) if blocks else text.strip()
+
+
 def segment(text: str, limit: int) -> list[str]:
     """The article as posts of at most `limit` characters each.
 
     Paragraphs stay whole and travel together while they fit, so a post ends
     where the writing already ended rather than wherever the count ran out.
+    An author's own breaks override all of that and are never second-guessed:
+    a block over the limit stops the run rather than being quietly re-cut,
+    because the fix is a decision about the writing, not about arithmetic.
     """
+    blocks = explicit_blocks(text)
+    if blocks is not None:
+        over = [(i, b) for i, b in enumerate(blocks, 1) if len(b) > limit]
+        if over:
+            i, b = over[0]
+            raise ValueError(
+                f"block {i} of {len(blocks)} is {len(b)} characters, over the "
+                f"{limit} limit — split it in the file: {b[:60]}…")
+        return blocks
+
     posts: list[str] = []
     for group in sections(text):
         pieces: list[str] = []
@@ -152,15 +184,17 @@ def verify_verbatim(source: str, segments: list[str]) -> None:
 
 
 def plan(text: str, platforms: list[str]) -> dict[str, list[str]]:
+    flat = flatten(text)
     out: dict[str, list[str]] = {}
     if "X" in platforms:
+        # Author breaks are Threads-shaped. On X the whole piece fits one post,
+        # so the breaks become blank lines rather than twenty separate writes.
         limit = settings.X_LONGPOST_LIMIT if settings.X_LONGPOST else X_CHAIN_LIMIT
-        posts = [text.strip()] if len(text.strip()) <= limit else segment(text, X_CHAIN_LIMIT)
-        out["X"] = posts
+        out["X"] = [flat] if len(flat) <= limit else segment(text, X_CHAIN_LIMIT)
     if "Threads" in platforms:
         out["Threads"] = segment(text, THREADS_LIMIT)
     for posts in out.values():
-        verify_verbatim(text, posts)
+        verify_verbatim(flat, posts)
     return out
 
 
@@ -188,7 +222,8 @@ def main() -> None:
     platforms = [p.strip() for p in args.platforms.split(",") if p.strip()]
     posts_by_platform = plan(text, platforms)
 
-    log.info("%s — %d characters", args.path, len(text))
+    log.info("%s — %d characters%s", args.path, len(flatten(text)),
+             " (author's own breaks)" if explicit_blocks(text) else "")
     _report(log, posts_by_platform)
 
     if args.segments_only:

@@ -1,12 +1,19 @@
 name: Instagram — comment-to-DM
 
-# Every 30 min: private-reply the article link to keyword comments on recent
-# IG posts (links are tappable in DMs). One reply per comment, enforced via a
-# committed state file. Skips cleanly until IG_ACCESS_TOKEN exists with the
-# manage_comments + manage_messages scopes.
+# Private-reply the article link to keyword comments on recent IG posts
+# (links are tappable in DMs). One reply per comment, enforced via a committed
+# state file.
+#
+# PAUSED 2026-09-15 by the owner. The schedule is gone, not commented out, so
+# nothing about this file suggests it is meant to be running: the 「留言案例」
+# CTA has been removed from every carousel and caption, so there is nothing
+# for the loop to answer, and IG_ACCESS_TOKEN had expired that morning anyway.
+# Manual dispatch still works for a one-off sweep. To resume: restore
+#   schedule: [{cron: "*/30 * * * *"}]
+# here, put instagram-dm.yml back in scripts/job_health.py EXPECTED_PER_DAY,
+# and put a keyword CTA back in the carousel captions — a loop with nothing
+# to answer is just 48 API calls a day.
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
