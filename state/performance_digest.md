@@ -2,7 +2,7 @@
 
 _Auto-written by the learn loop each night. The framework auto-producer reads this before writing the next batch. Newest data wins._
 
-- date: 2026-10-05
+- date: 2026-10-06
 - data points: 30 | confidence: 75%
 
 ## Signals
