@@ -64,7 +64,7 @@ def test_a_section_heading_opens_its_post(article):
 def test_the_article_fits_one_x_post(article):
     """X Premium takes 25,000 characters, so an article of this length is one
     post and one write against the monthly quota, not a twenty-tweet chain."""
-    assert lf.plan(article, ["X"])["X"] == [article]
+    assert lf.plan(article, ["X"])["X"] == [lf.Post(article)]
 
 
 def test_an_oversized_paragraph_falls_back_to_sentences_then_commas():
@@ -104,10 +104,83 @@ def test_authored_breaks_become_blank_lines_on_x():
     """The breaks are Threads-shaped. On X the piece fits one post, so they
     cost nothing — chaining them would spend a write credit per block."""
     text = "第一段。\n\n---\n\n第二段。"
-    assert lf.plan(text, ["X"])["X"] == ["第一段。\n\n第二段。"]
+    assert lf.plan(text, ["X"])["X"] == [lf.Post("第一段。\n\n第二段。")]
 
 
 def test_paragraphs_stay_whole_when_they_fit():
     text = "第一段。\n\n第二段。\n\n第三段。"
     assert lf.segment(text, 500) == ["第一段。\n\n第二段。\n\n第三段。"]
     assert lf.segment(text, 8) == ["第一段。", "第二段。", "第三段。"]
+
+
+FIGURES = (
+    "開頭。\n\n![【圖 1：池塘】](img/a.png)\n\n"
+    "中段。\n\n![【圖 2：水面】](img/b.png)\n\n結尾。"
+)
+
+
+def test_each_figure_closes_an_x_post_with_its_image():
+    """X takes four images a post; an article can have nine. One figure per
+    post keeps every image under the paragraph the author put it after."""
+    assert lf.plan(FIGURES, ["X"])["X"] == [
+        lf.Post("開頭。\n\n【圖 1：池塘】", ("img/a.png",)),
+        lf.Post("中段。\n\n【圖 2：水面】", ("img/b.png",)),
+        lf.Post("結尾。"),
+    ]
+
+
+def test_threads_refuses_figures_it_cannot_attach():
+    """A caption with no image under it reads as a broken post."""
+    with pytest.raises(ValueError, match="figures"):
+        lf.plan(FIGURES, ["Threads"])
+
+
+def test_a_missing_or_wrong_image_stops_the_run_before_the_network(tmp_path):
+    posts = lf.plan(FIGURES, ["X"])["X"]
+    with pytest.raises(ValueError, match="image not found"):
+        lf.check_images(posts, tmp_path)
+    (tmp_path / "img").mkdir()
+    (tmp_path / "img" / "a.png").write_bytes(b"x")
+    (tmp_path / "img" / "b.png").write_bytes(b"x")
+    assert lf.check_images(posts, tmp_path)[2] == []
+    bad = [lf.Post("x", ("img/c.bmp",))]
+    (tmp_path / "img" / "c.bmp").write_bytes(b"x")
+    with pytest.raises(ValueError, match="can't take .bmp"):
+        lf.check_images(bad, tmp_path)
+
+
+def test_an_x_thread_with_images_posts_each_image_on_its_own_post():
+    from services.twitter import TwitterService
+    x = TwitterService(dry_run=True)
+    assert len(x.post_thread(["a", "b"], media_ids=[["m1"], []])) == 2
+    with pytest.raises(ValueError, match="2 tweets but 1 media lists"):
+        x.post_thread(["a", "b"], media_ids=[["m1"]])
+
+
+def test_an_image_upload_is_one_signed_multipart_post(tmp_path, monkeypatch):
+    """Pins the request shape for the one X call no dry run exercises."""
+    import requests
+    from services.twitter import MEDIA_UPLOAD_URL, TwitterService
+
+    seen = {}
+
+    class Ok:
+        ok = True
+
+        def json(self):
+            return {"data": {"id": "123", "media_key": "3_123"}}
+
+    def fake_post(url, auth, files, data, timeout):
+        seen.update(url=url, auth=auth, name=files["media"][0],
+                    mime=files["media"][2], data=data)
+        return Ok()
+
+    monkeypatch.setattr(requests, "post", fake_post)
+    img = tmp_path / "fig.png"
+    img.write_bytes(b"\x89PNG")
+    x = TwitterService(client=object())
+    assert x.upload_image(str(img)) == "123"
+    assert seen["url"] == MEDIA_UPLOAD_URL
+    assert (seen["name"], seen["mime"]) == ("fig.png", "image/png")
+    assert seen["data"] == {"media_category": "tweet_image"}
+    assert type(seen["auth"]).__name__ == "OAuth1"
