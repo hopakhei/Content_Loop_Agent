@@ -2,18 +2,18 @@
 
 _Auto-written by the learn loop each night. The framework auto-producer reads this before writing the next batch. Newest data wins._
 
-- date: 2026-10-08
-- data points: 30 | confidence: 75%
+- date: 2026-10-09
+- data points: 27 | confidence: 68%
 
 ## Signals
 
 ```
-Slots → 12:30: 1.61% (n=30)
-Content Types → Thread: 0.59% (n=24)
-Best Hook by platform → Threads=A (n=2, 0.76%) vs C (n=1, 0.71%) = 1.06x, X=C (n=4, 2.22%) vs A (n=6, 0.00%) = infx
+Slots → 12:30: 1.61% (n=27)
+Content Types → Thread: 0.61% (n=22)
+Best Hook by platform → Threads=A (n=2, 0.76%) vs C (n=1, 0.71%) = 1.06x, X=C (n=3, 2.96%) vs A (n=6, 0.00%) = infx
 X link A/B (engagement) → n/a
 Threads link A/B (engagement) → STALE, not reported (link last assigned 2026-09-12). One arm stopped being assigned, so the gap measures elapsed time, not the variable.
-Followers (7d) → X +2, Threads -40
+Followers (7d) → X +3, Threads -48
 ```
 
 ## What to make more of next
