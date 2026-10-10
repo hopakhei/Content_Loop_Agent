@@ -18,6 +18,8 @@ try:
 except ImportError:  # pragma: no cover - surfaced at runtime with a clear message
     tweepy = None
 
+MEDIA_UPLOAD_URL = "https://api.x.com/2/media/upload"
+
 
 class TwitterService:
     def __init__(self, dry_run: bool = False, logger: Optional[logging.Logger] = None, client=None):
@@ -51,29 +53,70 @@ class TwitterService:
                 bearer_token=settings.X_BEARER_TOKEN or None,
             )
 
-    def post_tweet(self, text: str, in_reply_to: Optional[str] = None) -> str:
+    def upload_image(self, path: str) -> str:
+        """Upload one image for a later post. Returns the media id.
+
+        tweepy's Client has no v2 upload and the v1.1 endpoint it used to call
+        was retired, so this is a direct multipart POST signed with the same
+        OAuth 1.0a user context as every other write. An uploaded image that is
+        never attached expires on its own after a day — nothing is public yet.
+        """
+        if self.dry_run:
+            self._dry_counter += 1
+            self.log.info("[dry-run] would upload image: %s", path)
+            return f"DRYRUN-MEDIA-{self._dry_counter}"
+        import mimetypes
+        import requests
+        from requests_oauthlib import OAuth1
+
+        auth = OAuth1(settings.X_API_KEY, settings.X_API_SECRET,
+                      settings.X_ACCESS_TOKEN, settings.X_ACCESS_SECRET)
+        mime = mimetypes.guess_type(path)[0] or "application/octet-stream"
+        with open(path, "rb") as fh:
+            r = requests.post(
+                MEDIA_UPLOAD_URL,
+                auth=auth,
+                files={"media": (path.rsplit("/", 1)[-1], fh, mime)},
+                data={"media_category": "tweet_image"},
+                timeout=120,
+            )
+        if not r.ok:
+            raise RuntimeError(f"image upload failed ({r.status_code}) for {path}: {r.text[:300]}")
+        return str(r.json()["data"]["id"])
+
+    def post_tweet(self, text: str, in_reply_to: Optional[str] = None,
+                   media_ids: Optional[list[str]] = None) -> str:
         if self.dry_run:
             self._dry_counter += 1
             stamp = datetime.now(timezone.utc).strftime("%H%M%S")
             fake = f"DRYRUN-{stamp}-{self._dry_counter}"
-            self.log.info("[dry-run] would post tweet (reply_to=%s): %s", in_reply_to, _preview(text))
+            self.log.info("[dry-run] would post tweet (reply_to=%s, media=%s): %s",
+                          in_reply_to, media_ids or [], _preview(text))
             return fake
-        resp = self.client.create_tweet(text=text, in_reply_to_tweet_id=in_reply_to)
+        resp = self.client.create_tweet(text=text, in_reply_to_tweet_id=in_reply_to,
+                                        media_ids=media_ids or None)
         return str(resp.data["id"])
 
-    def post_thread(self, tweets: list[str]) -> list[str]:
+    def post_thread(self, tweets: list[str],
+                    media_ids: Optional[list[list[str]]] = None) -> list[str]:
         """Post tweets as a reply chain. Returns the ids in order; ids[0] is the
         root tweet (the canonical Post ID for Performance logging).
+
+        `media_ids`, when given, runs alongside `tweets`: the images attached
+        to each post, already uploaded.
 
         If the chain fails midway, raises PartialThreadError carrying the ids
         that DID post — the root tweet is live, so the caller must record it
         rather than retry the whole thread (X rejects duplicate content anyway).
         """
+        if media_ids is not None and len(media_ids) != len(tweets):
+            raise ValueError(f"{len(tweets)} tweets but {len(media_ids)} media lists")
         ids: list[str] = []
         reply_to: Optional[str] = None
-        for text in tweets:
+        for i, text in enumerate(tweets):
             try:
-                tid = self.post_tweet(text, in_reply_to=reply_to)
+                tid = self.post_tweet(text, in_reply_to=reply_to,
+                                      media_ids=media_ids[i] if media_ids else None)
             except Exception as exc:
                 if ids:
                     raise PartialThreadError(ids, exc) from exc

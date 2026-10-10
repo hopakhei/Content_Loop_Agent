@@ -18,6 +18,12 @@ The only transformation applied is where the text is cut:
           chain otherwise.
   Threads 500 characters a post, chained as replies.
 
+A figure is a line of its own, `![caption](path)`. On X each figure closes a
+post — the caption stays in the text, the image is attached under it — so an
+article with figures goes out as a thread of long posts with every image where
+the author put it. Threads refuses an article with figures until it can attach
+them.
+
 Cuts land on blank lines, then on sentence ends, then on commas, and a URL is
 never split. `verify_verbatim` re-joins the segments and compares them to the
 source — if a character went missing the run stops before anything is posted.
@@ -29,6 +35,7 @@ import logging
 import re
 import sys
 from pathlib import Path
+from typing import NamedTuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -47,6 +54,22 @@ _URL = re.compile(r"https?://\S+")
 # must not land is the bottom of a post — the reader gets a title with nothing
 # under it and the section it names starts in the next reply.
 _HEADING = re.compile(r"^[一二三四五六七八九十]+、")
+# A line of three or more dashes is the author saying "the post ends here".
+# Same marker core/composition.py already uses to split a thread, so a draft
+# written for one path reads the same in the other. When a file carries these,
+# the automatic packer stands down entirely — the writer has done the cutting,
+# and the only job left is to check that each block fits.
+_EXPLICIT = re.compile(r"^[ \t]*[-–—_]{3,}[ \t]*$", re.M)
+# A figure: `![caption](path)` on a line of its own, path relative to the file.
+# The reader sees the caption where the line was and the image under the post.
+_FIGURE = re.compile(r"^[ \t]*!\[([^\]\n]*)\]\(([^)\s]+)\)[ \t]*$", re.M)
+X_IMAGE_TYPES = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+X_IMAGE_MAX_BYTES = 5 * 1024 * 1024
+
+
+class Post(NamedTuple):
+    text: str
+    media: tuple[str, ...] = ()
 
 
 def paragraphs(text: str) -> list[str]:
@@ -119,12 +142,38 @@ def sections(text: str) -> list[list[str]]:
     return out
 
 
+def explicit_blocks(text: str) -> list[str] | None:
+    """The author's own post breaks, or None when the file has none."""
+    if not _EXPLICIT.search(text):
+        return None
+    return [b.strip() for b in _EXPLICIT.split(text) if b.strip()]
+
+
+def flatten(text: str) -> str:
+    """The article without its break markers — what the reader ends up with."""
+    blocks = explicit_blocks(text)
+    return "\n\n".join(blocks) if blocks else text.strip()
+
+
 def segment(text: str, limit: int) -> list[str]:
     """The article as posts of at most `limit` characters each.
 
     Paragraphs stay whole and travel together while they fit, so a post ends
     where the writing already ended rather than wherever the count ran out.
+    An author's own breaks override all of that and are never second-guessed:
+    a block over the limit stops the run rather than being quietly re-cut,
+    because the fix is a decision about the writing, not about arithmetic.
     """
+    blocks = explicit_blocks(text)
+    if blocks is not None:
+        over = [(i, b) for i, b in enumerate(blocks, 1) if len(b) > limit]
+        if over:
+            i, b = over[0]
+            raise ValueError(
+                f"block {i} of {len(blocks)} is {len(b)} characters, over the "
+                f"{limit} limit — split it in the file: {b[:60]}…")
+        return blocks
+
     posts: list[str] = []
     for group in sections(text):
         pieces: list[str] = []
@@ -151,25 +200,77 @@ def verify_verbatim(source: str, segments: list[str]) -> None:
     )
 
 
-def plan(text: str, platforms: list[str]) -> dict[str, list[str]]:
-    out: dict[str, list[str]] = {}
+def captioned(text: str) -> str:
+    """Each figure line replaced by its caption — the words the reader gets."""
+    return _FIGURE.sub(lambda m: m.group(1), text)
+
+
+def _x_posts(text: str) -> list[Post]:
+    flat = flatten(text)
+    limit = settings.X_LONGPOST_LIMIT if settings.X_LONGPOST else X_CHAIN_LIMIT
+    figures = list(_FIGURE.finditer(flat))
+    if not figures:
+        # Author breaks are Threads-shaped. On X the whole piece fits one post,
+        # so the breaks become blank lines rather than twenty separate writes.
+        if len(flat) <= limit:
+            return [Post(flat)]
+        return [Post(s) for s in segment(text, X_CHAIN_LIMIT)]
+    # X takes four images a post and the article may have more, so each figure
+    # closes a post of its own: the image lands right under the paragraph the
+    # author put it after, instead of being gathered at the top or dropped.
+    posts, start = [], 0
+    for m in figures:
+        posts.append(Post((flat[start:m.start()] + m.group(1)).strip(), (m.group(2),)))
+        start = m.end()
+    if flat[start:].strip():
+        posts.append(Post(flat[start:].strip()))
+    over = [(i, p) for i, p in enumerate(posts, 1) if len(p.text) > limit]
+    if over:
+        i, p = over[0]
+        raise ValueError(f"X post {i} of {len(posts)} is {len(p.text)} characters, "
+                         f"over the {limit} limit: {p.text[:60]}…")
+    return posts
+
+
+def plan(text: str, platforms: list[str]) -> dict[str, list[Post]]:
+    out: dict[str, list[Post]] = {}
     if "X" in platforms:
-        limit = settings.X_LONGPOST_LIMIT if settings.X_LONGPOST else X_CHAIN_LIMIT
-        posts = [text.strip()] if len(text.strip()) <= limit else segment(text, X_CHAIN_LIMIT)
-        out["X"] = posts
+        out["X"] = _x_posts(text)
     if "Threads" in platforms:
-        out["Threads"] = segment(text, THREADS_LIMIT)
+        if _FIGURE.search(text):
+            # Refuse rather than post captions that point at nothing.
+            raise ValueError("this article has figures and the Threads path can't "
+                             "attach images yet — publish X on its own")
+        out["Threads"] = [Post(s) for s in segment(text, THREADS_LIMIT)]
+    reader = captioned(flatten(text))
     for posts in out.values():
-        verify_verbatim(text, posts)
+        verify_verbatim(reader, [p.text for p in posts])
     return out
 
 
-def _report(log, posts_by_platform: dict[str, list[str]]) -> None:
+def check_images(posts: list[Post], base: Path) -> list[list[Path]]:
+    """Every image resolved and inside X's limits, before anything is sent."""
+    resolved = []
+    for post in posts:
+        paths = [base / m for m in post.media]
+        for p in paths:
+            if not p.is_file():
+                raise ValueError(f"image not found: {p}")
+            if p.suffix.lower() not in X_IMAGE_TYPES:
+                raise ValueError(f"X can't take {p.suffix} images: {p}")
+            if p.stat().st_size > X_IMAGE_MAX_BYTES:
+                raise ValueError(f"{p} is {p.stat().st_size // 1024} KB, over X's 5 MB image limit")
+        resolved.append(paths)
+    return resolved
+
+
+def _report(log, posts_by_platform: dict[str, list[Post]]) -> None:
     for platform, posts in posts_by_platform.items():
         log.info("── %s: %d post%s", platform, len(posts), "" if len(posts) == 1 else "s")
         for i, p in enumerate(posts, 1):
-            head = p.splitlines()[0] if p.splitlines() else ""
-            log.info("  [%2d/%d] %4d chars | %s", i, len(posts), len(p), head[:48])
+            head = p.text.splitlines()[0] if p.text.splitlines() else ""
+            pics = f" + {', '.join(p.media)}" if p.media else ""
+            log.info("  [%2d/%d] %4d chars | %s%s", i, len(posts), len(p.text), head[:48], pics)
 
 
 def main() -> None:
@@ -184,18 +285,23 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     log = logging.getLogger("longform")
 
-    text = Path(args.path).read_text("utf-8").strip()
+    source = Path(args.path)
+    text = source.read_text("utf-8").strip()
     platforms = [p.strip() for p in args.platforms.split(",") if p.strip()]
     posts_by_platform = plan(text, platforms)
+    images = {platform: check_images(posts, source.parent)
+              for platform, posts in posts_by_platform.items()}
 
-    log.info("%s — %d characters", args.path, len(text))
+    log.info("%s — %d characters%s", args.path, len(captioned(flatten(text))),
+             " (author's own breaks)" if explicit_blocks(text) else "")
     _report(log, posts_by_platform)
 
     if args.segments_only:
         for platform, posts in posts_by_platform.items():
             print(f"\n{'=' * 60}\n{platform}\n{'=' * 60}")
             for i, p in enumerate(posts, 1):
-                print(f"\n--- {i}/{len(posts)} ({len(p)} chars) ---\n{p}")
+                pics = f" + {', '.join(p.media)}" if p.media else ""
+                print(f"\n--- {i}/{len(posts)} ({len(p.text)} chars{pics}) ---\n{p.text}")
         return
 
     from services.errors import PartialThreadError  # noqa: E402
@@ -209,7 +315,16 @@ def main() -> None:
             # the other from publishing.
             client = (TwitterService if platform == "X" else ThreadsService)(
                 dry_run=args.dry_run, logger=log)
-            ids = client.post_thread(posts)
+            texts = [p.text for p in posts]
+            if any(images[platform]):
+                # Every upload before the first post: a bad image stops the run
+                # with nothing public, instead of halfway down a live thread.
+                media_ids = [[client.upload_image(str(f)) for f in files]
+                             for files in images[platform]]
+                log.info("Uploaded %d images", sum(map(len, media_ids)))
+                ids = client.post_thread(texts, media_ids=media_ids)
+            else:
+                ids = client.post_thread(texts)
         except PartialThreadError as exc:
             # The root is live. Say how far it got — the rest is added by hand,
             # never by re-running this, which would duplicate the opening post.

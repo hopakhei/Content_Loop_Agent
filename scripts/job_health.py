@@ -42,13 +42,13 @@ API = "https://api.github.com"
 # cron is the implementation; the check is only worth running while the two are
 # stated separately.
 EXPECTED_PER_DAY = {
-    # The cron asks for 48. GitHub delivers 21-26 (measured 2026-08-04..08-06:
-    # 26, then 21 on the day of the runner shortage). This number is what the
-    # platform actually gives, not what the file requests — the check answers
-    # "has this stopped running", and setting it to 48 would fire most days
-    # against a schedule that is working as well as it ever does. The gap
-    # itself is real and worth knowing; it is written here so it stays known.
-    "instagram-dm.yml": 24,        # */30 * * * *, honoured about half the time
+    # instagram-dm.yml is not here because it is paused (2026-09-15): its
+    # schedule was removed along with the 「留言案例」 CTA it existed to answer.
+    # When it was live the cron asked for 48 a day and GitHub delivered 21-26,
+    # and 24 was the number used here — what the platform gives, not what the
+    # file requests. test_every_scheduled_workflow_is_covered keeps this table
+    # and the set of scheduled workflows equal, so resuming the loop without
+    # restoring its row fails the build rather than going unwatched.
     "generate-pending.yml": 2,     # 0 3,15 * * *
     "post.yml": 1,                 # 30 4 * * *
     "carousel-drip.yml": 1,        # 30 4 * * *

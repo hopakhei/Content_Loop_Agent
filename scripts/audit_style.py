@@ -154,6 +154,42 @@ _ABSOLUTES = re.compile(r"(最?致命|一定散|必死|毀掉|災難性?|崩潰|
 CLOSING_TIC = re.compile(r"下一個框架")
 MAX_CLOSING_TIC = 20
 
+# 鐵律零點九. The owner read the batch as 冇頭冇尾 on 2026-09-15, and across
+# 54 units the count was: 25 closed by pointing at another post, 0 came back
+# to the scene they opened on. A post whose last act is a hand-off has no
+# ending; a post that never returns to its opening has no shape. Both are
+# visible in a single post, so they are graded per unit — unlike the
+# 下一個框架 tic above, which only shows across many.
+POINTS_AWAY = re.compile(r"下一篇|下一個框架|第\s*[0-9０-９]+\s*篇")
+_SENTENCE_END = re.compile(r"(?<=[。！？])")
+
+
+def last_sentence(seg: str) -> str:
+    parts = [p.strip() for p in _SENTENCE_END.split(seg) if p.strip()]
+    return parts[-1] if parts else ""
+
+
+def points_away(segs: list[str]) -> bool:
+    """The closing sentence hands the reader to another post. A cross-reference
+    earlier in the closing segment is fine; only the last sentence is graded."""
+    return bool(segs) and bool(POINTS_AWAY.search(last_sentence(segs[-1])))
+
+
+def bookend(segs: list[str]) -> bool:
+    """The closing segment returns to a life noun the opening used.
+
+    A proxy, and a narrow one: it can see that the word came back, not whether
+    the reader now sees the scene differently — that layer is a person's call.
+    An opening with no life noun has nothing this check could match, so it
+    passes; 鐵律零點六 and the grounding audit already require the scene."""
+    if len(segs) < 2:
+        return True
+    from research.scorers import LIFE_NOUNS
+    first = {n for n in LIFE_NOUNS if n in segs[0]}
+    if not first:
+        return True
+    return bool(first & {n for n in LIFE_NOUNS if n in segs[-1]})
+
 # Instagram was never graded by this script, and it turned out to be where the
 # tic was densest: 236 em-dashes across the deck files against 149 in the
 # units, plus jargon (對沖, 敏感度分析) that the unit ban list would have
@@ -334,12 +370,15 @@ def audit(slug: str) -> dict:
         "unnumbered": unnumbered,
         "absolutes": absolutes,
         "closing_tic": bool(CLOSING_TIC.search(segs[-1] if segs else "")),
+        "points_away": points_away(segs),
+        "bookend": bookend(segs),
         "echo": echo,
         "ok": (len(segs) <= MAX_SEGMENTS and not bans and not echo
                and dashes <= MAX_EM_DASH and triads <= MAX_TRIADS
                and len(parallels) <= MAX_PARALLEL_RUNS
                and len(qruns) <= MAX_QUESTION_RUNS
                and not unnumbered and not absolutes
+               and not points_away(segs) and bookend(segs)
                and all(MIN_SEGMENT_CHARS <= n <= MAX_SEGMENT_CHARS for n in lens)),
     }
 
@@ -431,6 +470,14 @@ def problems(row: dict) -> list[str]:
                    "that matters")
     for u in row["unnumbered"]:
         out.append(f"講咗個數但冇編號 — {u}；讀者數唔到就等於冇講。用 1. 2. 3. 逐行列")
+    if row.get("points_away"):
+        out.append("收尾指去另一篇（下一篇／第 N 篇）— the post's last act is a "
+                   "hand-off; end on this post's own judgement or something the "
+                   "reader can do tonight, and put the cross-reference before it")
+    if not row.get("bookend", True):
+        out.append("收尾冇返返去開場嗰個場景 — the opening's life noun never comes "
+                   "back; close on the scene the reader was hooked with, seen "
+                   "the way they can now see it")
     if row["absolutes"]:
         seen = ", ".join(sorted(set(row["absolutes"])))
         out.append(f"絕對化用語 ×{len(row['absolutes'])}（{seen}）— stakes the analysis "

@@ -278,6 +278,13 @@ UNIT_SLUGS = {
     "decision-quality-chain": "decision-quality-chain",
     "mckinsey-seven-degrees-of-freedom-for-growth": "seven-degrees-of-freedom",
     "porters-generic-strategies": "porter",
+    # batch 51-54. Four frameworks whose book name and unit handle are already
+    # the same string, so these rows are identity mappings — kept anyway, since
+    # membership of this dict is what marks a framework published.
+    "sbu-segmentation-framework": "sbu-segmentation-framework",
+    "management-flight-simulators": "management-flight-simulators",
+    "business-model-patterns-library": "business-model-patterns-library",
+    "share-of-wallet-framework": "share-of-wallet-framework",
     "porters-five-forces": "five-forces",
     "bcg-growth-share-matrix": "bcg-matrix",
     "blue-ocean-strategy-canvas": "blue-ocean",

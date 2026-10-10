@@ -41,7 +41,7 @@ make-buy-ally-vertical-integration-framework,Make-Buy-Ally / Vertical Integratio
 adjacency-expansion-matrix,Adjacency Expansion Matrix,Corporate & Portfolio Strategy,brief,published,adjacency-expansion,firm,8
 mckinsey-three-horizons-of-growth,McKinsey Three Horizons of Growth,Corporate & Portfolio Strategy,brief,backlog,,firm,5
 corporate-value-creation-logic,Corporate Value Creation Logic,Corporate & Portfolio Strategy,brief,backlog,,none,7
-sbu-segmentation-framework,SBU Segmentation Framework,Corporate & Portfolio Strategy,brief,backlog,,firm,7
+sbu-segmentation-framework,SBU Segmentation Framework,Corporate & Portfolio Strategy,brief,published,sbu-segmentation-framework,firm,7
 strategic-control-map,Strategic Control Map,Corporate & Portfolio Strategy,brief,backlog,,none,6
 portfolio-value-gap-analysis,Portfolio Value Gap Analysis,Corporate & Portfolio Strategy,brief,backlog,,none,11
 capital-allocation-framework,Capital Allocation Framework,Corporate & Portfolio Strategy,brief,backlog,,none,7
@@ -69,7 +69,7 @@ lean-canvas,Lean Canvas,Business Model & Value Proposition,brief,published,lean-
 value-proposition-canvas,Value Proposition Canvas,Business Model & Value Proposition,brief,backlog,,author,3
 operating-model-canvas,Operating Model Canvas,Business Model & Value Proposition,brief,backlog,,dated,3
 profit-formula-framework,Profit Formula Framework,Business Model & Value Proposition,brief,published,profit-formula,author,10
-business-model-patterns-library,Business Model Patterns Library,Business Model & Value Proposition,brief,backlog,,author,5
+business-model-patterns-library,Business Model Patterns Library,Business Model & Value Proposition,brief,published,business-model-patterns-library,author,5
 two-sided-platform-business-model,Two-sided Platform Business Model,Business Model & Value Proposition,brief,backlog,,none,8
 b2b2c-value-chain-mapping,B2B2C Value Chain Mapping,Business Model & Value Proposition,brief,published,b2b2c-value-chain-mapping,author,5
 service-dominant-logic,Service-Dominant Logic,Business Model & Value Proposition,brief,backlog,,dated,5
@@ -103,7 +103,7 @@ stp-framework,STP Framework,"Customer, Marketing & Brand",brief,backlog,,dated,5
 customer-journey-mapping,Customer Journey Mapping,"Customer, Marketing & Brand",brief,backlog,,dated,4
 customer-lifecycle-framework,Customer Lifecycle Framework,"Customer, Marketing & Brand",brief,backlog,,none,6
 customer-lifetime-value-model,Customer Lifetime Value Model,"Customer, Marketing & Brand",brief,published,customer-lifetime-value,none,9
-share-of-wallet-framework,Share of Wallet Framework,"Customer, Marketing & Brand",brief,backlog,,none,7
+share-of-wallet-framework,Share of Wallet Framework,"Customer, Marketing & Brand",brief,published,share-of-wallet-framework,none,7
 net-promoter-system,Net Promoter System,"Customer, Marketing & Brand",brief,published,net-promoter,firm,2
 rfm-segmentation,RFM Segmentation,"Customer, Marketing & Brand",brief,backlog,,none,3
 kano-model,Kano Model,"Customer, Marketing & Brand",brief,published,kano-model,none,4
@@ -152,7 +152,7 @@ decision-quality-chain,Decision Quality Chain,"Strategy Process, Problem Solving
 adkar-change-management-model,ADKAR Change Management Model,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,dated,2
 strategic-planning-rhythm,Strategic Planning Rhythm,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
 hoshin-kanri,Hoshin Kanri,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,2
-management-flight-simulators,Management Flight Simulators,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,author,3
+management-flight-simulators,Management Flight Simulators,"Strategy Process, Problem Solving & Decision-Making",brief,published,management-flight-simulators,author,3
 lewins-force-field-analysis,Lewin's Force Field Analysis,"Strategy Process, Problem Solving & Decision-Making",brief,backlog,,none,0
 triple-bottom-line,Triple Bottom Line,"Social Impact, ESG & Public Value",brief,published,triple-bottom-line,dated,5
 shared-value-framework,Shared Value Framework,"Social Impact, ESG & Public Value",brief,published,shared-value,author,5

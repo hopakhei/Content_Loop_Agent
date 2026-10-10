@@ -69,7 +69,7 @@ de-AI 掃描（renhua + content-anti-ai）、同埋背景相嘅亮度閘。寫�
     {"kind": "cover", "kicker": "90s.pm 投資 · #NNN 主題", "head": "...", "sub": "..."},
     {"kicker": "01 · 分類", "head": "...", "body": "..."},
     {"kind": "cta", "bookmark": false, "head": "...", "body": "...",
-     "follow": "留言「全文」，我 DM 給你", "link": "@90s.pm.investing · #NNN 主題"}
+     "link": "@90s.pm.investing · #NNN 主題"}
   ]
 }
 ```
@@ -171,6 +171,9 @@ de-AI 掃描（renhua + content-anti-ai）、同埋背景相嘅亮度閘。寫�
 
 - 封面承擔 ~80% 成敗：5–8 字 hook + curiosity gap，必須獨立成立
 - 一張 slide 一個 idea，5 秒內讀完；超過就拆
-- Saves 是最強排名信號：CTA 引導收藏（我們用 bookmark 圖示 + 留言全文 DM）
+- Saves 是最強排名信號：CTA 引導收藏（bookmark 圖示 + 「收藏這一頁」）。
+  **2026-09-15 起唔再有「留言『全文／案例』，我 DM 給你」**——業主話似廣告句，
+  全線拆走，comment-to-DM loop 同步暫停。收尾 slide 同 caption 唔准再有任何
+  留言／DM／tag 要求。
 - Carousel 有獨家 second-chance 派發：沒滑完的觀眾會被再派一次
 - 出 post 後首 30–60 分鐘的互動決定擴散；有留言盡快回覆
