@@ -2,7 +2,7 @@
 name: ig-caption
 description: >
   撰寫 Instagram caption（carousel、quote card、Reel）時必須載入 ——
-  125 字元 hook 規則、留言「全文」comment-to-DM 機制、hashtag 策略。
+  125 字元 hook 規則、hashtag 策略；2026-09-15 起唔再有留言 DM CTA。
   觸發詞：caption、IG 文案、carousels/*.json 的 caption 欄。
 ---
 
@@ -21,12 +21,15 @@ Feed 會在約 125 字元截斷（「…more」），大部分人不會點開。
 
 <內容 tease：一段，撮要整輯的故事鏈；每 2–3 行換行透氣>
 
-想看全文（<全文獨有內容 tease>）：留言「全文」，我 DM 給你。
-
 全文：{CTA_URL}
 
 #hashtags
 ```
+
+> **2026-09-15：「留言『全文』，我 DM 給你」呢句已經全線拆走。** 業主嘅原話：
+> 好似廣告句，唔需要呢個 show。comment-to-DM loop 同步暫停（`instagram-dm.yml`
+> 冇咗 schedule）。Caption 同收尾 slide 一律唔准再有留言／DM／tag 類嘅要求。
+> 下面「Link 的現實」嗰段係講點解本來有呢句，留返做背景，唔係指示。
 
 - 長度 150–500 字元最佳；教育性強可到 1,000
 - Caption 不重複 slides 內容 —— 補充「為什麼重要」的 framing
