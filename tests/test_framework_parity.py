@@ -148,7 +148,15 @@ def test_every_framework_hook_carries_an_authority_signal():
                # at all — B2B2C value chain mapping and data monetization —
                # lean on 顧問, already above, because naming anyone would be
                # inventing a provenance.
-               "Prahalad", "Doz", "Elkington", "Shostack", "Wack", "殼牌")
+               "Prahalad", "Doz", "Elkington", "Shostack", "Wack", "殼牌",
+               # batch 51-54. Forrester and Sterman built the management flight
+               # simulators at MIT Sloan, already above. Gassmann and St Gallen
+               # published the 55 patterns — Osterwalder is in the list already
+               # but belongs to the Canvas (#32), so this one carries its own
+               # name. SBU segmentation and share of wallet have no inventor at
+               # all: dated provenance, leaning on 顧問 above, because naming
+               # anyone would be inventing a provenance.
+               "Forrester", "Sterman", "Gassmann", "聖加侖")
     bare = []
     for path in sorted((BASE / "units").glob("*.md")):
         slug = path.stem
