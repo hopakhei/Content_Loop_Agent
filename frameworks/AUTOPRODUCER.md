@@ -76,6 +76,13 @@ The shape that matters:
   having reconstructed the wrong five. Three or more items go on their own lines
   as `1.` `2.` `3.`. This is the only place bullets are allowed. Use `：` inside
   those lines, not `——`, which burns the em-dash budget.
+- **Segment 1 promises, segment 4 pays off.** 鐵律零點八 and 零點九, added
+  2026-09-15 after the owner read the batch as 「冇頭冇尾」 — and 0 of 54 units
+  returned to their opening scene. One reader-subject sentence in segment 1
+  saying what they will be able to tell apart after reading; the closing
+  segment comes back to the scene segment 1 opened on, and its **last sentence
+  is this post's own** — a judgement or something the reader can do tonight,
+  never 「下一篇」 or 「第 N 篇」. Cross-references live before the last sentence.
 - **Name the authority at the end of segment 1**, following the table in 鐵律
   三點零. Firm-tier frameworks name the firm; consulting-canon frameworks name
   the author and let the firms be heavy users; everything else names author,
@@ -228,10 +235,15 @@ Two rules that override anything a prompt might say:
 Hook A must carry a real authority signal — the firm, the author, or the
 institution. `tests/test_framework_parity.py` fails the build if it does not.
 
-## The comment CTA
+## No comment-to-DM CTA
 
-The carousel CTA and caption ask for the keyword **「案例」**, not 「全文」.
-The DM loop watches 全文/框架/案例; 案例 is the one this series uses.
+Captions and the closing slide used to ask readers to comment 「案例」 for a DM.
+The owner pulled it on 2026-09-15 — it read as a sales line — and the DM loop
+is paused, so a caption that still asks for it is a promise nobody keeps.
+
+Caption shape now: the hook paragraph, a blank line, `全文：{CTA_URL}`, a blank
+line, the hashtags. Closing slide: 「收藏這一頁」 over 「策略框架系列，一週一個。」
+and nothing else. Do not add 留言/DM/tag/follow asks of any kind.
 
 ## Before committing
 
