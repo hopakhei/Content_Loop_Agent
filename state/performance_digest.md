@@ -2,7 +2,7 @@
 
 _Auto-written by the learn loop each night. The framework auto-producer reads this before writing the next batch. Newest data wins._
 
-- date: 2026-11-19
+- date: 2026-11-20
 - data points: 1 | confidence: 2%
 
 ## Signals
@@ -13,7 +13,7 @@ Content Types → Thread: 0.69% (n=1)
 Best Hook by platform → n/a
 X link A/B (engagement) → n/a
 Threads link A/B (engagement) → n/a
-Followers (7d) → X +6, Threads +70
+Followers (7d) → X +6, Threads +48
 ```
 
 ## What to make more of next
