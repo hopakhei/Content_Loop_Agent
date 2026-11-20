@@ -106,6 +106,27 @@ def test_a_binary_contrast_shell_is_caught():
     assert not rx.search("這不是重點。他而是走了另一條路")
 
 
+def test_an_ending_that_points_at_another_post_is_caught():
+    """The owner's words, 2026-09-15: 冇頭冇尾. 25 of 54 units closed on a
+    hand-off — the post's last act was to point somewhere else."""
+    assert ast_.points_away(["你巷口那間茶餐廳。", "我看成長故事。下一篇講一個發明人。"])
+    assert ast_.points_away(["開場。", "判斷。第 41 篇問的是另一件事。"])
+    # A cross-reference before the close is allowed; only the last sentence is graded.
+    assert not ast_.points_away(
+        ["開場。", "第 41 篇問一個決定。這一篇問一串決定。你今晚就數得出。"])
+
+
+def test_a_closing_that_returns_to_the_opening_scene_passes():
+    """0 of 54 units came back to their opening. The proxy is a shared life
+    noun; whether the scene reads differently now is a person's call."""
+    assert ast_.bookend(
+        ["你巷口那間茶餐廳加賣咖啡。", "中段。", "下次見到巷口那間茶餐廳，你會知道。"])
+    assert not ast_.bookend(
+        ["你巷口那間茶餐廳加賣咖啡。", "中段。", "我看成長故事會數它跨了幾條線。"])
+    # An opening with no life noun has nothing to return to by this proxy.
+    assert ast_.bookend(["你手上那間公司的分部業績。", "中段。", "我當它是刻意的。"])
+
+
 def test_a_short_segment_is_a_bullet_not_a_paragraph():
     assert ast_.MIN_SEGMENT_CHARS >= 100
     assert ast_.MAX_SEGMENTS == 4
