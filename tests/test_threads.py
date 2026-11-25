@@ -70,6 +70,7 @@ def test_post_post_two_step_publish():
     assert create[0].endswith("/17800000/threads")
     assert create[1]["media_type"] == "TEXT"
     assert create[1]["text"] == "hello"
+    assert "image_url" not in create[1]
     assert "reply_to_id" not in create[1]
     assert publish[0].endswith("/17800000/threads_publish")
     assert publish[1]["creation_id"] == "C1"
@@ -219,3 +220,95 @@ def test_post_thread_partial_failure_carries_live_ids(monkeypatch):
     with pytest.raises(PartialThreadError) as err:
         svc.post_thread(["one", "two"])
     assert err.value.ids == ["901"]
+
+
+def test_post_image_waits_for_finished_then_publishes(monkeypatch):
+    monkeypatch.setattr(threads_module, "IMAGE_CONTAINER_READY_DELAYS", (0.0, 0.0))
+
+    class BecomesFinished(FakeSession):
+        def __init__(self):
+            super().__init__()
+            self.status_reads = 0
+
+        def get(self, url, params=None, timeout=None):
+            if (params or {}).get("fields") == "status,error_message":
+                self.status_reads += 1
+                status = "IN_PROGRESS" if self.status_reads == 1 else "FINISHED"
+                return _Resp({"status": status})
+            return super().get(url, params=params, timeout=timeout)
+
+    svc = ThreadsService(session=BecomesFinished(), access_token="tok", user_id="17800000")
+    assert svc.post_post("hello", image_url="https://example.com/nvda.png") == "901"
+    create, publish = svc.session.posts
+    assert create[0].endswith("/17800000/threads")
+    assert create[1]["media_type"] == "IMAGE"
+    assert create[1]["image_url"] == "https://example.com/nvda.png"
+    assert create[1]["text"] == "hello"
+    assert "reply_to_id" not in create[1]
+    assert svc.session.status_reads == 2
+    assert publish[0].endswith("/17800000/threads_publish")
+    assert publish[1]["creation_id"] == "C1"
+
+
+def test_post_image_does_not_publish_before_finished(monkeypatch):
+    monkeypatch.setattr(threads_module, "IMAGE_CONTAINER_READY_DELAYS", (0.0,))
+
+    class Stuck(FakeSession):
+        container_status = "IN_PROGRESS"
+
+    svc = ThreadsService(session=Stuck(), access_token="tok", user_id="17800000")
+    with pytest.raises(RuntimeError, match="not FINISHED"):
+        svc.post_post("hello", image_url="https://example.com/nvda.png")
+    assert all(not url.endswith("/threads_publish") for url, _ in svc.session.posts)
+
+
+def test_image_container_error_raises_without_publishing(monkeypatch):
+    monkeypatch.setattr(threads_module, "IMAGE_CONTAINER_READY_DELAYS", (0.0,))
+
+    class ErrorContainer(FakeSession):
+        container_status = "ERROR"
+
+    svc = ThreadsService(session=ErrorContainer(), access_token="tok", user_id="17800000")
+    with pytest.raises(RuntimeError, match="ERROR.*boom detail"):
+        svc.post_post("caption", image_url="https://example.com/a.png")
+    assert all(not url.endswith("/threads_publish") for url, _ in svc.session.posts)
+
+
+def test_text_post_still_publishes_if_container_stays_in_progress(monkeypatch):
+    # Loop 1's text path stays best-effort: an image-only "wait until FINISHED"
+    # rule must not block a text container that never leaves IN_PROGRESS.
+    monkeypatch.setattr(threads_module, "CONTAINER_READY_DELAYS", (0.0,))
+
+    class Stuck(FakeSession):
+        container_status = "IN_PROGRESS"
+
+    svc = ThreadsService(session=Stuck(), access_token="tok", user_id="17800000")
+    assert svc.post_post("hello") == "901"
+    assert svc.session.posts[-1][0].endswith("/threads_publish")
+
+
+def test_image_url_must_be_public_https():
+    svc = ThreadsService(dry_run=True, access_token="", user_id="")
+    with pytest.raises(ValueError, match="https"):
+        svc.post_post("hello", image_url="http://example.com/a.png")
+    with pytest.raises(ValueError, match="https"):
+        svc.post_post("hello", image_url="https://example.com/a.png?access_token=secret")
+    assert svc.session is None
+
+
+def test_error_body_does_not_keep_the_access_token(monkeypatch):
+    monkeypatch.setattr(threads_module, "PUBLISH_RETRY_DELAYS", ())
+    token = "THREADS_SECRET_VALUE_0123456789"
+
+    class Leak(FakeSession):
+        def post(self, url, data=None, timeout=None):
+            resp = _Resp({})
+            resp.status_code = 500
+            resp.text = f"nope token={token}"
+            return resp
+
+    svc = ThreadsService(session=Leak(), access_token=token, user_id="17800000")
+    with pytest.raises(RuntimeError) as err:
+        svc.post_post("hello")
+    assert token not in str(err.value)
+    assert "***" in str(err.value)

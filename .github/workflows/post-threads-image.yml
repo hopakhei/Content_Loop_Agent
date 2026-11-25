@@ -1,0 +1,58 @@
+name: Threads — one image post
+
+# One already-approved Threads post with an image. Separate from Loop 1.
+#
+# post.yml's schedule is unchanged and still publishes text-only Notion drafts.
+# This workflow has no schedule, does not read Notion, and does not write a
+# Scheduled or Draft row. The caption is the committed file
+# assets/threads/nvda-tariff-post.txt (227 characters). The shell never
+# receives the caption, so a workflow input cannot alter it.
+#
+# graph.threads.net downloads the image itself. The URL is the same public
+# host Instagram already uses: raw.githubusercontent.com plus this repo and
+# ref (IG_CARD_URL_BASE in instagram.yml). The PNG is already in the commit
+# that is checked out, so this job does not commit during the run.
+#
+# dry_run defaults to true. Publishing is an explicit dry_run=false dispatch.
+# THREADS_ACCESS_TOKEN is passed only as an environment variable. No step
+# prints it. THREADS_USER_ID is optional; an empty value is resolved via /me.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Check the caption and image URL without calling the Threads API"
+        type: boolean
+        default: true
+
+concurrency:
+  group: threads-image-post
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      THREADS_ACCESS_TOKEN: ${{ secrets.THREADS_ACCESS_TOKEN }}
+      THREADS_USER_ID: ${{ secrets.THREADS_USER_ID }}
+      IG_CARD_URL_BASE: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Publish approved Threads image post
+        run: |
+          set -euo pipefail
+          EXTRA=""
+          if [ "${{ inputs.dry_run }}" = "true" ]; then EXTRA="--dry-run"; fi
+          python scripts/post_threads_image.py $EXTRA
+      - name: Upload run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: threads-image-log-${{ github.run_id }}
+          path: logs/
+          retention-days: 14
