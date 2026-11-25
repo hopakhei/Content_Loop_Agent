@@ -2,7 +2,13 @@
 
 Posts single posts and reply-chains via the official Threads API
 (https://developers.facebook.com/docs/threads). Publishing is two-step:
-create a media container, then publish it. Replies chain with `reply_to_id`.
+create a media container (`POST /{threads-user-id}/threads`), poll
+`GET /{container-id}?fields=status,error_message` until it is publishable,
+then `POST /{threads-user-id}/threads_publish`. Replies chain with `reply_to_id`.
+
+Text posts send media_type=TEXT. An image post sends media_type=IMAGE plus a
+public image_url; graph.threads.net fetches the file itself. Loop 1 does not
+pass an image, so its scheduled posts stay text-only.
 
 Auth is a long-lived Threads user access token (THREADS_ACCESS_TOKEN, ~60 days,
 refreshable). THREADS_USER_ID is optional — resolved from /me when absent.
@@ -34,6 +40,9 @@ PUBLISH_RETRY_DELAYS = (2.0, 5.0)
 # Poll the container status this many times (with these delays) until it
 # reports FINISHED before attempting to publish, per Meta's guidance.
 CONTAINER_READY_DELAYS = (0.0, 2.0, 3.0, 5.0)
+# Image containers stay IN_PROGRESS while Meta downloads image_url. Used only
+# when an image is attached. Text posts keep CONTAINER_READY_DELAYS above.
+IMAGE_CONTAINER_READY_DELAYS = (0.0, 2.0, 3.0, 5.0, 8.0, 13.0, 21.0)
 
 
 class ThreadsService:
@@ -76,6 +85,9 @@ class ThreadsService:
             self.user_id = self._me()["id"]
         return self.user_id
 
+    def _redact(self, value) -> str:
+        return redact_secret(str(value), self.token)
+
     def verify(self) -> str:
         """Read-only credential check. Returns the authenticated @handle."""
         if self.session is None:
@@ -85,21 +97,43 @@ class ThreadsService:
         return data.get("username") or "unknown"
 
     # ── publishing ───────────────────────────────────────────────────────────
-    def post_post(self, text: str, reply_to: Optional[str] = None) -> str:
+    def post_post(
+        self,
+        text: str,
+        reply_to: Optional[str] = None,
+        *,
+        image_url: Optional[str] = None,
+    ) -> str:
+        """Publish one Threads post. Returns the published media id.
+
+        `image_url` selects the official image container: media_type=IMAGE and
+        image_url, which graph.threads.net fetches from a public HTTPS host.
+        Omit it for a text post (media_type=TEXT). Loop 1 always omits it.
+        """
+        if image_url is not None:
+            image_url = image_url.strip()
+            if not image_url.startswith("https://") or "access_token=" in image_url.lower():
+                raise ValueError("Threads image_url must be a public https URL.")
+
         if self.dry_run:
             self._dry_counter += 1
             stamp = datetime.now(timezone.utc).strftime("%H%M%S")
             fake = f"DRYRUN-TH-{stamp}-{self._dry_counter}"
             self.log.info("[dry-run] would post to Threads (reply_to=%s): %s", reply_to, _preview(text))
+            if image_url:
+                self.log.info("[dry-run] image_url=%s", image_url)
             return fake
 
         uid = self._resolve_user_id()
         payload = {"media_type": "TEXT", "text": text, "access_token": self.token}
+        if image_url:
+            payload["media_type"] = "IMAGE"
+            payload["image_url"] = image_url
         if reply_to:
             payload["reply_to_id"] = reply_to
         create = self._post_with_retry(f"{API_BASE}/{uid}/threads", payload, what="create container")
         creation_id = create.json()["id"]
-        self._await_container(creation_id)
+        self._await_container(creation_id, require_finished=image_url is not None)
         # threads_publish 400s ("Media ID is not available") when the container
         # still isn't ready despite the status poll — client errors are
         # retryable here, unlike on create.
@@ -111,11 +145,18 @@ class ThreadsService:
         )
         return str(publish.json()["id"])
 
-    def _await_container(self, creation_id: str) -> None:
+    def _await_container(self, creation_id: str, *, require_finished: bool = False) -> None:
         """Poll the container until Meta reports it FINISHED (publishable).
-        Best-effort: status-check failures fall through to the publish attempt;
-        a terminal ERROR/EXPIRED status raises with Meta's error message."""
-        for delay in CONTAINER_READY_DELAYS:
+
+        Text posts are best-effort: a status-check failure falls through to the
+        publish attempt, and an empty status is treated as ready. Image posts
+        (`require_finished`) keep polling and refuse to publish until the status
+        is FINISHED or PUBLISHED — Meta cannot attach the image before that.
+        A terminal ERROR/EXPIRED status raises with Meta's error message.
+        """
+        delays = IMAGE_CONTAINER_READY_DELAYS if require_finished else CONTAINER_READY_DELAYS
+        last_status = ""
+        for delay in delays:
             if delay:
                 time.sleep(delay)
             try:
@@ -127,15 +168,25 @@ class ThreadsService:
                 r.raise_for_status()
                 data = r.json()
             except Exception as exc:
-                self.log.warning("Container status check failed (%s) — proceeding to publish.", exc)
+                self.log.warning(
+                    "Container status check failed (%s)%s",
+                    self._redact(exc),
+                    " — retrying." if require_finished else " — proceeding to publish.",
+                )
+                if require_finished:
+                    continue
                 return
             status = (data.get("status") or "").upper()
-            if status in ("FINISHED", "PUBLISHED", ""):
+            last_status = status
+            if status in ("FINISHED", "PUBLISHED") or (status == "" and not require_finished):
                 return
             if status in ("ERROR", "EXPIRED"):
-                raise RuntimeError(
-                    f"Threads container {status}: {data.get('error_message') or 'no detail from Meta'}"
-                )
+                detail = data.get("error_message") or "no detail from Meta"
+                raise RuntimeError(f"Threads container {status}: {self._redact(detail)}")
+        if require_finished:
+            raise RuntimeError(
+                f"Threads container not FINISHED after polling (last status: {last_status or 'unknown'})."
+            )
         self.log.warning("Container %s still IN_PROGRESS after polling — attempting publish anyway.", creation_id)
 
     def _post_with_retry(self, url: str, data: dict, *, what: str, retry_client_errors: bool = False):
@@ -153,13 +204,19 @@ class ThreadsService:
                 r = self.session.post(url, data=data, timeout=30)
             except Exception as exc:  # network error (ConnectionError/Timeout)
                 if not more:
+                    redacted = self._redact(exc)
+                    if redacted != str(exc):
+                        raise RuntimeError(f"Threads {what} failed: {redacted}") from exc
                     raise
-                self.log.warning("Threads %s network error (attempt %d): %s — retrying.", what, attempt + 1, exc)
+                self.log.warning(
+                    "Threads %s network error (attempt %d): %s — retrying.",
+                    what, attempt + 1, self._redact(exc),
+                )
                 continue
             status = getattr(r, "status_code", 200)
             if status < 400:
                 return r
-            last_detail = f"{status} {_body_snippet(r)}".strip()
+            last_detail = f"{status} {self._redact(_body_snippet(r))}".strip()
             if more and (status >= 500 or retry_client_errors):
                 self.log.warning("Threads %s returned %s (attempt %d) — retrying.", what, last_detail, attempt + 1)
                 continue
@@ -250,6 +307,18 @@ class ThreadsService:
                 "quotes": vals.get("quotes", 0),
             }
         return out
+
+
+def redact_secret(text: str, secret: str) -> str:
+    """Drop a credential if it appears in a log line or error string.
+
+    Tokens shorter than 12 characters are left in place. Test stand-ins like
+    "tok" are substrings of ordinary words, and replacing them would mangle
+    the message. Real Threads tokens are longer than that.
+    """
+    if not text or not secret or len(secret) < 12:
+        return text
+    return text.replace(secret, "***")
 
 
 def _body_snippet(resp) -> str:
