@@ -48,3 +48,7 @@ scenario-planning
 service-blueprinting
 strategic-alignment-model
 triple-bottom-line
+business-model-patterns-library
+management-flight-simulators
+sbu-segmentation-framework
+share-of-wallet-framework
